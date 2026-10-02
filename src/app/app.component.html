@@ -5,8 +5,8 @@
 <section class="welcome"><span class="eyebrow">SEUS ESTUDOS</span><h2>O que você quer revisar?</h2><p>Escolha uma matéria para começar.</p></section>
 <section class="study-history">
  <div class="history-heading"><div><span class="eyebrow">HISTÓRICO</span><h3>Seu ritmo de estudos</h3></div></div>
- @for(day of history();track day.date;let first=$first){
- <details class="history-day" [open]="first">
+ @for(day of history();track day.date){
+ <details class="history-day">
   <summary class="history-date"><span>{{formatDate(day.date)}}</span><span class="history-chevron">⌄</span></summary>
   <div class="history-content">
    <div class="history-group"><b>Aprendizado</b>
