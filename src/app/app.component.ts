@@ -3,14 +3,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatIconModule } from '@angular/material/icon';
 type Rating = 'again'|'hard'|'good'|'easy';
 interface Card { id:number; subject:'AWS'|'JavaScript'|'Padrões de Projeto'; topic:string; question:string; answer:string; explanation:string; due:string; interval:number; }
 interface StudyDay { date:string; learning:string[]; reviews:string[]; }
 const DAY=86400000;
 const today=()=>new Date().toISOString().slice(0,10);
 const addDays=(n:number)=>new Date(Date.now()+n*DAY).toISOString().slice(0,10);
-@Component({selector:'app-root',standalone:true,imports:[MatButtonModule,MatCardModule,MatChipsModule,MatExpansionModule,MatIconModule],templateUrl:'./app.component.html',styleUrl:'./app.component.css'})
+@Component({selector:'app-root',standalone:true,imports:[MatButtonModule,MatCardModule,MatChipsModule,MatExpansionModule],templateUrl:'./app.component.html',styleUrl:'./app.component.css'})
 export class AppComponent implements OnInit {
  private readonly supabaseUrl='https://elzkhndhkkkfxvtbhilt.supabase.co';
  private readonly supabaseKey='sb_publishable_YFZqSuAst3q1ERiC3HA71A_u4fmIP9j';
