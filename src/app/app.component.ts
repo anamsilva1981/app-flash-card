@@ -1,6 +1,7 @@
 import { Component, computed, signal } from '@angular/core';
 type Rating = 'again'|'hard'|'good'|'easy';
 interface Card { id:number; subject:'AWS'|'JavaScript'|'Padrões de Projeto'; topic:string; question:string; answer:string; explanation:string; due:string; interval:number; }
+interface StudyDay { date:string; learning:string[]; reviews:string[]; }
 const DAY=86400000;
 const today=()=>new Date().toISOString().slice(0,10);
 const addDays=(n:number)=>new Date(Date.now()+n*DAY).toISOString().slice(0,10);
@@ -42,6 +43,13 @@ export class AppComponent {
  {id:31,subject:'Padrões de Projeto',topic:'Padrões comportamentais',question:'Quais são os padrões comportamentais?',answer:'Chain of Responsibility, Command, Iterator, Mediator, Memento, Observer, State, Strategy, Template Method e Visitor.',explanation:'O catálogo apresenta dez padrões comportamentais: Chain of Responsibility, Command, Iterator, Mediator, Memento, Observer, State, Strategy, Template Method e Visitor. Eles tratam principalmente de comunicação, fluxo de responsabilidades e colaboração entre objetos.',due:today(),interval:0}
  ];
  cards=signal<Card[]>(this.load());
+ history=signal<StudyDay[]>(this.loadHistory());
+ private learningSeed:StudyDay[]=[{date:'2026-10-02',learning:['JavaScript — 3.1 — Visão geral e definições','AWS IA — Fundamentos de Machine Learning','Padrões de Projeto — Classificação dos padrões'],reviews:[]}];
+ private loadHistory():StudyDay[]{try{const saved:StudyDay[]=JSON.parse(localStorage.getItem('study-history')||'null');if(Array.isArray(saved))return this.mergeLearning(saved);return this.learningSeed;}catch{return this.learningSeed}}
+ private mergeLearning(saved:StudyDay[]):StudyDay[]{const result=saved.map(d=>({...d,learning:[...d.learning],reviews:[...d.reviews]}));for(const seedDay of this.learningSeed){const found=result.find(d=>d.date===seedDay.date);if(found){found.learning=Array.from(new Set([...found.learning,...seedDay.learning]));}else result.push({...seedDay,learning:[...seedDay.learning],reviews:[]});}return result.sort((a,b)=>b.date.localeCompare(a.date));}
+ private saveReview(label:string){const date=today();const next=this.history().map(d=>({...d,learning:[...d.learning],reviews:[...d.reviews]}));let day=next.find(d=>d.date===date);if(!day){day={date,learning:[],reviews:[]};next.push(day);}if(!day.reviews.includes(label))day.reviews.push(label);next.sort((a,b)=>b.date.localeCompare(a.date));this.history.set(next);localStorage.setItem('study-history',JSON.stringify(next));}
+ reviewLabel(){const subject=this.subject();const topic=this.topic();const name=subject==='AWS'?'AWS IA':subject||'';return topic==='Todos'?name:`${name} — ${topic}`;}
+ formatDate(date:string){const [y,m,d]=date.split('-');return `${d}/${m}/${y}`;}
  subjectCards=computed(()=>this.subject()?this.cards().filter(c=>c.subject===this.subject()):[]);
  topics=computed(()=>['Todos',...Array.from(new Set(this.subjectCards().map(c=>c.topic)))]);
  dueCards=computed(()=>this.shuffle(this.subjectCards().filter(c=>c.due<=today()&&(this.topic()==='Todos'||c.topic===this.topic()))));
@@ -63,6 +71,6 @@ export class AppComponent {
  choose(v:string){this.topic.set(v);this.index.set(0);this.flipped.set(false);this.explanationOpen.set(false)}
  reveal(){this.flipped.set(!this.flipped());this.explanationOpen.set(false)}
  toggleExplanation(){this.explanationOpen.set(!this.explanationOpen())}
- rate(r:Rating){const c=this.card();if(!c)return;const days={again:1,hard:2,good:4,easy:7}[r];this.cards.set(this.cards().map(x=>x.id===c.id?{...x,due:addDays(days),interval:days}:x));localStorage.setItem('flashcards',JSON.stringify(this.cards()));this.flipped.set(false);this.explanationOpen.set(false);this.index.set(0)}
+ rate(r:Rating){const c=this.card();if(!c)return;const days={again:1,hard:2,good:4,easy:7}[r];const currentDeck=this.dueCards().map(x=>x.id);this.cards.set(this.cards().map(x=>x.id===c.id?{...x,due:addDays(days),interval:days}:x));localStorage.setItem('flashcards',JSON.stringify(this.cards()));const remaining=this.cards().filter(x=>currentDeck.includes(x.id)&&x.due<=today()).length;if(remaining===0)this.saveReview(this.reviewLabel());this.flipped.set(false);this.explanationOpen.set(false);this.index.set(0)}
  reset(){localStorage.removeItem('flashcards');this.cards.set(this.seed);this.index.set(0);this.flipped.set(false);this.explanationOpen.set(false)}
 }
