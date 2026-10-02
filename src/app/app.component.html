@@ -5,16 +5,18 @@
 <section class="welcome"><span class="eyebrow">SEUS ESTUDOS</span><h2>O que você quer revisar?</h2><p>Escolha uma matéria para começar.</p></section>
 <section class="study-history">
  <div class="history-heading"><div><span class="eyebrow">HISTÓRICO</span><h3>Seu ritmo de estudos</h3></div></div>
- @for(day of history();track day.date){
- <article class="history-day">
-  <div class="history-date">{{formatDate(day.date)}}</div>
-  <div class="history-group"><b>Aprendizado</b>
-   @if(day.learning.length){<ul>@for(item of day.learning;track item){<li>{{item}}</li>}</ul>}@else{<p>Nenhum conteúdo novo.</p>}
+ @for(day of history();track day.date;let first=$first){
+ <details class="history-day" [open]="first">
+  <summary class="history-date"><span>{{formatDate(day.date)}}</span><span class="history-chevron">⌄</span></summary>
+  <div class="history-content">
+   <div class="history-group"><b>Aprendizado</b>
+    @if(day.learning.length){<ul>@for(item of day.learning;track item){<li>{{item}}</li>}</ul>}@else{<p>Nenhum conteúdo novo.</p>}
+   </div>
+   <div class="history-group"><b>Revisões</b>
+    @if(day.reviews.length){<ul>@for(item of day.reviews;track item){<li>{{item}}</li>}</ul>}@else{<p>Nenhum baralho revisado.</p>}
+   </div>
   </div>
-  <div class="history-group"><b>Revisões</b>
-   @if(day.reviews.length){<ul>@for(item of day.reviews;track item){<li>{{item}}</li>}</ul>}@else{<p>Nenhum baralho revisado.</p>}
-  </div>
- </article>
+ </details>
  }
 </section>
 <section class="subjects">
