@@ -4,12 +4,18 @@
 @if(!subject()){
 <section class="welcome"><span class="eyebrow">SEUS ESTUDOS</span><h2>O que você quer revisar?</h2><p>Escolha uma matéria para começar.</p></section>
 <section class="study-history">
- <div class="history-heading"><div><span class="eyebrow">HISTÓRICO DE ESTUDOS</span><h3>02/10/2026</h3></div><span class="history-count">3 tópicos</span></div>
- <ul>
-  <li><span class="history-dot js-dot">JS</span><div><b>JavaScript</b><small>3.1 — Visão geral e definições</small></div></li>
-  <li><span class="history-dot aws-dot">☁</span><div><b>AWS IA</b><small>Fundamentos de Machine Learning</small></div></li>
-  <li><span class="history-dot patterns-dot">DP</span><div><b>Padrões de Projeto</b><small>Classificação dos padrões</small></div></li>
- </ul>
+ <div class="history-heading"><div><span class="eyebrow">HISTÓRICO</span><h3>Seu ritmo de estudos</h3></div></div>
+ @for(day of history();track day.date){
+ <article class="history-day">
+  <div class="history-date">{{formatDate(day.date)}}</div>
+  <div class="history-group"><b>Aprendizado</b>
+   @if(day.learning.length){<ul>@for(item of day.learning;track item){<li>{{item}}</li>}</ul>}@else{<p>Nenhum conteúdo novo.</p>}
+  </div>
+  <div class="history-group"><b>Revisões</b>
+   @if(day.reviews.length){<ul>@for(item of day.reviews;track item){<li>{{item}}</li>}</ul>}@else{<p>Nenhum baralho revisado.</p>}
+  </div>
+ </article>
+ }
 </section>
 <section class="subjects">
  <button class="subject-card aws" (click)="openSubject('AWS')"><div class="subject-icon">☁</div><div><span>INTELIGÊNCIA ARTIFICIAL</span><h3>AWS IA</h3><p>{{subjectDue('AWS')}} cards para revisar hoje</p></div><b>›</b></button>
