@@ -1,5 +1,5 @@
 <main class="shell">
-<header><div><span class="eyebrow">REVISÃO ESPAÇADA</span><h1>Flashcard<span>.</span></h1></div><button mat-icon-button class="reset" (click)="reset()" title="Reiniciar progresso"><mat-icon>refresh</mat-icon></button></header>
+<header><div><span class="eyebrow">REVISÃO ESPAÇADA</span><h1>Flashcard<span>.</span></h1></div><button mat-icon-button class="reset" (click)="reset()" title="Reiniciar progresso" aria-label="Reiniciar progresso"><span class="reset-symbol">↻</span></button></header>
 
 @if(!subject()){
 <section class="welcome"><span class="eyebrow">SEUS ESTUDOS</span><h2>O que você quer revisar?</h2><p>Escolha uma matéria para começar.</p></section>
@@ -20,16 +20,16 @@
  }
 </section>
 <section class="subjects">
- <mat-card class="subject-card aws" appearance="outlined" (click)="openSubject('AWS')"><div class="subject-icon">☁</div><div><span>INTELIGÊNCIA ARTIFICIAL</span><h3>AWS IA</h3><p>{{subjectDue('AWS')}} cards para revisar hoje</p></div><mat-icon>chevron_right</mat-icon></mat-card>
- <mat-card class="subject-card js" appearance="outlined" (click)="openSubject('JavaScript')"><div class="subject-icon">JS</div><div><span>PROGRAMAÇÃO</span><h3>JavaScript</h3><p>{{subjectDue('JavaScript')}} cards para revisar hoje</p></div><mat-icon>chevron_right</mat-icon></mat-card>
- <mat-card class="subject-card patterns" appearance="outlined" (click)="openSubject('Padrões de Projeto')"><div class="subject-icon">DP</div><div><span>ENGENHARIA DE SOFTWARE</span><h3>Padrões de Projeto</h3><p>{{subjectDue('Padrões de Projeto')}} cards para revisar hoje</p></div><mat-icon>chevron_right</mat-icon></mat-card>
- <mat-card class="subject-card react" appearance="outlined" (click)="openSubject('React')"><div class="subject-icon">⚛</div><div><span>PROGRAMAÇÃO</span><h3>React</h3><p>Conteúdo em breve</p></div><mat-icon>chevron_right</mat-icon></mat-card>
- <mat-card class="subject-card architecture" appearance="outlined" (click)="openSubject('Arquitetura')"><div class="subject-icon">ARQ</div><div><span>ENGENHARIA DE SOFTWARE</span><h3>Arquitetura</h3><p>Conteúdo em breve</p></div><mat-icon>chevron_right</mat-icon></mat-card>
- <mat-card class="subject-card java" appearance="outlined" (click)="openSubject('Java')"><div class="subject-icon">J</div><div><span>PROGRAMAÇÃO</span><h3>Java</h3><p>Conteúdo em breve</p></div><mat-icon>chevron_right</mat-icon></mat-card>
+ <mat-card class="subject-card aws" appearance="outlined" (click)="openSubject('AWS')"><div class="subject-icon">☁</div><div><span>INTELIGÊNCIA ARTIFICIAL</span><h3>AWS IA</h3><p>{{subjectDue('AWS')}} cards para revisar hoje</p></div><span class="subject-arrow" aria-hidden="true">›</span></mat-card>
+ <mat-card class="subject-card js" appearance="outlined" (click)="openSubject('JavaScript')"><div class="subject-icon">JS</div><div><span>PROGRAMAÇÃO</span><h3>JavaScript</h3><p>{{subjectDue('JavaScript')}} cards para revisar hoje</p></div><span class="subject-arrow" aria-hidden="true">›</span></mat-card>
+ <mat-card class="subject-card patterns" appearance="outlined" (click)="openSubject('Padrões de Projeto')"><div class="subject-icon">DP</div><div><span>ENGENHARIA DE SOFTWARE</span><h3>Padrões de Projeto</h3><p>{{subjectDue('Padrões de Projeto')}} cards para revisar hoje</p></div><span class="subject-arrow" aria-hidden="true">›</span></mat-card>
+ <mat-card class="subject-card react" appearance="outlined" (click)="openSubject('React')"><div class="subject-icon">⚛</div><div><span>PROGRAMAÇÃO</span><h3>React</h3><p>Conteúdo em breve</p></div><span class="subject-arrow" aria-hidden="true">›</span></mat-card>
+ <mat-card class="subject-card architecture" appearance="outlined" (click)="openSubject('Arquitetura')"><div class="subject-icon">ARQ</div><div><span>ENGENHARIA DE SOFTWARE</span><h3>Arquitetura</h3><p>Conteúdo em breve</p></div><span class="subject-arrow" aria-hidden="true">›</span></mat-card>
+ <mat-card class="subject-card java" appearance="outlined" (click)="openSubject('Java')"><div class="subject-icon">J</div><div><span>PROGRAMAÇÃO</span><h3>Java</h3><p>Conteúdo em breve</p></div><span class="subject-arrow" aria-hidden="true">›</span></mat-card>
 </section>
 <section class="summary"><strong>{{totalDue()}}</strong><span>cards no total para revisar hoje</span></section>
 }@else{
-<button mat-button class="back" (click)="back()"><mat-icon>arrow_back</mat-icon> Todas as matérias</button>
+<button mat-button class="back" (click)="back()">‹ Todas as matérias</button>
 <section class="hero"><div><p>{{subject()==='AWS'?'AWS IA':subject()}}</p><strong>{{dueCards().length}} cards para revisar hoje.</strong></div><div class="ring">{{dueCards().length}}</div></section>
 <div class="topic-title">Escolha o conteúdo</div>
 <nav class="topics">@for(t of topics();track t){<button mat-stroked-button [class.active]="topic()===t" (click)="choose(t)">{{t}}</button>}</nav>
