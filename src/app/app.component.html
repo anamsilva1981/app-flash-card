@@ -6,11 +6,13 @@
 <section class="subjects">
  <button class="subject-card aws" (click)="openSubject('AWS')"><div class="subject-icon">☁</div><div><span>INTELIGÊNCIA ARTIFICIAL</span><h3>AWS IA</h3><p>{{subjectDue('AWS')}} cards para revisar hoje</p></div><b>›</b></button>
  <button class="subject-card js" (click)="openSubject('JavaScript')"><div class="subject-icon">JS</div><div><span>PROGRAMAÇÃO</span><h3>JavaScript</h3><p>{{subjectDue('JavaScript')}} cards para revisar hoje</p></div><b>›</b></button>
+ <button class="subject-card patterns" (click)="openSubject('Padrões de Projeto')"><div class="subject-icon">DP</div><div><span>ENGENHARIA DE SOFTWARE</span><h3>Padrões de Projeto</h3><p>{{subjectDue('Padrões de Projeto')}} cards para revisar hoje</p></div><b>›</b></button>
+ <button class="subject-card react" (click)="openSubject('React')"><div class="subject-icon">⚛</div><div><span>PROGRAMAÇÃO</span><h3>React</h3><p>Conteúdo em breve</p></div><b>›</b></button>
 </section>
 <section class="summary"><strong>{{totalDue()}}</strong><span>cards no total para revisar hoje</span></section>
 }@else{
 <button class="back" (click)="back()">‹ Todas as matérias</button>
-<section class="hero"><div><p>{{subject()==='AWS'?'AWS IA':'JavaScript'}}</p><strong>{{dueCards().length}} cards para revisar hoje.</strong></div><div class="ring">{{dueCards().length}}</div></section>
+<section class="hero"><div><p>{{subject()==='AWS'?'AWS IA':subject()}}</p><strong>{{dueCards().length}} cards para revisar hoje.</strong></div><div class="ring">{{dueCards().length}}</div></section>
 <div class="topic-title">Escolha o conteúdo</div>
 <nav class="topics">@for(t of topics();track t){<button [class.active]="topic()===t" (click)="choose(t)">{{t}}</button>}</nav>
 @if(card();as c){<section class="study"><div class="meta"><span>{{c.topic}}</span><b>{{progress()}}</b></div><button class="card" (click)="reveal()" [class.flipped]="flipped()"><div class="label">{{flipped()?'RESPOSTA':'PERGUNTA'}}</div><div class="content">{{flipped()?c.answer:c.question}}</div><small>{{flipped()?'Avalie abaixo como foi lembrar':'Toque para ver a resposta'}}</small></button>
