@@ -6,7 +6,7 @@ const today=()=>new Date().toISOString().slice(0,10);
 const addDays=(n:number)=>new Date(Date.now()+n*DAY).toISOString().slice(0,10);
 @Component({selector:'app-root',standalone:true,templateUrl:'./app.component.html',styleUrl:'./app.component.css'})
 export class AppComponent {
- readonly topics=['Todos','Fundamentos de Machine Learning'];
+ readonly topics=['Todos','Fundamentos de Machine Learning','JavaScript — 3.1 Visão geral e definições'];
  topic=signal('Todos'); flipped=signal(false); index=signal(0);
  private seed:Card[]=[
  {id:1,topic:'Fundamentos de Machine Learning',question:'Quais são as etapas básicas para criar um modelo de ML?',answer:'Preparar dados, escolher algoritmo, treinar, avaliar e iterar.',due:today(),interval:0},
@@ -18,7 +18,17 @@ export class AppComponent {
  {id:7,topic:'Fundamentos de Machine Learning',question:'Qual é o objetivo do aprendizado supervisionado?',answer:'Aprender a prever a saída para dados novos e ainda não vistos.',due:today(),interval:0},
  {id:8,topic:'Fundamentos de Machine Learning',question:'Qual tipo de aprendizado utiliza dados não rotulados?',answer:'Aprendizado não supervisionado.',due:today(),interval:0},
  {id:9,topic:'Fundamentos de Machine Learning',question:'Como funciona o aprendizado por reforço?',answer:'O modelo aprende com recompensas e penalidades por suas ações.',due:today(),interval:0},
- {id:10,topic:'Fundamentos de Machine Learning',question:'Qual a diferença entre inferência em lote e em tempo real?',answer:'Lote processa vários dados juntos; tempo real responde quase imediatamente.',due:today(),interval:0}
+ {id:10,topic:'Fundamentos de Machine Learning',question:'Qual a diferença entre inferência em lote e em tempo real?',answer:'Lote processa vários dados juntos; tempo real responde quase imediatamente.',due:today(),interval:0},
+ {id:11,topic:'JavaScript — 3.1 Visão geral e definições',question:'Em quais duas categorias os tipos de JavaScript se dividem?',answer:'Tipos primitivos e tipos de objeto.',due:today(),interval:0},
+ {id:12,topic:'JavaScript — 3.1 Visão geral e definições',question:'Quais são os tipos primitivos de JavaScript?',answer:'Números, strings, booleanos, null, undefined e símbolos.',due:today(),interval:0},
+ {id:13,topic:'JavaScript — 3.1 Visão geral e definições',question:'Qual é a principal característica dos valores primitivos?',answer:'São imutáveis: não podem ser alterados.',due:today(),interval:0},
+ {id:14,topic:'JavaScript — 3.1 Visão geral e definições',question:'Strings são mutáveis ou imutáveis?',answer:'Imutáveis. Uma string existente não pode ser alterada.',due:today(),interval:0},
+ {id:15,topic:'JavaScript — 3.1 Visão geral e definições',question:'O que é um objeto em JavaScript?',answer:'Uma coleção de propriedades, cada uma com nome e valor.',due:today(),interval:0},
+ {id:16,topic:'JavaScript — 3.1 Visão geral e definições',question:'Objetos são mutáveis. O que isso significa?',answer:'Suas propriedades podem ser alteradas.',due:today(),interval:0},
+ {id:17,topic:'JavaScript — 3.1 Visão geral e definições',question:'O que é um array em JavaScript?',answer:'Um objeto que representa uma coleção ordenada de valores.',due:today(),interval:0},
+ {id:18,topic:'JavaScript — 3.1 Visão geral e definições',question:'O que são métodos em JavaScript?',answer:'Funções associadas a valores ou objetos.',due:today(),interval:0},
+ {id:19,topic:'JavaScript — 3.1 Visão geral e definições',question:'Quais valores não permitem invocar métodos?',answer:'null e undefined.',due:today(),interval:0},
+ {id:20,topic:'JavaScript — 3.1 Visão geral e definições',question:'Qual é a diferença entre const, let e var?',answer:'const declara constantes; let e var declaram variáveis.',due:today(),interval:0}
  ];
  cards=signal<Card[]>(this.load());
  dueCards=computed(()=>this.cards().filter(c=>c.due<=today()&&(this.topic()==='Todos'||c.topic===this.topic())));
