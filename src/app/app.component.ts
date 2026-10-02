@@ -1,37 +1,40 @@
 import { Component, computed, signal } from '@angular/core';
 type Rating = 'again'|'hard'|'good'|'easy';
-interface Card { id:number; topic:string; question:string; answer:string; due:string; interval:number; }
+interface Card { id:number; subject:'AWS'|'JavaScript'; topic:string; question:string; answer:string; due:string; interval:number; }
 const DAY=86400000;
 const today=()=>new Date().toISOString().slice(0,10);
 const addDays=(n:number)=>new Date(Date.now()+n*DAY).toISOString().slice(0,10);
 @Component({selector:'app-root',standalone:true,templateUrl:'./app.component.html',styleUrl:'./app.component.css'})
 export class AppComponent {
- readonly topics=['Todos','Fundamentos de Machine Learning','JavaScript — 3.1 Visão geral e definições'];
- topic=signal('Todos'); flipped=signal(false); index=signal(0);
+ subject=signal<'AWS'|'JavaScript'|null>(null); topic=signal('Todos'); flipped=signal(false); index=signal(0);
  private seed:Card[]=[
- {id:1,topic:'Fundamentos de Machine Learning',question:'Quais são as etapas básicas para criar um modelo de ML?',answer:'Preparar dados, escolher algoritmo, treinar, avaliar e iterar.',due:today(),interval:0},
- {id:2,topic:'Fundamentos de Machine Learning',question:'Por que a qualidade dos dados de treinamento é tão importante?',answer:'Dados ruins geram modelos e previsões ruins.',due:today(),interval:0},
- {id:3,topic:'Fundamentos de Machine Learning',question:'O que são dados rotulados?',answer:'Dados que possuem uma saída ou classe conhecida associada.',due:today(),interval:0},
- {id:4,topic:'Fundamentos de Machine Learning',question:'O que são dados não rotulados?',answer:'Dados de entrada sem saída, classe ou variável-alvo associada.',due:today(),interval:0},
- {id:5,topic:'Fundamentos de Machine Learning',question:'O que caracteriza dados não estruturados?',answer:'Não possuem formato predefinido, como texto, imagem, áudio e vídeo.',due:today(),interval:0},
- {id:6,topic:'Fundamentos de Machine Learning',question:'Qual tipo de aprendizado utiliza dados rotulados?',answer:'Aprendizado supervisionado.',due:today(),interval:0},
- {id:7,topic:'Fundamentos de Machine Learning',question:'Qual é o objetivo do aprendizado supervisionado?',answer:'Aprender a prever a saída para dados novos e ainda não vistos.',due:today(),interval:0},
- {id:8,topic:'Fundamentos de Machine Learning',question:'Qual tipo de aprendizado utiliza dados não rotulados?',answer:'Aprendizado não supervisionado.',due:today(),interval:0},
- {id:9,topic:'Fundamentos de Machine Learning',question:'Como funciona o aprendizado por reforço?',answer:'O modelo aprende com recompensas e penalidades por suas ações.',due:today(),interval:0},
- {id:10,topic:'Fundamentos de Machine Learning',question:'Qual a diferença entre inferência em lote e em tempo real?',answer:'Lote processa vários dados juntos; tempo real responde quase imediatamente.',due:today(),interval:0},
- {id:11,topic:'JavaScript — 3.1 Visão geral e definições',question:'Em quais duas categorias os tipos de JavaScript se dividem?',answer:'Tipos primitivos e tipos de objeto.',due:today(),interval:0},
- {id:12,topic:'JavaScript — 3.1 Visão geral e definições',question:'Quais são os tipos primitivos de JavaScript?',answer:'Números, strings, booleanos, null, undefined e símbolos.',due:today(),interval:0},
- {id:13,topic:'JavaScript — 3.1 Visão geral e definições',question:'Qual é a principal característica dos valores primitivos?',answer:'São imutáveis: não podem ser alterados.',due:today(),interval:0},
- {id:14,topic:'JavaScript — 3.1 Visão geral e definições',question:'Strings são mutáveis ou imutáveis?',answer:'Imutáveis. Uma string existente não pode ser alterada.',due:today(),interval:0},
- {id:15,topic:'JavaScript — 3.1 Visão geral e definições',question:'O que é um objeto em JavaScript?',answer:'Uma coleção de propriedades, cada uma com nome e valor.',due:today(),interval:0},
- {id:16,topic:'JavaScript — 3.1 Visão geral e definições',question:'Objetos são mutáveis. O que isso significa?',answer:'Suas propriedades podem ser alteradas.',due:today(),interval:0},
- {id:17,topic:'JavaScript — 3.1 Visão geral e definições',question:'O que é um array em JavaScript?',answer:'Um objeto que representa uma coleção ordenada de valores.',due:today(),interval:0},
- {id:18,topic:'JavaScript — 3.1 Visão geral e definições',question:'O que são métodos em JavaScript?',answer:'Funções associadas a valores ou objetos.',due:today(),interval:0},
- {id:19,topic:'JavaScript — 3.1 Visão geral e definições',question:'Quais valores não permitem invocar métodos?',answer:'null e undefined.',due:today(),interval:0},
- {id:20,topic:'JavaScript — 3.1 Visão geral e definições',question:'Qual é a diferença entre const, let e var?',answer:'const declara constantes; let e var declaram variáveis.',due:today(),interval:0}
+ {id:1,subject:'AWS',topic:'Fundamentos de Machine Learning',question:'Quais são as etapas básicas para criar um modelo de ML?',answer:'Preparar dados, escolher algoritmo, treinar, avaliar e iterar.',due:today(),interval:0},
+ {id:2,subject:'AWS',topic:'Fundamentos de Machine Learning',question:'Por que a qualidade dos dados de treinamento é tão importante?',answer:'Dados ruins geram modelos e previsões ruins.',due:today(),interval:0},
+ {id:3,subject:'AWS',topic:'Fundamentos de Machine Learning',question:'O que são dados rotulados?',answer:'Dados que possuem uma saída ou classe conhecida associada.',due:today(),interval:0},
+ {id:4,subject:'AWS',topic:'Fundamentos de Machine Learning',question:'O que são dados não rotulados?',answer:'Dados de entrada sem saída, classe ou variável-alvo associada.',due:today(),interval:0},
+ {id:5,subject:'AWS',topic:'Fundamentos de Machine Learning',question:'O que caracteriza dados não estruturados?',answer:'Não possuem formato predefinido, como texto, imagem, áudio e vídeo.',due:today(),interval:0},
+ {id:6,subject:'AWS',topic:'Fundamentos de Machine Learning',question:'Qual tipo de aprendizado utiliza dados rotulados?',answer:'Aprendizado supervisionado.',due:today(),interval:0},
+ {id:7,subject:'AWS',topic:'Fundamentos de Machine Learning',question:'Qual é o objetivo do aprendizado supervisionado?',answer:'Aprender a prever a saída para dados novos e ainda não vistos.',due:today(),interval:0},
+ {id:8,subject:'AWS',topic:'Fundamentos de Machine Learning',question:'Qual tipo de aprendizado utiliza dados não rotulados?',answer:'Aprendizado não supervisionado.',due:today(),interval:0},
+ {id:9,subject:'AWS',topic:'Fundamentos de Machine Learning',question:'Como funciona o aprendizado por reforço?',answer:'O modelo aprende com recompensas e penalidades por suas ações.',due:today(),interval:0},
+ {id:10,subject:'AWS',topic:'Fundamentos de Machine Learning',question:'Qual a diferença entre inferência em lote e em tempo real?',answer:'Lote processa vários dados juntos; tempo real responde quase imediatamente.',due:today(),interval:0},
+ {id:11,subject:'JavaScript',topic:'3.1 — Visão geral e definições',question:'Em quais duas categorias os tipos de JavaScript se dividem?',answer:'Tipos primitivos e tipos de objeto.',due:today(),interval:0},
+ {id:12,subject:'JavaScript',topic:'3.1 — Visão geral e definições',question:'Quais são os tipos primitivos de JavaScript?',answer:'Números, strings, booleanos, null, undefined e símbolos.',due:today(),interval:0},
+ {id:13,subject:'JavaScript',topic:'3.1 — Visão geral e definições',question:'Qual é a principal característica dos valores primitivos?',answer:'São imutáveis: não podem ser alterados.',due:today(),interval:0},
+ {id:14,subject:'JavaScript',topic:'3.1 — Visão geral e definições',question:'Strings são mutáveis ou imutáveis?',answer:'Imutáveis. Uma string existente não pode ser alterada.',due:today(),interval:0},
+ {id:15,subject:'JavaScript',topic:'3.1 — Visão geral e definições',question:'O que é um objeto em JavaScript?',answer:'Uma coleção de propriedades, cada uma com nome e valor.',due:today(),interval:0},
+ {id:16,subject:'JavaScript',topic:'3.1 — Visão geral e definições',question:'Objetos são mutáveis. O que isso significa?',answer:'Suas propriedades podem ser alteradas.',due:today(),interval:0},
+ {id:17,subject:'JavaScript',topic:'3.1 — Visão geral e definições',question:'O que é um array em JavaScript?',answer:'Um objeto que representa uma coleção ordenada de valores.',due:today(),interval:0},
+ {id:18,subject:'JavaScript',topic:'3.1 — Visão geral e definições',question:'O que são métodos em JavaScript?',answer:'Funções associadas a valores ou objetos.',due:today(),interval:0},
+ {id:19,subject:'JavaScript',topic:'3.1 — Visão geral e definições',question:'Quais valores não permitem invocar métodos?',answer:'null e undefined.',due:today(),interval:0},
+ {id:20,subject:'JavaScript',topic:'3.1 — Visão geral e definições',question:'Qual é a diferença entre const, let e var?',answer:'const declara constantes; let e var declaram variáveis.',due:today(),interval:0}
  ];
  cards=signal<Card[]>(this.load());
- dueCards=computed(()=>this.cards().filter(c=>c.due<=today()&&(this.topic()==='Todos'||c.topic===this.topic())));
+ subjectCards=computed(()=>this.subject()?this.cards().filter(c=>c.subject===this.subject()):[]);
+ topics=computed(()=>['Todos',...Array.from(new Set(this.subjectCards().map(c=>c.topic)))]);
+ dueCards=computed(()=>this.subjectCards().filter(c=>c.due<=today()&&(this.topic()==='Todos'||c.topic===this.topic())));
+ totalDue=computed(()=>this.cards().filter(c=>c.due<=today()).length);
+ subjectDue=(subject:'AWS'|'JavaScript')=>this.cards().filter(c=>c.subject===subject&&c.due<=today()).length;
  card=computed(()=>this.dueCards()[this.index()%Math.max(this.dueCards().length,1)]);
  progress=computed(()=>this.dueCards().length?String(this.index()+1)+' / '+String(this.dueCards().length):'0 / 0');
  private load():Card[]{try{
@@ -42,6 +45,8 @@ export class AppComponent {
    return previous?{...seedCard,due:previous.due,interval:previous.interval}:seedCard;
   });
  }catch{return this.seed}}
+ openSubject(v:'AWS'|'JavaScript'){this.subject.set(v);this.topic.set('Todos');this.index.set(0);this.flipped.set(false)}
+ back(){this.subject.set(null);this.topic.set('Todos');this.index.set(0);this.flipped.set(false)}
  choose(v:string){this.topic.set(v);this.index.set(0);this.flipped.set(false)}
  reveal(){this.flipped.set(!this.flipped())}
  rate(r:Rating){const c=this.card();if(!c)return;const days={again:1,hard:2,good:4,easy:7}[r];this.cards.set(this.cards().map(x=>x.id===c.id?{...x,due:addDays(days),interval:days}:x));localStorage.setItem('flashcards',JSON.stringify(this.cards()));this.flipped.set(false);this.index.set(0)}
