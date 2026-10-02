@@ -44,11 +44,12 @@ export class AppComponent {
  cards=signal<Card[]>(this.load());
  subjectCards=computed(()=>this.subject()?this.cards().filter(c=>c.subject===this.subject()):[]);
  topics=computed(()=>['Todos',...Array.from(new Set(this.subjectCards().map(c=>c.topic)))]);
- dueCards=computed(()=>this.subjectCards().filter(c=>c.due<=today()&&(this.topic()==='Todos'||c.topic===this.topic())));
+ dueCards=computed(()=>this.shuffle(this.subjectCards().filter(c=>c.due<=today()&&(this.topic()==='Todos'||c.topic===this.topic()))));
  totalDue=computed(()=>this.cards().filter(c=>c.due<=today()).length);
  subjectDue=(subject:'AWS'|'JavaScript'|'Padrões de Projeto'|'React'|'Arquitetura')=>this.cards().filter(c=>c.subject===subject&&c.due<=today()).length;
  card=computed(()=>this.dueCards()[this.index()%Math.max(this.dueCards().length,1)]);
  progress=computed(()=>this.dueCards().length?String(this.index()+1)+' / '+String(this.dueCards().length):'0 / 0');
+ private shuffle<T>(items:T[]):T[]{const copy=[...items];for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]];}return copy;}
  private load():Card[]{try{
   const saved:Card[]=JSON.parse(localStorage.getItem('flashcards')||'null');
   if(!Array.isArray(saved))return this.seed;
