@@ -6,7 +6,7 @@ const today=()=>new Date().toISOString().slice(0,10);
 const addDays=(n:number)=>new Date(Date.now()+n*DAY).toISOString().slice(0,10);
 @Component({selector:'app-root',standalone:true,templateUrl:'./app.component.html',styleUrl:'./app.component.css'})
 export class AppComponent {
- subject=signal<'AWS'|'JavaScript'|'Padrões de Projeto'|'React'|null>(null); topic=signal('Todos'); flipped=signal(false); explanationOpen=signal(false); index=signal(0);
+ subject=signal<'AWS'|'JavaScript'|'Padrões de Projeto'|'React'|'Arquitetura'|null>(null); topic=signal('Todos'); flipped=signal(false); explanationOpen=signal(false); index=signal(0);
  private seed:Card[]=[
  {id:1,subject:'AWS',topic:'Fundamentos de Machine Learning',question:'Quais são as etapas básicas para criar um modelo de ML?',answer:'Preparar dados, escolher algoritmo, treinar, avaliar e iterar.',explanation:'Um modelo de ML nasce dos dados. Primeiro os dados são coletados e preparados; depois escolhe-se um algoritmo adequado ao problema. O algoritmo é treinado para aprender padrões nesses dados. Em seguida, o modelo é avaliado com dados de teste para verificar se generaliza bem. Se o resultado não for satisfatório, ajustam-se dados, algoritmo ou parâmetros e o processo é repetido.',due:today(),interval:0},
  {id:2,subject:'AWS',topic:'Fundamentos de Machine Learning',question:'Por que a qualidade dos dados de treinamento é tão importante?',answer:'Dados ruins geram modelos e previsões ruins.',explanation:'A qualidade do modelo depende diretamente da informação usada no treinamento. Dados incorretos, incompletos, enviesados ou mal preparados fazem o algoritmo aprender padrões errados. Mesmo um algoritmo excelente não corrige automaticamente dados ruins. Por isso, coleta, limpeza e preparação são etapas críticas. É a ideia de “garbage in, garbage out”: entrada ruim tende a produzir saída ruim.',due:today(),interval:0},
@@ -46,7 +46,7 @@ export class AppComponent {
  topics=computed(()=>['Todos',...Array.from(new Set(this.subjectCards().map(c=>c.topic)))]);
  dueCards=computed(()=>this.subjectCards().filter(c=>c.due<=today()&&(this.topic()==='Todos'||c.topic===this.topic())));
  totalDue=computed(()=>this.cards().filter(c=>c.due<=today()).length);
- subjectDue=(subject:'AWS'|'JavaScript'|'Padrões de Projeto'|'React')=>this.cards().filter(c=>c.subject===subject&&c.due<=today()).length;
+ subjectDue=(subject:'AWS'|'JavaScript'|'Padrões de Projeto'|'React'|'Arquitetura')=>this.cards().filter(c=>c.subject===subject&&c.due<=today()).length;
  card=computed(()=>this.dueCards()[this.index()%Math.max(this.dueCards().length,1)]);
  progress=computed(()=>this.dueCards().length?String(this.index()+1)+' / '+String(this.dueCards().length):'0 / 0');
  private load():Card[]{try{
@@ -57,7 +57,7 @@ export class AppComponent {
    return previous?{...seedCard,due:previous.due,interval:previous.interval}:seedCard;
   });
  }catch{return this.seed}}
- openSubject(v:'AWS'|'JavaScript'|'Padrões de Projeto'|'React'){this.subject.set(v);this.topic.set('Todos');this.index.set(0);this.flipped.set(false);this.explanationOpen.set(false)}
+ openSubject(v:'AWS'|'JavaScript'|'Padrões de Projeto'|'React'|'Arquitetura'){this.subject.set(v);this.topic.set('Todos');this.index.set(0);this.flipped.set(false);this.explanationOpen.set(false)}
  back(){this.subject.set(null);this.topic.set('Todos');this.index.set(0);this.flipped.set(false);this.explanationOpen.set(false)}
  choose(v:string){this.topic.set(v);this.index.set(0);this.flipped.set(false);this.explanationOpen.set(false)}
  reveal(){this.flipped.set(!this.flipped());this.explanationOpen.set(false)}
