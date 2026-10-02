@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, signal, OnInit } from '@angular/core';
 type Rating = 'again'|'hard'|'good'|'easy';
 interface Card { id:number; subject:'AWS'|'JavaScript'|'Padrões de Projeto'; topic:string; question:string; answer:string; explanation:string; due:string; interval:number; }
 interface StudyDay { date:string; learning:string[]; reviews:string[]; }
@@ -6,7 +6,9 @@ const DAY=86400000;
 const today=()=>new Date().toISOString().slice(0,10);
 const addDays=(n:number)=>new Date(Date.now()+n*DAY).toISOString().slice(0,10);
 @Component({selector:'app-root',standalone:true,templateUrl:'./app.component.html',styleUrl:'./app.component.css'})
-export class AppComponent {
+export class AppComponent implements OnInit {
+ private readonly supabaseUrl='https://elzkhndhkkkfxvtbhilt.supabase.co';
+ private readonly supabaseKey='sb_publishable_YFZqSuAst3q1ERiC3HA71A_u4fmIP9j';
  subject=signal<'AWS'|'JavaScript'|'Padrões de Projeto'|'React'|'Arquitetura'|'Java'|null>(null); topic=signal('Todos'); flipped=signal(false); explanationOpen=signal(false); index=signal(0);
  private seed:Card[]=[
  {id:1,subject:'AWS',topic:'Fundamentos de Machine Learning',question:'Quais são as etapas básicas para criar um modelo de ML?',answer:'Preparar dados, escolher algoritmo, treinar, avaliar e iterar.',explanation:'Um modelo de ML nasce dos dados. Primeiro os dados são coletados e preparados; depois escolhe-se um algoritmo adequado ao problema. O algoritmo é treinado para aprender padrões nesses dados. Em seguida, o modelo é avaliado com dados de teste para verificar se generaliza bem. Se o resultado não for satisfatório, ajustam-se dados, algoritmo ou parâmetros e o processo é repetido.',due:today(),interval:0},
@@ -45,9 +47,12 @@ export class AppComponent {
  cards=signal<Card[]>(this.load());
  history=signal<StudyDay[]>(this.loadHistory());
  private learningSeed:StudyDay[]=[{date:'2026-10-02',learning:['JavaScript — 3.1 — Visão geral e definições','AWS IA — Fundamentos de Machine Learning','Padrões de Projeto — Classificação dos padrões'],reviews:[]}];
- private loadHistory():StudyDay[]{try{const saved:StudyDay[]=JSON.parse(localStorage.getItem('study-history')||'null');if(Array.isArray(saved))return this.mergeLearning(saved);return this.learningSeed;}catch{return this.learningSeed}}
+ ngOnInit(){void this.loadRemoteHistory();}
+ private async api(path:string,options:RequestInit={}){return fetch(this.supabaseUrl+'/rest/v1/'+path,{...options,headers:{apikey:this.supabaseKey,Authorization:'Bearer '+this.supabaseKey,'Content-Type':'application/json',Prefer:'return=minimal',...(options.headers||{})}})}
+ private async loadRemoteHistory(){try{const res=await this.api('study_activity?select=activity_date,kind,label&order=activity_date.desc,created_at.asc');if(!res.ok)return;const rows:any[]=await res.json();const days=new Map<string,StudyDay>();for(const row of rows){if(!days.has(row.activity_date))days.set(row.activity_date,{date:row.activity_date,learning:[],reviews:[]});const day=days.get(row.activity_date)!;const target=row.kind==='learning'?day.learning:day.reviews;if(!target.includes(row.label))target.push(row.label);}this.history.set(this.mergeLearning([...days.values()]));}catch{}}
+ private loadHistory():StudyDay[]{return this.learningSeed;}
  private mergeLearning(saved:StudyDay[]):StudyDay[]{const result=saved.map(d=>({...d,learning:[...d.learning],reviews:[...d.reviews]}));for(const seedDay of this.learningSeed){const found=result.find(d=>d.date===seedDay.date);if(found){found.learning=Array.from(new Set([...found.learning,...seedDay.learning]));}else result.push({...seedDay,learning:[...seedDay.learning],reviews:[]});}return result.sort((a,b)=>b.date.localeCompare(a.date));}
- private saveReview(label:string){const date=today();const next=this.history().map(d=>({...d,learning:[...d.learning],reviews:[...d.reviews]}));let day=next.find(d=>d.date===date);if(!day){day={date,learning:[],reviews:[]};next.push(day);}if(!day.reviews.includes(label))day.reviews.push(label);next.sort((a,b)=>b.date.localeCompare(a.date));this.history.set(next);localStorage.setItem('study-history',JSON.stringify(next));}
+ private saveReview(label:string){const date=today();const next=this.history().map(d=>({...d,learning:[...d.learning],reviews:[...d.reviews]}));let day=next.find(d=>d.date===date);if(!day){day={date,learning:[],reviews:[]};next.push(day);}if(!day.reviews.includes(label))day.reviews.push(label);next.sort((a,b)=>b.date.localeCompare(a.date));this.history.set(next);void this.api('study_activity?on_conflict=activity_date,kind,label',{method:'POST',headers:{Prefer:'resolution=ignore-duplicates,return=minimal'},body:JSON.stringify({activity_date:date,kind:'review',label})});}
  reviewLabel(){const subject=this.subject();const topic=this.topic();const name=subject==='AWS'?'AWS IA':subject||'';return topic==='Todos'?name:`${name} — ${topic}`;}
  formatDate(date:string){const [y,m,d]=date.split('-');return `${d}/${m}/${y}`;}
  subjectCards=computed(()=>this.subject()?this.cards().filter(c=>c.subject===this.subject()):[]);
