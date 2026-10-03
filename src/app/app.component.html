@@ -77,27 +77,6 @@
         <button class="hero-settings" (click)="setTab('settings')" aria-label="Configurações">⚙</button>
       </header>
 
-      <section class="history-card">
-        <div class="history-icon">🗓</div>
-        <div class="history-main">
-          <span>SEU RITMO DE ESTUDOS</span>
-          <h2>Histórico</h2>
-          @for(day of history();track day.date){
-            <mat-expansion-panel class="history-day" [expanded]="false">
-              <mat-expansion-panel-header><mat-panel-title>{{formatDate(day.date)}}</mat-panel-title></mat-expansion-panel-header>
-              <div class="history-content">
-                <div class="history-group"><b>Aprendizado</b>
-                  @if(day.learning.length){<ul>@for(item of day.learning;track item){<li>{{item}}</li>}</ul>}@else{<p>Nenhum conteúdo novo.</p>}
-                </div>
-                <div class="history-group"><b>Revisões</b>
-                  @if(day.reviews.length){<ul>@for(item of day.reviews;track item){<li>{{item}}</li>}</ul>}@else{<p>Nenhum baralho revisado.</p>}
-                </div>
-              </div>
-            </mat-expansion-panel>
-          }
-        </div>
-      </section>
-
       <section class="subjects">
         <button class="subject-card aws" (click)="openSubject('AWS')"><div class="subject-icon">☁</div><div><span>INTELIGÊNCIA ARTIFICIAL</span><h3>AWS IA</h3><p>{{subjectDue('AWS')}} cards para revisar hoje</p></div><b>›</b></button>
         <button class="subject-card js" (click)="openSubject('JavaScript')"><div class="subject-icon">JS</div><div><span>PROGRAMAÇÃO</span><h3>JavaScript</h3><p>{{subjectDue('JavaScript')}} cards para revisar hoje</p></div><b>›</b></button>
@@ -134,6 +113,25 @@
         }
       </section>
     </section>
+  } @else if(activeTab()==='history'){
+    <section class="panel-page">
+      <div class="page-heading"><div><span>SEUS ESTUDOS</span><h1>Histórico</h1><p>Consulte o que você estudou e revisou em cada dia.</p></div><div class="page-icon">🗓</div></div>
+      <section class="history-list">
+        @for(day of history();track day.date){
+          <mat-expansion-panel class="history-day" [expanded]="false">
+            <mat-expansion-panel-header><mat-panel-title>{{formatDate(day.date)}}</mat-panel-title></mat-expansion-panel-header>
+            <div class="history-content">
+              <div class="history-group"><b>Aprendizado</b>
+                @if(day.learning.length){<ul>@for(item of day.learning;track item){<li>{{item}}</li>}</ul>}@else{<p>Nenhum conteúdo novo.</p>}
+              </div>
+              <div class="history-group"><b>Revisões</b>
+                @if(day.reviews.length){<ul>@for(item of day.reviews;track item){<li>{{item}}</li>}</ul>}@else{<p>Nenhum baralho revisado.</p>}
+              </div>
+            </div>
+          </mat-expansion-panel>
+        }
+      </section>
+    </section>
   } @else {
     <section class="panel-page">
       <div class="page-heading"><div><span>PREFERÊNCIAS</span><h1>Configurações</h1><p>Ajustes da sua rotina de estudos.</p></div><div class="page-icon">⚙</div></div>
@@ -149,6 +147,7 @@
   <nav class="bottom-nav">
     <button [class.active]="activeTab()==='home'" (click)="setTab('home')"><span>⌂</span><b>Início</b></button>
     <button [class.active]="activeTab()==='progress'" (click)="setTab('progress')"><span>▥</span><b>Progresso</b></button>
+    <button [class.active]="activeTab()==='history'" (click)="setTab('history')"><span>🗓</span><b>Histórico</b></button>
     <button [class.active]="activeTab()==='settings'" (click)="setTab('settings')"><span>⚙</span><b>Configurações</b></button>
   </nav>
 }
