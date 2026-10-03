@@ -13,7 +13,7 @@ const addDays=(n:number)=>new Date(Date.now()+n*DAY).toISOString().slice(0,10);
 export class AppComponent implements OnInit {
  private readonly supabaseUrl='https://elzkhndhkkkfxvtbhilt.supabase.co';
  private readonly supabaseKey='sb_publishable_YFZqSuAst3q1ERiC3HA71A_u4fmIP9j';
- activeTab=signal<'home'|'progress'|'settings'>('home');
+ activeTab=signal<'home'|'progress'|'history'|'settings'>('home');
  subject=signal<'AWS'|'JavaScript'|'Padrões de Projeto'|'Angular'|'React'|'Arquitetura'|'Java'|null>(null); topic=signal('Todos'); flipped=signal(false); explanationOpen=signal(false); index=signal(0);
  private seed:Card[]=[
  {id:1,subject:'AWS',topic:'Fundamentos de Machine Learning',question:'Quais são as etapas básicas para criar um modelo de ML?',answer:'Preparar dados, escolher algoritmo, treinar, avaliar e iterar.',explanation:'Um modelo de ML nasce dos dados. Primeiro os dados são coletados e preparados; depois escolhe-se um algoritmo adequado ao problema. O algoritmo é treinado para aprender padrões nesses dados. Em seguida, o modelo é avaliado com dados de teste para verificar se generaliza bem. Se o resultado não for satisfatório, ajustam-se dados, algoritmo ou parâmetros e o processo é repetido.',example:"Exemplo: para reconhecer gatos e cachorros, você prepara as fotos, escolhe o algoritmo, treina, testa e ajusta o modelo.",due:today(),interval:0},
@@ -111,7 +111,7 @@ export class AppComponent implements OnInit {
  subjectDue=(subject:'AWS'|'JavaScript'|'Padrões de Projeto'|'Angular'|'React'|'Arquitetura'|'Java')=>this.cards().filter(c=>c.subject===subject&&c.due<=today()).length;
  subjectTotal=(subject:'AWS'|'JavaScript'|'Padrões de Projeto'|'Angular'|'React'|'Arquitetura'|'Java')=>this.cards().filter(c=>c.subject===subject).length;
  subjectIcon(subject:string){return ({AWS:'☁',JavaScript:'JS','Padrões de Projeto':'▱',Angular:'A',React:'⚛',Arquitetura:'⌂',Java:'☕'} as Record<string,string>)[subject]||'•';}
- setTab(tab:'home'|'progress'|'settings'){this.activeTab.set(tab);}
+ setTab(tab:'home'|'progress'|'history'|'settings'){this.activeTab.set(tab);}
  card=computed(()=>this.dueCards()[this.index()%Math.max(this.dueCards().length,1)]);
  progress=computed(()=>this.dueCards().length?String(this.index()+1)+' / '+String(this.dueCards().length):'0 / 0');
  private shuffle<T>(items:T[]):T[]{const copy=[...items];for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]];}return copy;}
