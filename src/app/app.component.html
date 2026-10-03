@@ -1,41 +1,155 @@
-<main class="shell">
-<header><div><span class="eyebrow">REVISÃO ESPAÇADA</span><h1>Flashcard<span>.</span></h1></div><button mat-icon-button class="reset" (click)="reset()" title="Reiniciar progresso" aria-label="Reiniciar progresso"><span class="reset-symbol">↻</span></button></header>
+<main class="app-shell">
+@if(subject()){
+  <section class="review-page">
+    <header class="review-header">
+      <button class="icon-button" (click)="back()" aria-label="Voltar">‹</button>
+      <div class="review-title">
+        <div class="mini-icon">{{subjectIcon(subject()!)}}</div>
+        <div>
+          <h1>{{subject()==='AWS'?'AWS IA':subject()}}</h1>
+          <p>{{dueCards().length}} cards para revisar hoje</p>
+        </div>
+      </div>
+      <button class="icon-button" (click)="reset()" aria-label="Reiniciar">↻</button>
+    </header>
 
-@if(!subject()){
-<section class="welcome"><span class="eyebrow">SEUS ESTUDOS</span><h2>O que você quer revisar?</h2><p>Escolha uma matéria para começar.</p></section>
-<section class="study-history">
- <div class="history-heading"><div><span class="eyebrow">HISTÓRICO</span><h3>Seu ritmo de estudos</h3></div></div>
- @for(day of history();track day.date){
- <mat-expansion-panel class="history-day" [expanded]="false">
-  <mat-expansion-panel-header><mat-panel-title>{{formatDate(day.date)}}</mat-panel-title></mat-expansion-panel-header>
-  <div class="history-content">
-   <div class="history-group"><b>Aprendizado</b>
-    @if(day.learning.length){<ul>@for(item of day.learning;track item){<li>{{item}}</li>}</ul>}@else{<p>Nenhum conteúdo novo.</p>}
-   </div>
-   <div class="history-group"><b>Revisões</b>
-    @if(day.reviews.length){<ul>@for(item of day.reviews;track item){<li>{{item}}</li>}</ul>}@else{<p>Nenhum baralho revisado.</p>}
-   </div>
-  </div>
- </mat-expansion-panel>
- }
-</section>
-<section class="subjects">
- <mat-card class="subject-card aws" appearance="outlined" (click)="openSubject('AWS')"><div class="subject-icon">☁</div><div><span>INTELIGÊNCIA ARTIFICIAL</span><h3>AWS IA</h3><p>{{subjectDue('AWS')}} cards para revisar hoje</p></div><span class="subject-arrow" aria-hidden="true">›</span></mat-card>
- <mat-card class="subject-card js" appearance="outlined" (click)="openSubject('JavaScript')"><div class="subject-icon">JS</div><div><span>PROGRAMAÇÃO</span><h3>JavaScript</h3><p>{{subjectDue('JavaScript')}} cards para revisar hoje</p></div><span class="subject-arrow" aria-hidden="true">›</span></mat-card>
- <mat-card class="subject-card patterns" appearance="outlined" (click)="openSubject('Padrões de Projeto')"><div class="subject-icon">DP</div><div><span>ENGENHARIA DE SOFTWARE</span><h3>Padrões de Projeto</h3><p>{{subjectDue('Padrões de Projeto')}} cards para revisar hoje</p></div><span class="subject-arrow" aria-hidden="true">›</span></mat-card>
- <mat-card class="subject-card angular" appearance="outlined" (click)="openSubject('Angular')"><div class="subject-icon">A</div><div><span>FRONT-END</span><h3>Angular</h3><p>{{subjectDue('Angular')}} cards para revisar hoje</p></div><span class="subject-arrow" aria-hidden="true">›</span></mat-card>
- <mat-card class="subject-card react" appearance="outlined" (click)="openSubject('React')"><div class="subject-icon">⚛</div><div><span>PROGRAMAÇÃO</span><h3>React</h3><p>Conteúdo em breve</p></div><span class="subject-arrow" aria-hidden="true">›</span></mat-card>
- <mat-card class="subject-card architecture" appearance="outlined" (click)="openSubject('Arquitetura')"><div class="subject-icon">ARQ</div><div><span>ENGENHARIA DE SOFTWARE</span><h3>Arquitetura</h3><p>Conteúdo em breve</p></div><span class="subject-arrow" aria-hidden="true">›</span></mat-card>
- <mat-card class="subject-card java" appearance="outlined" (click)="openSubject('Java')"><div class="subject-icon">J</div><div><span>PROGRAMAÇÃO</span><h3>Java</h3><p>Conteúdo em breve</p></div><span class="subject-arrow" aria-hidden="true">›</span></mat-card>
-</section>
-<section class="summary"><strong>{{totalDue()}}</strong><span>cards no total para revisar hoje</span></section>
-}@else{
-<button mat-button class="back" (click)="back()">‹ Todas as matérias</button>
-<section class="hero"><div><p>{{subject()==='AWS'?'AWS IA':subject()}}</p><strong>{{dueCards().length}} cards para revisar hoje.</strong></div><div class="ring">{{dueCards().length}}</div></section>
-<div class="topic-title">Escolha o conteúdo</div>
-<nav class="topics">@for(t of topics();track t){<button mat-stroked-button [class.active]="topic()===t" (click)="choose(t)">{{t}}</button>}</nav>
-@if(card();as c){<section class="study"><div class="meta"><span>{{c.topic}}</span><b>{{progress()}}</b></div><button class="card" (click)="reveal()" [class.flipped]="flipped()"><div class="label">{{flipped()?'RESPOSTA':'PERGUNTA'}}</div><div class="content">{{flipped()?c.answer:c.question}}</div><small>{{flipped()?'Avalie abaixo como foi lembrar':'Toque para ver a resposta'}}</small></button>
-@if(flipped()){<button mat-stroked-button class="explanation-toggle" (click)="toggleExplanation()"><span>Entender melhor</span><b>{{explanationOpen()?'−':'+'}}</b></button>@if(explanationOpen()){<div class="explanation"><span>EXPLICAÇÃO</span><p>{{c.explanation}}</p><span class="example-label">EXEMPLO</span><p>{{c.example}}</p></div>}<div class="ratings"><button (click)="rate('again')"><b>Não sei</b><small>amanhã</small></button><button (click)="rate('hard')"><b>Difícil</b><small>2 dias</small></button><button (click)="rate('good')"><b>Sei</b><small>4 dias</small></button><button (click)="rate('easy')"><b>Fácil</b><small>7 dias</small></button></div>}@else{<button mat-flat-button class="reveal" (click)="reveal()">Mostrar resposta</button>}</section>}@else{<section class="done"><div>✓</div><h2>Revisão concluída</h2><p>Você não tem mais cards vencendo hoje neste conteúdo.</p></section>}
+    <div class="progress-row">
+      <div class="progress-copy"><span>Progresso de hoje</span><b>{{progress()}}</b></div>
+      <div class="progress-track"><div class="progress-fill" [style.width.%]="dueCards().length ? ((index()+1)/dueCards().length)*100 : 100"></div></div>
+    </div>
+
+    <div class="topic-title">Escolha o conteúdo</div>
+    <nav class="topics">
+      @for(t of topics();track t){
+        <button [class.active]="topic()===t" (click)="choose(t)">{{t}}</button>
+      }
+    </nav>
+
+    @if(card();as c){
+      <section class="study">
+        <div class="meta"><span>{{c.topic}}</span><b>{{progress()}}</b></div>
+        <button class="flashcard" (click)="reveal()" [class.flipped]="flipped()">
+          <div class="flashcard-badge">{{flipped()?'RESPOSTA':'PERGUNTA'}}</div>
+          <div class="flashcard-icon">{{subjectIcon(c.subject)}}</div>
+          <div class="flashcard-content">{{flipped()?c.answer:c.question}}</div>
+          <small>{{flipped()?'Avalie abaixo como foi lembrar':'Toque para ver a resposta'}}</small>
+        </button>
+
+        @if(flipped()){
+          <button class="explanation-toggle" (click)="toggleExplanation()">
+            <span>💡 Entender melhor</span><b>{{explanationOpen()?'−':'+'}}</b>
+          </button>
+          @if(explanationOpen()){
+            <div class="explanation">
+              <div class="explanation-block">
+                <span>💡 ENTENDA MELHOR</span>
+                <p>{{c.explanation}}</p>
+              </div>
+              <div class="example-block">
+                <span>🧩 EXEMPLO PRÁTICO</span>
+                <p>{{c.example}}</p>
+              </div>
+            </div>
+          }
+          <div class="ratings">
+            <button (click)="rate('again')"><b>Não sei</b><small>amanhã</small></button>
+            <button (click)="rate('hard')"><b>Difícil</b><small>2 dias</small></button>
+            <button (click)="rate('good')"><b>Sei</b><small>4 dias</small></button>
+            <button (click)="rate('easy')"><b>Fácil</b><small>7 dias</small></button>
+          </div>
+        } @else {
+          <button class="primary-action" (click)="reveal()">Virar card</button>
+        }
+      </section>
+    } @else {
+      <section class="done"><div>✓</div><h2>Revisão concluída</h2><p>Você não tem mais cards vencendo hoje neste conteúdo.</p></section>
+    }
+  </section>
+} @else {
+  @if(activeTab()==='home'){
+    <section class="home-page">
+      <header class="home-hero">
+        <div>
+          <div class="hero-kicker">📚 SEUS ESTUDOS</div>
+          <h1>Olá!</h1>
+          <p>Qual matéria você quer revisar hoje?</p>
+        </div>
+        <button class="hero-settings" (click)="setTab('settings')" aria-label="Configurações">⚙</button>
+      </header>
+
+      <section class="history-card">
+        <div class="history-icon">🗓</div>
+        <div class="history-main">
+          <span>SEU RITMO DE ESTUDOS</span>
+          <h2>Histórico</h2>
+          @for(day of history();track day.date){
+            <mat-expansion-panel class="history-day" [expanded]="false">
+              <mat-expansion-panel-header><mat-panel-title>{{formatDate(day.date)}}</mat-panel-title></mat-expansion-panel-header>
+              <div class="history-content">
+                <div class="history-group"><b>Aprendizado</b>
+                  @if(day.learning.length){<ul>@for(item of day.learning;track item){<li>{{item}}</li>}</ul>}@else{<p>Nenhum conteúdo novo.</p>}
+                </div>
+                <div class="history-group"><b>Revisões</b>
+                  @if(day.reviews.length){<ul>@for(item of day.reviews;track item){<li>{{item}}</li>}</ul>}@else{<p>Nenhum baralho revisado.</p>}
+                </div>
+              </div>
+            </mat-expansion-panel>
+          }
+        </div>
+      </section>
+
+      <section class="subjects">
+        <button class="subject-card aws" (click)="openSubject('AWS')"><div class="subject-icon">☁</div><div><span>INTELIGÊNCIA ARTIFICIAL</span><h3>AWS IA</h3><p>{{subjectDue('AWS')}} cards para revisar hoje</p></div><b>›</b></button>
+        <button class="subject-card js" (click)="openSubject('JavaScript')"><div class="subject-icon">JS</div><div><span>PROGRAMAÇÃO</span><h3>JavaScript</h3><p>{{subjectDue('JavaScript')}} cards para revisar hoje</p></div><b>›</b></button>
+        <button class="subject-card patterns" (click)="openSubject('Padrões de Projeto')"><div class="subject-icon">▱</div><div><span>ENGENHARIA DE SOFTWARE</span><h3>Padrões de Projeto</h3><p>{{subjectDue('Padrões de Projeto')}} cards para revisar hoje</p></div><b>›</b></button>
+        <button class="subject-card angular" (click)="openSubject('Angular')"><div class="subject-icon">A</div><div><span>FRONT-END</span><h3>Angular</h3><p>{{subjectDue('Angular')}} cards para revisar hoje</p></div><b>›</b></button>
+        <button class="subject-card react" (click)="openSubject('React')"><div class="subject-icon">⚛</div><div><span>PROGRAMAÇÃO</span><h3>React</h3><p>Conteúdo em breve</p></div><b>›</b></button>
+        <button class="subject-card architecture" (click)="openSubject('Arquitetura')"><div class="subject-icon">⌂</div><div><span>ENGENHARIA DE SOFTWARE</span><h3>Arquitetura</h3><p>Conteúdo em breve</p></div><b>›</b></button>
+        <button class="subject-card java" (click)="openSubject('Java')"><div class="subject-icon">☕</div><div><span>PROGRAMAÇÃO</span><h3>Java</h3><p>Conteúdo em breve</p></div><b>›</b></button>
+      </section>
+
+      <section class="summary-card">
+        <div class="summary-icon">▥</div>
+        <strong>{{totalDue()}}</strong>
+        <span>cards no total para revisar hoje</span>
+      </section>
+    </section>
+  } @else if(activeTab()==='progress'){
+    <section class="panel-page">
+      <div class="page-heading"><div><span>SEUS ESTUDOS</span><h1>Meu progresso</h1><p>Acompanhe seu ritmo de revisão.</p></div><div class="page-icon">📊</div></div>
+      <div class="stats-grid">
+        <div class="stat purple"><b>{{totalDue()}}</b><span>Para revisar</span></div>
+        <div class="stat green"><b>{{cards().length}}</b><span>Cards cadastrados</span></div>
+        <div class="stat amber"><b>{{history().length}}</b><span>Dias no histórico</span></div>
+      </div>
+      <section class="progress-list">
+        @for(s of ['AWS','JavaScript','Padrões de Projeto','Angular','React','Arquitetura','Java'];track s){
+          <div class="progress-item">
+            <div class="progress-subject-icon">{{subjectIcon(s)}}</div>
+            <div class="progress-info">
+              <div class="progress-label"><b>{{s==='AWS'?'AWS IA':s}}</b><span>{{subjectDue($any(s))}} pendentes</span></div>
+              <div class="mini-track"><div [style.width.%]="subjectTotal($any(s)) ? ((subjectTotal($any(s))-subjectDue($any(s)))/subjectTotal($any(s)))*100 : 0"></div></div>
+            </div>
+          </div>
+        }
+      </section>
+    </section>
+  } @else {
+    <section class="panel-page">
+      <div class="page-heading"><div><span>PREFERÊNCIAS</span><h1>Configurações</h1><p>Ajustes da sua rotina de estudos.</p></div><div class="page-icon">⚙</div></div>
+      <section class="settings-card">
+        <div class="setting-row"><div><b>🔀 Ordem dos cards</b><span>Aleatória por matéria</span></div><span class="toggle on"></span></div>
+        <div class="setting-row"><div><b>↻ Revisão espaçada</b><span>Agenda automática de revisão</span></div><span class="toggle on"></span></div>
+        <div class="setting-row"><div><b>💾 Progresso local</b><span>Salvo neste dispositivo</span></div><span class="status-chip">Ativo</span></div>
+      </section>
+      <button class="danger-action" (click)="reset()">Reiniciar progresso</button>
+    </section>
+  }
+
+  <nav class="bottom-nav">
+    <button [class.active]="activeTab()==='home'" (click)="setTab('home')"><span>⌂</span><b>Início</b></button>
+    <button [class.active]="activeTab()==='progress'" (click)="setTab('progress')"><span>▥</span><b>Progresso</b></button>
+    <button [class.active]="activeTab()==='settings'" (click)="setTab('settings')"><span>⚙</span><b>Configurações</b></button>
+  </nav>
 }
-<footer>Seu progresso fica salvo neste dispositivo.</footer>
 </main>
