@@ -14,6 +14,8 @@ export class AppComponent implements OnInit {
  private readonly supabaseUrl='https://elzkhndhkkkfxvtbhilt.supabase.co';
  private readonly supabaseKey='sb_publishable_YFZqSuAst3q1ERiC3HA71A_u4fmIP9j';
  activeTab=signal<'home'|'progress'|'history'|'settings'>('home');
+ historyMonth=signal(new Date(today()+'T12:00:00'));
+ selectedHistoryDate=signal<string|null>(null);
  subject=signal<'AWS'|'JavaScript'|'Padrões de Projeto'|'Angular'|'React'|'Arquitetura'|'Java'|null>(null); topic=signal('Todos'); flipped=signal(false); explanationOpen=signal(false); index=signal(0);
  private seed:Card[]=[
  {id:1,subject:'AWS',topic:'Fundamentos de Machine Learning',question:'Quais são as etapas básicas para criar um modelo de ML?',answer:'Preparar dados, escolher algoritmo, treinar, avaliar e iterar.',explanation:'Um modelo de ML nasce dos dados. Primeiro os dados são coletados e preparados; depois escolhe-se um algoritmo adequado ao problema. O algoritmo é treinado para aprender padrões nesses dados. Em seguida, o modelo é avaliado com dados de teste para verificar se generaliza bem. Se o resultado não for satisfatório, ajustam-se dados, algoritmo ou parâmetros e o processo é repetido.',example:"Exemplo: para reconhecer gatos e cachorros, você prepara as fotos, escolhe o algoritmo, treina, testa e ajusta o modelo.",due:today(),interval:0},
@@ -126,7 +128,13 @@ export class AppComponent implements OnInit {
  subjectDue=(subject:'AWS'|'JavaScript'|'Padrões de Projeto'|'Angular'|'React'|'Arquitetura'|'Java')=>this.cards().filter(c=>c.subject===subject&&c.due<=today()).length;
  subjectTotal=(subject:'AWS'|'JavaScript'|'Padrões de Projeto'|'Angular'|'React'|'Arquitetura'|'Java')=>this.cards().filter(c=>c.subject===subject).length;
  subjectIcon(subject:string){return ({AWS:'☁',JavaScript:'JS','Padrões de Projeto':'▱',Angular:'A',React:'⚛',Arquitetura:'⌂',Java:'☕'} as Record<string,string>)[subject]||'•';}
- setTab(tab:'home'|'progress'|'history'|'settings'){this.activeTab.set(tab);}
+ monthLabel=computed(()=>this.historyMonth().toLocaleDateString('pt-BR',{month:'long',year:'numeric'}).replace(/^./,v=>v.toUpperCase()));
+ calendarDays=computed(()=>{const base=this.historyMonth();const y=base.getFullYear(),m=base.getMonth();const first=new Date(y,m,1);const last=new Date(y,m+1,0);const cells:Array<{date:string|null;day:number|null;learning:boolean;review:boolean;today:boolean}> = [];for(let i=0;i<first.getDay();i++)cells.push({date:null,day:null,learning:false,review:false,today:false});for(let d=1;d<=last.getDate();d++){const key=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;const activity=this.history().find(x=>x.date===key);cells.push({date:key,day:d,learning:!!activity?.learning.length,review:!!activity?.reviews.length,today:key===today()});}return cells;});
+ selectedHistoryDay=computed(()=>this.history().find(d=>d.date===this.selectedHistoryDate())||null);
+ studyDaysInMonth=computed(()=>{const y=this.historyMonth().getFullYear(),m=this.historyMonth().getMonth();return this.history().filter(d=>{const dt=new Date(d.date+'T12:00:00');return dt.getFullYear()===y&&dt.getMonth()===m&&(d.learning.length||d.reviews.length)}).length;});
+ changeHistoryMonth(offset:number){const d=this.historyMonth();this.historyMonth.set(new Date(d.getFullYear(),d.getMonth()+offset,1));this.selectedHistoryDate.set(null)}
+ selectHistoryDate(date:string|null){if(date)this.selectedHistoryDate.set(date)}
+ setTab(tab:'home'|'progress'|'history'|'settings'){this.activeTab.set(tab);if(tab==='history'&&!this.selectedHistoryDate()){const latest=this.history().find(d=>d.learning.length||d.reviews.length);if(latest){const dt=new Date(latest.date+'T12:00:00');this.historyMonth.set(new Date(dt.getFullYear(),dt.getMonth(),1));}}}
  card=computed(()=>this.dueCards()[this.index()%Math.max(this.dueCards().length,1)]);
  progress=computed(()=>this.dueCards().length?String(this.index()+1)+' / '+String(this.dueCards().length):'0 / 0');
  private shuffle<T>(items:T[]):T[]{const copy=[...items];for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]];}return copy;}
