@@ -32,3 +32,5 @@
 .subject-arrow{display:grid;place-items:center;width:32px;height:40px;font:400 38px/1 Arial,sans-serif;color:#9aa0aa;overflow:hidden}
 .subject-card>div:nth-child(2){min-width:0}
 .subject-card h3,.subject-card p,.subject-card span{max-width:100%}
+
+.angular .subject-icon{background:#fde8e8;color:#c62828}
