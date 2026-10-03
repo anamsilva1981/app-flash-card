@@ -34,3 +34,5 @@
 .subject-card h3,.subject-card p,.subject-card span{max-width:100%}
 
 .angular .subject-icon{background:#fde8e8;color:#c62828}
+
+.explanation .example-label{display:block;margin-top:16px}
