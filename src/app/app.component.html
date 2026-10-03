@@ -114,23 +114,42 @@
       </section>
     </section>
   } @else if(activeTab()==='history'){
-    <section class="panel-page">
-      <div class="page-heading"><div><span>SEUS ESTUDOS</span><h1>Histórico</h1><p>Consulte o que você estudou e revisou em cada dia.</p></div><div class="page-icon">🗓</div></div>
-      <section class="history-list">
-        @for(day of history();track day.date){
-          <mat-expansion-panel class="history-day" [expanded]="false">
-            <mat-expansion-panel-header><mat-panel-title>{{formatDate(day.date)}}</mat-panel-title></mat-expansion-panel-header>
-            <div class="history-content">
-              <div class="history-group"><b>Aprendizado</b>
-                @if(day.learning.length){<ul>@for(item of day.learning;track item){<li>{{item}}</li>}</ul>}@else{<p>Nenhum conteúdo novo.</p>}
-              </div>
-              <div class="history-group"><b>Revisões</b>
-                @if(day.reviews.length){<ul>@for(item of day.reviews;track item){<li>{{item}}</li>}</ul>}@else{<p>Nenhum baralho revisado.</p>}
-              </div>
-            </div>
-          </mat-expansion-panel>
-        }
+    <section class="panel-page history-page">
+      <div class="page-heading"><div><span>SEUS ESTUDOS</span><h1>Histórico</h1><p>Veja quando você aprendeu e revisou cada conteúdo.</p></div><div class="page-icon">🗓</div></div>
+
+      <section class="calendar-card">
+        <div class="calendar-header">
+          <button (click)="changeHistoryMonth(-1)" aria-label="Mês anterior">‹</button>
+          <div><h2>{{monthLabel()}}</h2><span>{{studyDaysInMonth()}} {{studyDaysInMonth()===1?'dia':'dias'}} de estudo neste mês</span></div>
+          <button (click)="changeHistoryMonth(1)" aria-label="Próximo mês">›</button>
+        </div>
+        <div class="weekdays"><span>DOM</span><span>SEG</span><span>TER</span><span>QUA</span><span>QUI</span><span>SEX</span><span>SÁB</span></div>
+        <div class="calendar-grid">
+          @for(day of calendarDays();track $index){
+            @if(day.date){
+              <button class="calendar-day" [class.has-activity]="day.learning||day.review" [class.selected]="selectedHistoryDate()===day.date" [class.today]="day.today" (click)="selectHistoryDate(day.date)">
+                <span>{{day.day}}</span>
+                <div class="day-markers">@if(day.learning){<i class="learning"></i>}@if(day.review){<i class="review"></i>}</div>
+              </button>
+            } @else { <div class="calendar-day empty"></div> }
+          }
+        </div>
+        <div class="calendar-legend"><span><i class="learning"></i> Aprendizado</span><span><i class="review"></i> Revisão</span></div>
       </section>
+
+      @if(selectedHistoryDay();as day){
+        <section class="day-detail">
+          <div class="detail-heading"><div><span>ATIVIDADE DO DIA</span><h2>{{formatDate(day.date)}}</h2></div><div class="detail-count">{{day.learning.length + day.reviews.length}}</div></div>
+          <div class="detail-group learning-detail"><div class="detail-icon">✦</div><div><b>Aprendizado</b>
+            @if(day.learning.length){<ul>@for(item of day.learning;track item){<li>{{item}}</li>}</ul>}@else{<p>Nenhum conteúdo novo neste dia.</p>}
+          </div></div>
+          <div class="detail-group review-detail"><div class="detail-icon">↻</div><div><b>Revisões</b>
+            @if(day.reviews.length){<ul>@for(item of day.reviews;track item){<li>{{item}}</li>}</ul>}@else{<p>Nenhuma revisão neste dia.</p>}
+          </div></div>
+        </section>
+      } @else {
+        <div class="calendar-hint">Toque em um dia marcado para ver o que você estudou.</div>
+      }
     </section>
   } @else {
     <section class="panel-page">
