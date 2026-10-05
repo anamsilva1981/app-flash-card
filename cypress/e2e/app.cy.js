@@ -23,7 +23,7 @@ describe('Telas e fluxos principais do produto',()=>{
       cy.contains('Adicionar tópico').should('be.visible');
       cy.get('input[placeholder="Ex.: Template Literals"]').type('Standalone Components');
       cy.contains('button','Alta').click();
-      cy.contains('button','Adicionar').click();
+      cy.contains('button','Adicionar').last().click();
     });
     cy.get('.study-form').should('not.exist');
     cy.contains('Standalone Components').should('exist');
