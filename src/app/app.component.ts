@@ -1,4 +1,5 @@
 import { Component, computed, signal, OnInit, HostListener, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
@@ -11,7 +12,7 @@ interface StudyItem { id:string; title:string; subject:string; notes:string; lin
 const DAY=86400000;
 const today=()=>new Date().toLocaleDateString('en-CA',{timeZone:'America/Sao_Paulo'});
 const addDays=(n:number)=>new Date(Date.now()+n*DAY).toISOString().slice(0,10);
-@Component({selector:'app-root',standalone:true,imports:[SubjectManagerComponent,MatButtonModule,MatCardModule,MatChipsModule,MatExpansionModule],templateUrl:'./app.component.html',styleUrl:'./app.component.css'})
+@Component({selector:'app-root',standalone:true,imports:[FormsModule,SubjectManagerComponent,MatButtonModule,MatCardModule,MatChipsModule,MatExpansionModule],templateUrl:'./app.component.html',styleUrl:'./app.component.css'})
 export class AppComponent implements OnInit {
  private readonly supabaseUrl='https://elzkhndhkkkfxvtbhilt.supabase.co';
  private readonly supabaseKey='sb_publishable_YFZqSuAst3q1ERiC3HA71A_u4fmIP9j';

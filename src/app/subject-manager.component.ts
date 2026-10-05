@@ -27,7 +27,7 @@ export class SubjectManagerComponent {
  reviewDue(){const s=this.selectedSubject();if(s)this.reviewRequested.emit(s.name==='AWS IA'?'AWS':s.name)}
  addFlashcard(){const s=this.selectedSubject();if(s)window.dispatchEvent(new CustomEvent('add-flashcard',{detail:{subject:s.name}}))}
  addTopic(){const s=this.selectedSubject();if(s)this.addTopicRequested.emit(s.name)}
- editTopic(item:StudyItem){this.editTopicRequested.emit(item)}
+ editTopic(item:StudyItem){this.closeTopic();this.editTopicRequested.emit(item)}
  completeTopic(item:StudyItem){this.selectedTopic.set(null);this.completeTopicRequested.emit(item)}
  openTopic(item:StudyItem){this.selectedTopic.set(item)} closeTopic(){this.selectedTopic.set(null)}
  openNew(){this.editingId.set(null);this.name.set('');this.selectedDays.set([]);this.formOpen.set(true)}

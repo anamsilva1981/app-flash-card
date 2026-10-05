@@ -96,7 +96,7 @@
         <section class="study-form">
           <div class="form-head"><h2>{{editingStudyId()?'Editar tópico':'Adicionar tópico'}}</h2><button (click)="closeStudyForm()">×</button></div>
           <label>Título do tópico<input #titleInput [value]="studyTitle()" (input)="studyTitle.set(titleInput.value)" placeholder="Ex.: Template Literals"></label>
-          <label>Matéria<select #subjectInput [value]="studySubject()" (change)="studySubject.set(subjectInput.value)">@for(s of studySubjects();track s){<option [value]="s">{{s}}</option>}</select></label>
+          <label>Matéria<select [ngModel]="studySubject()" (ngModelChange)="studySubject.set($event)">@for(s of studySubjects();track s){<option [value]="s">{{s}}</option>}</select></label>
           <button class="new-subject-button" (click)="subjectFormOpen.set(true)">＋ Adicionar nova matéria</button>
           @if(subjectFormOpen()){<div class="new-subject-form"><input #newSubjectInput [value]="newSubjectName()" (input)="newSubjectName.set(newSubjectInput.value)" placeholder="Nome da nova matéria"><button (click)="addStudySubject()">Adicionar</button><button class="cancel" (click)="subjectFormOpen.set(false)">Cancelar</button></div>}
           <label>Observação <small>(opcional)</small><textarea #notesInput [value]="studyNotes()" (input)="studyNotes.set(notesInput.value)" placeholder="Anotações sobre o que você quer estudar..."></textarea></label>
