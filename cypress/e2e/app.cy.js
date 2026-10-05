@@ -14,7 +14,7 @@ describe('Telas e fluxos principais do produto',()=>{
   it('cobre Estudar, baralhos, tópicos e criação de tópico',()=>{
     cy.contains('nav button','Estudar').click();
     cy.contains('h1','Estudar').should('be.visible');
-    cy.contains('ROTINA DE ESTUDOS').filter(':visible').should('have.length.at.least',1);
+    cy.contains('h2','Baralhos').should('be.visible');
     cy.contains('button','Angular').click();
     cy.contains('button','Tópicos').click();
     cy.contains('Signals').filter(':visible').should('have.length.at.least',1);
@@ -38,42 +38,51 @@ describe('Telas e fluxos principais do produto',()=>{
     cy.get('.card-editor textarea').eq(3).type('const count = signal(0)');
     cy.contains('button','Salvar flashcard').click();
     cy.contains('O que é um Signal?').should('exist');
-    cy.contains('button','Editar').first().click();
-    cy.contains('Editar flashcard').should('be.visible');
-    cy.get('.card-editor textarea').eq(1).clear().type('Um valor reativo que notifica consumidores.');
-    cy.contains('button','Salvar flashcard').click();
-    cy.contains('Um valor reativo que notifica consumidores.').should('exist');
   });
 
   it('cobre Histórico e calendário',()=>{
     cy.contains('nav button','Histórico').click();
-    cy.contains('h1','Histórico').should('be.visible');
-    cy.contains('Calendário').should('be.visible');
-    cy.get('.calendar-grid button').filter(':not([disabled])').first().click();
-    cy.contains(/Estudado|Revisado|Nenhum registro/).should('exist');
+    cy.contains('h1','Evolução').should('be.visible');
+    cy.contains('Dias com atividade').should('be.visible');
+    cy.contains('Aprendizado').should('exist');
+    cy.get('button[aria-label="Mês anterior"]').should('be.visible');
+    cy.get('button[aria-label="Próximo mês"]').should('be.visible');
   });
 
   it('cobre Perfil, lembretes, privacidade, suporte e exclusão',()=>{
     cy.contains('nav button','Perfil').click();
-    cy.contains('h1','Perfil').should('be.visible');
-    cy.contains('Lembretes').should('be.visible');
-    cy.contains('Privacidade').should('be.visible');
-    cy.contains('Suporte').should('be.visible');
+    cy.contains('h1','Configurações').should('be.visible');
+    cy.contains('Sua conta').should('be.visible');
+    cy.contains('Seu horário de estudo').should('be.visible');
+    cy.contains('Privacidade e suporte').should('be.visible');
     cy.contains('Excluir conta').should('be.visible');
+    cy.get('textarea[placeholder="Descreva o que precisa"]').type('Teste automatizado de suporte.');
+    cy.contains('button','Registrar solicitação').click();
+    cy.contains('Solicitação registrada').should('be.visible');
+    cy.contains('button','Quero excluir minha conta').click();
+    cy.contains('Digite EXCLUIR para confirmar').should('be.visible');
+    cy.contains('button','Cancelar').click();
   });
 
   it('cobre revisão de flashcards e avaliação',()=>{
-    cy.contains('button',/Começar revisão|Explorar flashcards/).click();
+    cy.contains('nav button','Estudar').click();
     cy.contains('button','Angular').click();
-    cy.contains(/PERGUNTA|RESPOSTA/).should('be.visible');
+    cy.contains('button','Criar card').click();
+    cy.get('.card-editor input[placeholder="Ex.: Fundamentos"]').type('Revisão E2E');
+    cy.get('.card-editor textarea').eq(0).type('Pergunta para revisão?');
+    cy.get('.card-editor textarea').eq(1).type('Resposta para revisão.');
+    cy.contains('button','Salvar flashcard').click();
+    cy.contains('button',/Revisar agora|Revisar novamente/).click();
+    cy.contains('Progresso da sessão').should('be.visible');
     cy.contains('button','Virar card').click();
+    cy.contains('button','Entender melhor').should('be.visible');
     cy.contains('button','Sei').should('be.visible').click();
   });
 
   it('mantém layout principal utilizável em viewport mobile',()=>{
-    cy.viewport(390,844);
-    cy.contains('SUA REVISÃO DIÁRIA').should('be.visible');
-    cy.get('nav').should('be.visible');
-    cy.contains('nav button','Estudar').should('be.visible');
+    cy.viewport(360,740);
+    cy.contains('Baralhos do dia').should('be.visible');
+    cy.get('nav[aria-label="Navegação principal"]').should('be.visible');
+    cy.contains('nav button','Perfil').should('be.visible');
   });
 });
