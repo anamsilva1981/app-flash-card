@@ -32,7 +32,7 @@
 @media(min-width:700px){.home-page{padding-top:32px!important}.home-page .daily-header{padding:34px 28px 72px}.home-page .daily-section:first-of-type{margin-left:22px;margin-right:22px}}
 @media(prefers-reduced-motion:reduce){.home-page .daily-subject{transition:none}}
 
-/* These views are inserted by dashboard.js, so their styles must be global. */
+/* Shared layout styles for the Angular study screens. */
 .study-v2-shell{min-width:0}.study-plan-page .page-heading{align-items:center;margin-bottom:24px}.study-plan-page .page-heading h1{margin-top:7px}
 .subject-detail-title{display:flex;align-items:center;gap:13px;padding:18px 0 8px}.subject-detail-title h2{margin:0 0 5px;font-size:25px;line-height:1.2;letter-spacing:-.03em;color:#27234f;overflow-wrap:anywhere}.subject-detail-title small{font-size:12px;color:#737087}.subject-detail-v3 .study-v2-tabs{margin:16px 0 22px;gap:4px;padding:5px;border-radius:14px}.study-v2-tabs button{min-height:44px;font-size:13px;cursor:pointer}.subject-detail-v3 .back-manager,.back-topic{display:inline-flex;align-items:center;min-height:40px;border:0;background:transparent;color:#5147ed;font-size:13px;font-weight:800;padding:0 4px;cursor:pointer}
 .subject-tab-content .section-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px}.section-actions>div{display:flex;flex-direction:column;gap:5px;min-width:0}.section-actions b{font-size:16px;color:#27234f}.section-actions span{font-size:12px;color:#737087}.section-actions>button,.done-card button{border:0;background:#5147ed;color:#fff;border-radius:12px;padding:11px 14px;font-size:12px;font-weight:800;min-height:42px;cursor:pointer}

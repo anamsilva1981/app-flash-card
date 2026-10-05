@@ -11,7 +11,7 @@
           <p>{{practice()?'Revisão livre':dueCards().length+' cards pendentes'}}</p>
         </div>
       </div>
-      
+
     </header>
 
     <div class="progress-row">
@@ -26,7 +26,7 @@
         <div class="meta"><span>{{c.topic}}</span><b>{{progress()}}</b></div>
         <button class="flashcard" (click)="reveal()" [class.flipped]="flipped()">
           <div class="flashcard-badge">{{flipped()?'RESPOSTA':'PERGUNTA'}}</div>
-          
+
           <div class="flashcard-content">{{flipped()?c.answer:c.question}}</div>
           <small>{{flipped()?'Avalie abaixo como foi lembrar':'Toque para ver a resposta'}}</small>
         </button>
