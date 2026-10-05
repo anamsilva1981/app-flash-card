@@ -5,7 +5,9 @@
   "scripts": {
     "start": "ng serve",
     "build": "ng build",
-    "test": "node tests.mjs"
+    "test": "node tests.mjs",
+    "e2e": "npx --yes cypress@15.5.0 run",
+    "e2e:open": "npx --yes cypress@15.5.0 open"
   },
   "dependencies": {
     "@angular/animations": "20.3.33",
