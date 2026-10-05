@@ -4,10 +4,11 @@
   <div class="detail-head"><button class="back" (click)="closeSubject()" aria-label="Voltar às matérias"><app-icon name="back"/></button><div><span>MATÉRIA</span><h2>{{current.name}}</h2><p>{{dayLabel(current.days)}}</p></div></div>
   <div class="detail-tabs"><button [class.active]="detailTab()==='flashcards'" (click)="detailTab.set('flashcards')">Flashcards</button><button [class.active]="detailTab()==='topics'" (click)="detailTab.set('topics')">Tópicos</button></div>
   @if(detailTab()==='flashcards'){
-    <div class="section-actions"><div><b>Flashcards</b><span>{{subjectCards().length}} cadastrados</span></div></div>
+    <div class="section-actions"><div><b>Flashcards</b><span>{{subjectCards().length}} cadastrados</span></div><button (click)="addCardRequested.emit(current.deck_key||current.name)"><app-icon name="plus"/>Criar card</button></div>
     @if(!subjectCards().length){<div class="empty"><app-icon name="book"/>Nenhum flashcard cadastrado nesta matéria.</div>}
     @else if(dueCards().length){<button class="primary-card" (click)="reviewDue()"><div><b>Revisar agora</b><span>{{dueCards().length}} card(s) para revisar hoje</span></div><app-icon name="chevron"/></button>}
     @else {<div class="done-card"><b><app-icon name="check"/>Todos os flashcards de hoje foram revisados</b><span>Você pode encerrar por hoje ou revisar novamente.</span><button (click)="reviewAgain()">Revisar novamente</button></div>}
+    <div class="topic-list">@for(card of subjectCards();track card.id){<article class="topic-row"><button class="topic-main" (click)="editCardRequested.emit(card)"><b>{{card.question}}</b><span>{{card.topic}}</span></button><button class="topic-edit" (click)="editCardRequested.emit(card)" [attr.aria-label]="'Editar flashcard: '+card.question"><app-icon name="edit"/></button></article>}</div>
   } @else {
     <div class="topic-view-tabs"><button [class.active]="topicView()==='todo'" (click)="topicView.set('todo');closeTopic()">A estudar</button><button [class.active]="topicView()==='done'" (click)="topicView.set('done');closeTopic()">Estudados</button></div>
     <div class="section-actions"><div><b>{{topicView()==='todo'?'Tópicos a estudar':'Tópicos estudados'}}</b><span>{{subjectTopics().length}} tópico(s)</span></div><button (click)="addTopic()"><app-icon name="plus"/>Adicionar</button></div>

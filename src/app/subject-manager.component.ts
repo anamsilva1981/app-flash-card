@@ -2,6 +2,7 @@ import { A11yModule } from '@angular/cdk/a11y';
 import { AppIconComponent, SubjectBadgeComponent } from './app-icon.component';
 import { Component, computed, signal, Input, Output, EventEmitter } from '@angular/core';
 import { api, cache, cached, write, flush, hasPending, syncStatus } from './sync';
+import { accountSession } from './account';
 import { sortTopics } from './review-schedule';
 
 export interface ManagedSubject { id:string; name:string; days:number[]; archived:boolean; deck_key?:string; routine_initialized?:boolean; }
@@ -14,10 +15,11 @@ export class SubjectManagerComponent {
  subjects=subjectConfigs; formOpen=signal(false); editingId=signal<string|null>(null); name=signal(''); selectedDays=signal<number[]>([]); showArchived=signal(false);
  selectedSubject=signal<ManagedSubject|null>(null); detailTab=signal<'flashcards'|'topics'>('flashcards'); selectedTopic=signal<StudyItem|null>(null);
  @Input() flashcards:Flashcard[]=[]; @Input() studyItems:StudyItem[]=[];
+ @Output() addCardRequested=new EventEmitter<string>(); @Output() editCardRequested=new EventEmitter<Flashcard>();
  @Output() configChanged=new EventEmitter<ManagedSubject[]>(); @Output() practiceRequested=new EventEmitter<string>();
  @Output() addTopicRequested=new EventEmitter<string>(); @Output() editTopicRequested=new EventEmitter<StudyItem>(); @Output() completeTopicRequested=new EventEmitter<StudyItem>(); @Output() subjectsChanged=new EventEmitter<string[]>(); @Output() subjectRenamed=new EventEmitter<{previous:string;name:string}>(); @Output() reviewRequested=new EventEmitter<string>();
  topicView=signal<'todo'|'done'>('todo');
- private persist(){this.configChanged.emit(this.subjects());localStorage.setItem('study-subject-config',JSON.stringify(this.subjects()));}
+ private persist(){this.configChanged.emit(this.subjects());cache('study-subject-config',this.subjects());}
  visibleSubjects(){return this.subjects().filter(s=>s.archived===this.showArchived())}
  openSubject(item:ManagedSubject){if(item.archived)return;this.selectedSubject.set(item);this.detailTab.set('flashcards');this.selectedTopic.set(null);this.topicView.set('todo')}
  closeSubject(){this.selectedSubject.set(null);this.selectedTopic.set(null)}
@@ -47,5 +49,5 @@ export class SubjectManagerComponent {
 }
 function defaults():ManagedSubject[]{return [{id:'aws',name:'AWS IA',days:[1,2,3,4,5,6,0],archived:false,deck_key:'AWS'},{id:'javascript',name:'JavaScript',days:[1,2,3,4,5,6,0],archived:false},{id:'patterns',name:'Padrões de Projeto',days:[],archived:false},{id:'angular',name:'Angular',days:[],archived:false},{id:'react',name:'React',days:[],archived:false},{id:'architecture',name:'Arquitetura',days:[],archived:false},{id:'java',name:'Java',days:[],archived:false}]}
 
-export const subjectConfigs=signal<ManagedSubject[]>(cached('study-subject-config',defaults().map(s=>({...s,deck_key:s.deck_key||s.name}))));
-export async function loadSubjectConfig(){try{await flush();if(hasPending()){return}const res=await api('study_subjects?select=id,name,days,archived,deck_key,routine_initialized&order=created_at.asc');if(!res.ok)throw new Error();const remote:ManagedSubject[]=await res.json();const migrated=cached('subject-routine-migrated',false);const legacy=cached<ManagedSubject[]>('study-subject-config',[]);if(!migrated){for(const local of legacy){const existing=remote.find(r=>r.name===local.name);if(existing&&!existing.routine_initialized){existing.days=local.days;existing.archived=local.archived;write('rpc/rename_study_subject',{subject_id:existing.id,new_name:existing.name,routine:existing.days,is_archived:existing.archived})}else if(!existing){const added={...local,id:crypto.randomUUID(),deck_key:local.name};remote.push(added);write('study_subjects?on_conflict=id',added)}}cache('subject-routine-migrated',true)}subjectConfigs.set(remote);cache('study-subject-config',remote)}catch{syncStatus.set('Usando matérias salvas neste dispositivo')}}
+export const subjectConfigs=signal<ManagedSubject[]>(cached('study-subject-config',[]));
+export async function loadSubjectConfig(){if(!accountSession()){subjectConfigs.set(cached('study-subject-config',[]));return}try{await flush();if(hasPending()){return}const res=await api('study_subjects?select=id,name,days,archived,deck_key,routine_initialized&order=created_at.asc');if(!res.ok)throw new Error();const remote:ManagedSubject[]=await res.json();const migrated=cached('subject-routine-migrated',false);const legacy=cached<ManagedSubject[]>('study-subject-config',[]);if(!migrated){for(const local of legacy){const existing=remote.find(r=>r.name===local.name);if(existing&&!existing.routine_initialized){existing.days=local.days;existing.archived=local.archived;write('rpc/rename_study_subject',{subject_id:existing.id,new_name:existing.name,routine:existing.days,is_archived:existing.archived})}else if(!existing){const added={...local,id:crypto.randomUUID(),deck_key:local.name};remote.push(added);write('study_subjects?on_conflict=id',added)}}cache('subject-routine-migrated',true)}subjectConfigs.set(remote);cache('study-subject-config',remote)}catch{syncStatus.set('Usando matérias salvas neste dispositivo')}}
