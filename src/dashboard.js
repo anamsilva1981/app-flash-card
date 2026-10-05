@@ -2,116 +2,44 @@
   let enhancing = false;
   const storageKey = 'study-subject-config';
   const defaults = [
-    {id:'aws',name:'AWS IA',days:[1,2,3,4,5,6,0],archived:false},
-    {id:'javascript',name:'JavaScript',days:[1,2,3,4,5,6,0],archived:false},
-    {id:'patterns',name:'Padrões de Projeto',days:[],archived:false},
-    {id:'angular',name:'Angular',days:[],archived:false},
-    {id:'react',name:'React',days:[],archived:false},
-    {id:'architecture',name:'Arquitetura',days:[],archived:false},
-    {id:'java',name:'Java',days:[],archived:false}
+    {id:'aws',name:'AWS IA',days:[1,2,3,4,5,6,0],archived:false},{id:'javascript',name:'JavaScript',days:[1,2,3,4,5,6,0],archived:false},{id:'patterns',name:'Padrões de Projeto',days:[],archived:false},{id:'angular',name:'Angular',days:[],archived:false},{id:'react',name:'React',days:[],archived:false},{id:'architecture',name:'Arquitetura',days:[],archived:false},{id:'java',name:'Java',days:[],archived:false}
   ];
-  const configs = () => { try { const v=JSON.parse(localStorage.getItem(storageKey)||'null'); return Array.isArray(v)?v:defaults; } catch { return defaults; } };
-  const saveConfigs = value => { localStorage.setItem(storageKey,JSON.stringify(value)); window.dispatchEvent(new CustomEvent('subject-config-changed')); };
-  const findNav = label => [...document.querySelectorAll('.bottom-nav button')].find(btn => btn.textContent?.includes(label));
-  const originalName = name => name==='AWS IA'?'AWS':name;
-  const icon = name => name==='JavaScript'?'JS':name==='AWS IA'?'aws':name==='Angular'?'A':name==='React'?'⚛':name==='Java'?'☕':name==='Arquitetura'?'⌂':name==='Padrões de Projeto'?'▱':'◆';
-  const esc = value => String(value||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-  const dayLabel = days => days.length===7?'Todos os dias':!days.length?'Sem dias definidos':['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].filter((_,i)=>days.includes(i)).join(', ');
-  const getStudyItems = () => [...document.querySelectorAll('.study-item')].map(el=>({el,title:el.querySelector('b')?.textContent?.trim()||'',subject:el.querySelector('.subject-tag')?.textContent?.trim()||''}));
+  const configs=()=>{try{const v=JSON.parse(localStorage.getItem(storageKey)||'null');return Array.isArray(v)?v:defaults}catch{return defaults}};
+  const saveConfigs=value=>{localStorage.setItem(storageKey,JSON.stringify(value));window.dispatchEvent(new CustomEvent('subject-config-changed'))};
+  const findNav=label=>[...document.querySelectorAll('.bottom-nav button')].find(btn=>btn.textContent?.includes(label));
+  const originalName=name=>name==='AWS IA'?'AWS':name;
+  const icon=name=>name==='JavaScript'?'JS':name==='AWS IA'||name==='AWS'?'aws':name==='Angular'?'A':name==='React'?'⚛':name==='Java'?'☕':name==='Arquitetura'?'⌂':name==='Padrões de Projeto'?'▱':'◆';
+  const esc=value=>String(value||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const dayLabel=days=>days.length===7?'Todos os dias':!days.length?'Sem dias definidos':['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].filter((_,i)=>days.includes(i)).join(', ');
+  const getStudyItems=()=>[...document.querySelectorAll('.study-item')].map(el=>({el,title:el.querySelector('b')?.textContent?.trim()||'',subject:el.querySelector('.subject-tag')?.textContent?.trim()||''}));
 
-  function enhanceHome() {
-    if (enhancing) return;
-    const home=document.querySelector('.home-page');
-    if(!home||home.dataset.dashboardEnhanced==='true') return;
-    enhancing=true;
-    const originals=[...home.querySelectorAll('.subject-card')];
+  function showDeckPicker(home,originals){
     const byName=name=>originals.find(btn=>btn.textContent?.includes(name));
+    const decks=originals.map(btn=>{const name=btn.querySelector('h3')?.textContent?.trim()||'';const m=btn.textContent?.match(/(\d+)\s+cards?/i);return{name,due:m?Number(m[1]):0,btn}}).filter(x=>x.name&&!['Arquitetura','Java'].includes(x.name));
+    const shell=document.createElement('section');shell.className='deck-picker';
+    shell.innerHTML=`<header class="deck-picker-header"><button class="deck-picker-back">‹</button><div><span>REVISÃO</span><h1>Revisar flashcards</h1><p>Escolha uma matéria para começar.</p></div></header><div class="deck-picker-summary"><b>${decks.reduce((s,d)=>s+d.due,0)}</b><span>cards pendentes hoje</span></div><div class="deck-picker-list">${decks.map(d=>`<button class="deck-choice" data-deck="${esc(d.name)}"><span class="deck-choice-icon">${icon(d.name)}</span><span><b>${esc(d.name==='AWS'?'AWS IA':d.name)}</b><small>${d.due?`${d.due} ${d.due===1?'card':'cards'} para revisar`:'Revisão concluída'}</small></span><strong>${d.due?'›':'✓'}</strong></button>`).join('')}</div>`;
+    [...home.children].forEach(x=>x.classList.add('deck-picker-hidden'));home.appendChild(shell);
+    shell.querySelector('.deck-picker-back').onclick=()=>{shell.remove();[...home.children].forEach(x=>x.classList.remove('deck-picker-hidden'))};
+    shell.querySelectorAll('.deck-choice').forEach(b=>b.onclick=()=>{const deck=decks.find(d=>d.name===b.dataset.deck);if(deck?.due>0)deck.btn.click()});
+  }
+
+  function enhanceHome(){
+    if(enhancing)return;const home=document.querySelector('.home-page');if(!home||home.dataset.dashboardEnhanced==='true')return;enhancing=true;
+    const originals=[...home.querySelectorAll('.subject-card')];const byName=name=>originals.find(btn=>btn.textContent?.includes(name));
     const totalDue=originals.reduce((sum,btn)=>{const m=btn.textContent?.match(/(\d+)\s+cards?/i);return sum+(m?Number(m[1]):0)},0);
-    const hidden=document.createElement('div'); hidden.className='dashboard-original-actions'; originals.forEach(b=>hidden.appendChild(b));
-    const today=new Date().getDay(); const todays=configs().filter(s=>!s.archived&&s.days.includes(today));
-    const date=new Intl.DateTimeFormat('pt-BR',{weekday:'long',day:'2-digit',month:'long'}).format(new Date());
+    const hidden=document.createElement('div');hidden.className='dashboard-original-actions';originals.forEach(b=>hidden.appendChild(b));
+    const today=new Date().getDay(),todays=configs().filter(s=>!s.archived&&s.days.includes(today));const date=new Intl.DateTimeFormat('pt-BR',{weekday:'long',day:'2-digit',month:'long'}).format(new Date());
     const rows=todays.map(s=>`<button class="daily-subject" data-subject="${esc(s.name)}"><span class="daily-subject-icon">${icon(s.name)}</span><span><b>${esc(s.name)}</b><small>Programada para hoje</small></span><strong>›</strong></button>`).join('');
     home.innerHTML=`<header class="daily-header"><div><h1>Olá!</h1><p>Vamos estudar hoje?</p></div><button class="daily-profile" aria-label="Perfil">♙</button></header><section class="daily-section"><button class="review-today-card"><span class="daily-card-icon">▣</span><span><b>Revisar flashcards</b><small>${totalDue} ${totalDue===1?'card pendente':'cards pendentes'}</small></span><strong>›</strong></button></section><section class="daily-section"><div class="daily-section-title"><h2>Matérias de hoje</h2><span>${todays.length}</span></div><div class="daily-subjects">${rows||'<div class="daily-empty">Nenhuma matéria programada para hoje.</div>'}</div></section><p class="daily-hint">${date}</p>`;
-    home.appendChild(hidden); home.dataset.dashboardEnhanced='true';
-    home.querySelector('.daily-profile')?.addEventListener('click',()=>findNav('Perfil')?.click());
-    home.querySelector('.review-today-card')?.addEventListener('click',()=>{const first=originals.find(b=>/[1-9]\d*\s+cards?/i.test(b.textContent||''))||originals[0];first?.click()});
-    home.querySelectorAll('.daily-subject').forEach(btn=>btn.addEventListener('click',()=>{const name=btn.dataset.subject||'';const target=byName(originalName(name));target?.click()}));
-    enhancing=false;
+    home.appendChild(hidden);home.dataset.dashboardEnhanced='true';home.querySelector('.daily-profile')?.addEventListener('click',()=>findNav('Perfil')?.click());
+    home.querySelector('.review-today-card')?.addEventListener('click',()=>showDeckPicker(home,originals));
+    home.querySelectorAll('.daily-subject').forEach(btn=>btn.addEventListener('click',()=>byName(originalName(btn.dataset.subject||''))?.click()));enhancing=false;
   }
 
-  function enhanceNav(){
-    const nav=document.querySelector('.bottom-nav'); if(!nav||nav.dataset.navV2==='true') return;
-    const buttons=[...nav.querySelectorAll('button')];
-    const home=buttons.find(b=>b.textContent?.includes('Início'));
-    const study=buttons.find(b=>b.textContent?.includes('A estudar'));
-    const history=buttons.find(b=>b.textContent?.includes('Histórico'));
-    const settings=buttons.find(b=>b.textContent?.includes('Configurações'));
-    if(!home||!study||!history||!settings)return;
-    study.querySelector('b').textContent='Estudar'; study.querySelector('span').textContent='▣';
-    history.querySelector('b').textContent='Histórico';
-    settings.querySelector('b').textContent='Perfil'; settings.querySelector('span').textContent='♙';
-    buttons.find(b=>b.textContent?.includes('Progresso'))?.remove();
-    nav.classList.remove('five'); nav.classList.add('four'); nav.dataset.navV2='true';
-  }
-
-  function enhanceStudy(){
-    const page=document.querySelector('.study-plan-page'); if(!page||page.dataset.studyV2==='true')return;
-    const heading=page.querySelector('.page-heading'); if(!heading)return;
-    const original=[...page.children]; original.forEach(el=>{if(el!==heading)el.classList.add('legacy-study-content')});
-    heading.innerHTML='<div><span>SEUS ESTUDOS</span><h1>Estudar</h1><p>Suas matérias e tópicos de estudo.</p></div><div class="page-icon">▣</div>';
-    const shell=document.createElement('section'); shell.className='study-v2-shell';
-    shell.innerHTML='<div class="study-v2-tabs"><button class="active" data-view="subjects">Matérias</button><button data-view="topics">Tópicos</button></div><div class="study-v2-content"></div>';
-    heading.after(shell); page.dataset.studyV2='true';
-    const content=shell.querySelector('.study-v2-content');
-    const renderSubjects=()=>{
-      const active=configs().filter(s=>!s.archived); const archived=configs().filter(s=>s.archived);
-      content.innerHTML=`<div class="subject-manager-v2"><div class="manager-actions"><b>Gerenciar matérias</b><button data-new>＋ Nova matéria</button></div><div class="managed-list">${active.map(s=>`<article><span class="managed-icon">${icon(s.name)}</span><div><b>${esc(s.name)}</b><small>${dayLabel(s.days)}</small></div><button data-edit="${esc(s.id)}">⋮</button></article>`).join('')}</div>${archived.length?`<details><summary>Arquivadas (${archived.length})</summary>${archived.map(s=>`<article class="archived-row"><div><b>${esc(s.name)}</b><small>${dayLabel(s.days)}</small></div><button data-restore="${esc(s.id)}">Restaurar</button></article>`).join('')}</details>`:''}</div>`;
-      content.querySelector('[data-new]')?.addEventListener('click',()=>renderForm());
-      content.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>renderForm(configs().find(s=>s.id===b.dataset.edit))));
-      content.querySelectorAll('[data-restore]').forEach(b=>b.addEventListener('click',()=>{saveConfigs(configs().map(s=>s.id===b.dataset.restore?{...s,archived:false}:s));renderSubjects()}));
-    };
-    const renderForm=item=>{
-      const selected=new Set(item?.days||[]); const days=[['D',0],['S',1],['T',2],['Q',3],['Q',4],['S',5],['S',6]];
-      content.innerHTML=`<div class="subject-edit-v2"><button class="back-manager">‹ Voltar</button><h2>${item?'Editar matéria':'Nova matéria'}</h2><label>Nome da matéria<input class="subject-name" value="${esc(item?.name||'')}" placeholder="Ex.: Matemática"></label><div class="days-title"><b>Dias da semana</b><small>Em quais dias você quer estudar esta matéria?</small></div><div class="day-pills">${days.map(([l,d])=>`<button data-day="${d}" class="${selected.has(d)?'active':''}">${l}</button>`).join('')}</div><button class="save-subject-v2">Salvar matéria</button>${item?'<button class="archive-subject-v2">Arquivar matéria</button>':''}</div>`;
-      content.querySelector('.back-manager').onclick=renderSubjects;
-      content.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>{const d=Number(b.dataset.day);selected.has(d)?selected.delete(d):selected.add(d);b.classList.toggle('active')});
-      content.querySelector('.save-subject-v2').onclick=()=>{const name=content.querySelector('.subject-name').value.trim();if(!name)return;const all=configs();if(item)saveConfigs(all.map(s=>s.id===item.id?{...s,name,days:[...selected]}:s));else saveConfigs([...all,{id:crypto.randomUUID(),name,days:[...selected],archived:false}]);renderSubjects()};
-      content.querySelector('.archive-subject-v2')?.addEventListener('click',()=>{saveConfigs(configs().map(s=>s.id===item.id?{...s,archived:true}:s));renderSubjects()});
-    };
-    const renderTopics=()=>{content.innerHTML='<div class="topics-v2-intro"><b>A estudar</b><span>Os tópicos continuam vinculados à matéria escolhida.</span><button class="open-legacy-topics">＋ Adicionar tópico</button></div><div class="topic-groups"></div>';const groups=content.querySelector('.topic-groups');const items=getStudyItems();const names=[...new Set(items.map(i=>i.subject))];groups.innerHTML=names.length?names.map(name=>`<section><h3>${esc(name)}</h3>${items.filter(i=>i.subject===name).map(i=>`<div class="topic-v2-row"><b>${esc(i.title)}</b></div>`).join('')}</section>`).join(''):'<div class="daily-empty">Nenhum tópico pendente.</div>';content.querySelector('.open-legacy-topics').onclick=()=>{page.classList.add('show-legacy-study');page.querySelector('.add-study-button')?.click()}};
-    shell.querySelectorAll('.study-v2-tabs button').forEach(btn=>btn.onclick=()=>{shell.querySelectorAll('.study-v2-tabs button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');btn.dataset.view==='topics'?renderTopics():renderSubjects()});
-    renderSubjects();
-  }
-
-  function enhanceHistory(){
-    const page=document.querySelector('.history-page'); if(!page||page.dataset.historyV2==='true')return;
-    const heading=page.querySelector('.page-heading'); if(!heading)return;
-    heading.querySelector('h1').textContent='Histórico e Progresso'; heading.querySelector('p').textContent='Acompanhe sua evolução.';
-    const tabs=document.createElement('div');tabs.className='history-v2-tabs';tabs.innerHTML='<button class="active">Histórico</button><button>Progresso</button>';heading.after(tabs);
-    const historyContent=[...page.children].filter(el=>el!==heading&&el!==tabs); const progressNav=[...document.querySelectorAll('.bottom-nav button')].find(b=>b.textContent?.includes('Progresso'));
-    tabs.children[0].onclick=()=>{tabs.children[0].classList.add('active');tabs.children[1].classList.remove('active');historyContent.forEach(x=>x.style.display='');page.querySelector('.embedded-progress')?.remove()};
-    tabs.children[1].onclick=()=>{tabs.children[1].classList.add('active');tabs.children[0].classList.remove('active');historyContent.forEach(x=>x.style.display='none');const box=document.createElement('section');box.className='embedded-progress';box.innerHTML='<div class="progress-placeholder"><b>Progresso</b><p>Resumo de revisões, cards cadastrados e evolução dos seus estudos.</p><div class="progress-cards"><span><strong>✓</strong> Revisões</span><span><strong>▣</strong> Conteúdos</span><span><strong>↗</strong> Evolução</span></div></div>';page.appendChild(box)};
-    page.dataset.historyV2='true';
-  }
-
-  function enhanceProfile(){
-    const nav=findNav('Perfil'); if(!nav||!nav.classList.contains('active'))return;
-    const page=document.querySelector('.panel-page:not(.history-page):not(.study-plan-page)'); if(!page||page.dataset.profileV2==='true')return;
-    const h=page.querySelector('.page-heading'); if(!h)return;
-    h.innerHTML='<div><span>SUA CONTA</span><h1>Perfil</h1><p>Configurações e preferências.</p></div><div class="page-icon">♙</div>';
-    const settings=page.querySelector('.settings-card'); if(settings){settings.insertAdjacentHTML('afterbegin','<div class="profile-row"><span class="profile-avatar">A</span><div><b>Meu perfil</b><small>Preferências do aplicativo</small></div></div><div class="settings-section-title">Configurações</div>');}
-    page.dataset.profileV2='true';
-  }
-
-  function enhanceReview(){
-    const page=document.querySelector('.review-page');if(!page)return;
-    page.querySelectorAll('.flashcard-icon').forEach(x=>x.remove());
-    const topics=page.querySelector('.topics');if(!topics||topics.dataset.selectified==='true')return;
-    const buttons=[...topics.querySelectorAll('button')];const select=document.createElement('select');select.className='topic-select';buttons.forEach(b=>{const o=document.createElement('option');o.value=b.textContent.trim();o.textContent=b.textContent.trim();o.selected=b.classList.contains('active');select.appendChild(o)});select.onchange=()=>buttons.find(b=>b.textContent.trim()===select.value)?.click();topics.style.display='none';topics.after(select);topics.dataset.selectified='true';
-  }
-
-  const enhance=()=>{enhanceNav();enhanceHome();enhanceStudy();enhanceHistory();enhanceProfile();enhanceReview()};
-  const observer=new MutationObserver(()=>requestAnimationFrame(enhance));observer.observe(document.documentElement,{childList:true,subtree:true});
-  window.addEventListener('subject-config-changed',()=>{const home=document.querySelector('.home-page');if(home)home.dataset.dashboardEnhanced='false';requestAnimationFrame(enhance)});
-  window.addEventListener('DOMContentLoaded',enhance);requestAnimationFrame(enhance);
+  function enhanceNav(){const nav=document.querySelector('.bottom-nav');if(!nav||nav.dataset.navV2==='true')return;const buttons=[...nav.querySelectorAll('button')],home=buttons.find(b=>b.textContent?.includes('Início')),study=buttons.find(b=>b.textContent?.includes('A estudar')),history=buttons.find(b=>b.textContent?.includes('Histórico')),settings=buttons.find(b=>b.textContent?.includes('Configurações'));if(!home||!study||!history||!settings)return;study.querySelector('b').textContent='Estudar';study.querySelector('span').textContent='▣';settings.querySelector('b').textContent='Perfil';settings.querySelector('span').textContent='♙';buttons.find(b=>b.textContent?.includes('Progresso'))?.remove();nav.classList.remove('five');nav.classList.add('four');nav.dataset.navV2='true'}
+  function enhanceStudy(){const page=document.querySelector('.study-plan-page');if(!page||page.dataset.studyV2==='true')return;const heading=page.querySelector('.page-heading');if(!heading)return;[...page.children].forEach(el=>{if(el!==heading)el.classList.add('legacy-study-content')});heading.innerHTML='<div><span>SEUS ESTUDOS</span><h1>Estudar</h1><p>Suas matérias e tópicos de estudo.</p></div><div class="page-icon">▣</div>';const shell=document.createElement('section');shell.className='study-v2-shell';shell.innerHTML='<div class="study-v2-tabs"><button class="active" data-view="subjects">Matérias</button><button data-view="topics">Tópicos</button></div><div class="study-v2-content"></div>';heading.after(shell);page.dataset.studyV2='true';const content=shell.querySelector('.study-v2-content');const renderSubjects=()=>{const active=configs().filter(s=>!s.archived),archived=configs().filter(s=>s.archived);content.innerHTML=`<div class="subject-manager-v2"><div class="manager-actions"><b>Gerenciar matérias</b><button data-new>＋ Nova matéria</button></div><div class="managed-list">${active.map(s=>`<article><span class="managed-icon">${icon(s.name)}</span><div><b>${esc(s.name)}</b><small>${dayLabel(s.days)}</small></div><button data-edit="${esc(s.id)}">⋮</button></article>`).join('')}</div>${archived.length?`<details><summary>Arquivadas (${archived.length})</summary>${archived.map(s=>`<article class="archived-row"><div><b>${esc(s.name)}</b><small>${dayLabel(s.days)}</small></div><button data-restore="${esc(s.id)}">Restaurar</button></article>`).join('')}</details>`:''}</div>`;content.querySelector('[data-new]')?.addEventListener('click',()=>renderForm());content.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>renderForm(configs().find(s=>s.id===b.dataset.edit))));content.querySelectorAll('[data-restore]').forEach(b=>b.addEventListener('click',()=>{saveConfigs(configs().map(s=>s.id===b.dataset.restore?{...s,archived:false}:s));renderSubjects()}))};const renderForm=item=>{const selected=new Set(item?.days||[]),days=[['D',0],['S',1],['T',2],['Q',3],['Q',4],['S',5],['S',6]];content.innerHTML=`<div class="subject-edit-v2"><button class="back-manager">‹ Voltar</button><h2>${item?'Editar matéria':'Nova matéria'}</h2><label>Nome da matéria<input class="subject-name" value="${esc(item?.name||'')}" placeholder="Ex.: Matemática"></label><div class="days-title"><b>Dias da semana</b><small>Em quais dias você quer estudar esta matéria?</small></div><div class="day-pills">${days.map(([l,d])=>`<button data-day="${d}" class="${selected.has(d)?'active':''}">${l}</button>`).join('')}</div><button class="save-subject-v2">Salvar matéria</button>${item?'<button class="archive-subject-v2">Arquivar matéria</button>':''}</div>`;content.querySelector('.back-manager').onclick=renderSubjects;content.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>{const d=Number(b.dataset.day);selected.has(d)?selected.delete(d):selected.add(d);b.classList.toggle('active')});content.querySelector('.save-subject-v2').onclick=()=>{const name=content.querySelector('.subject-name').value.trim();if(!name)return;const all=configs();saveConfigs(item?all.map(s=>s.id===item.id?{...s,name,days:[...selected]}:s):[...all,{id:crypto.randomUUID(),name,days:[...selected],archived:false}]);renderSubjects()};content.querySelector('.archive-subject-v2')?.addEventListener('click',()=>{saveConfigs(configs().map(s=>s.id===item.id?{...s,archived:true}:s));renderSubjects()})};const renderTopics=()=>{content.innerHTML='<div class="topics-v2-intro"><b>A estudar</b><span>Os tópicos continuam vinculados à matéria escolhida.</span><button class="open-legacy-topics">＋ Adicionar tópico</button></div><div class="topic-groups"></div>';const groups=content.querySelector('.topic-groups'),items=getStudyItems(),names=[...new Set(items.map(i=>i.subject))];groups.innerHTML=names.length?names.map(name=>`<section><h3>${esc(name)}</h3>${items.filter(i=>i.subject===name).map(i=>`<div class="topic-v2-row"><b>${esc(i.title)}</b></div>`).join('')}</section>`).join(''):'<div class="daily-empty">Nenhum tópico pendente.</div>';content.querySelector('.open-legacy-topics').onclick=()=>{page.classList.add('show-legacy-study');page.querySelector('.add-study-button')?.click()}};shell.querySelectorAll('.study-v2-tabs button').forEach(btn=>btn.onclick=()=>{shell.querySelectorAll('.study-v2-tabs button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');btn.dataset.view==='topics'?renderTopics():renderSubjects()});renderSubjects()}
+  function enhanceHistory(){const page=document.querySelector('.history-page');if(!page||page.dataset.historyV2==='true')return;const heading=page.querySelector('.page-heading');if(!heading)return;heading.querySelector('h1').textContent='Histórico e Progresso';heading.querySelector('p').textContent='Acompanhe sua evolução.';const tabs=document.createElement('div');tabs.className='history-v2-tabs';tabs.innerHTML='<button class="active">Histórico</button><button>Progresso</button>';heading.after(tabs);const historyContent=[...page.children].filter(el=>el!==heading&&el!==tabs);tabs.children[0].onclick=()=>{tabs.children[0].classList.add('active');tabs.children[1].classList.remove('active');historyContent.forEach(x=>x.style.display='');page.querySelector('.embedded-progress')?.remove()};tabs.children[1].onclick=()=>{tabs.children[1].classList.add('active');tabs.children[0].classList.remove('active');historyContent.forEach(x=>x.style.display='none');const box=document.createElement('section');box.className='embedded-progress';box.innerHTML='<div class="progress-placeholder"><b>Progresso</b><p>Resumo de revisões, cards cadastrados e evolução dos seus estudos.</p><div class="progress-cards"><span><strong>✓</strong> Revisões</span><span><strong>▣</strong> Conteúdos</span><span><strong>↗</strong> Evolução</span></div></div>';page.appendChild(box)};page.dataset.historyV2='true'}
+  function enhanceProfile(){const nav=findNav('Perfil');if(!nav||!nav.classList.contains('active'))return;const page=document.querySelector('.panel-page:not(.history-page):not(.study-plan-page)');if(!page||page.dataset.profileV2==='true')return;const h=page.querySelector('.page-heading');if(!h)return;h.innerHTML='<div><span>SUA CONTA</span><h1>Perfil</h1><p>Configurações e preferências.</p></div><div class="page-icon">♙</div>';const settings=page.querySelector('.settings-card');if(settings)settings.insertAdjacentHTML('afterbegin','<div class="profile-row"><span class="profile-avatar">A</span><div><b>Meu perfil</b><small>Preferências do aplicativo</small></div></div><div class="settings-section-title">Configurações</div>');page.dataset.profileV2='true'}
+  function enhanceReview(){const page=document.querySelector('.review-page');if(!page)return;page.querySelectorAll('.flashcard-icon').forEach(x=>x.remove());const topics=page.querySelector('.topics');if(!topics||topics.dataset.selectified==='true')return;const buttons=[...topics.querySelectorAll('button')],select=document.createElement('select');select.className='topic-select';buttons.forEach(b=>{const o=document.createElement('option');o.value=b.textContent.trim();o.textContent=b.textContent.trim();o.selected=b.classList.contains('active');select.appendChild(o)});select.onchange=()=>buttons.find(b=>b.textContent.trim()===select.value)?.click();topics.style.display='none';topics.after(select);topics.dataset.selectified='true'}
+  const enhance=()=>{enhanceNav();enhanceHome();enhanceStudy();enhanceHistory();enhanceProfile();enhanceReview()};const observer=new MutationObserver(()=>requestAnimationFrame(enhance));observer.observe(document.documentElement,{childList:true,subtree:true});window.addEventListener('subject-config-changed',()=>{const home=document.querySelector('.home-page');if(home)home.dataset.dashboardEnhanced='false';requestAnimationFrame(enhance)});window.addEventListener('DOMContentLoaded',enhance);requestAnimationFrame(enhance);
 })();
