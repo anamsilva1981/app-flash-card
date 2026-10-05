@@ -20,6 +20,11 @@ function mountLanguageSwitcher(i18n:I18nService){
   const button=document.createElement('button');
   button.type='button';
   button.className='language-switcher';
+  Object.assign(button.style,{
+    position:'fixed',top:'16px',right:'16px',zIndex:'300',minWidth:'48px',height:'40px',padding:'0 12px',
+    border:'1px solid #e9ecf3',borderRadius:'999px',background:'#fff',color:'#4823bb',fontWeight:'700',
+    fontSize:'12px',boxShadow:'0 6px 24px rgba(31,40,71,.08)'
+  });
   const render=()=>{
     const isPt=i18n.language()==='pt-BR';
     button.textContent=isPt?'EN':'PT';
