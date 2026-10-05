@@ -26,6 +26,6 @@ export class SessionComponent {
  }else if(this.mode()==='password'){
   if(this.password.length<8)throw new Error('Use uma senha de pelo menos 8 caracteres.');const {error}=await supabase.auth.updateUser({password:this.password});if(error)throw error;this.password='';this.enter(accountSession()!.user.id);
  }else{const {error}=await supabase.auth.signInWithPassword({email:this.email.trim(),password:this.password});if(error)throw error;this.password=''}
- }catch(error:any){this.message.set(error?.message==='Invalid login credentials'?'E-mail ou senha incorretos.':error?.message==='Email not confirmed'?'Confirme seu e-mail antes de entrar.':error?.message||'Não foi possível conectar. Tente novamente.')}finally{this.busy.set(false)}}
+ }catch(error:any){this.message.set(error?.message==='Invalid login credentials'?'E-mail ou senha incorretos.':error?.message==='Email not confirmed'?'Confirme seu e-mail antes de entrar.':error?.code==='email_address_not_authorized'?'O cadastro por e-mail ainda está em preparação. Você pode continuar sem conta.':error?.status===429?'Aguarde um pouco antes de tentar novamente.':error?.message||'Não foi possível conectar. Tente novamente.')}finally{this.busy.set(false)}}
  closePage(){history.replaceState(null,'',location.pathname);this.page.set('')}
 }

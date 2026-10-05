@@ -7,7 +7,7 @@
       <button class="icon-button" (click)="back()" aria-label="Voltar"><app-icon name="back"/></button>
       <div class="review-title">
         <div>
-          <h1>{{subject()==='AWS'?'AWS IA':subject()}}</h1>
+          <h1>{{subjectLabel()}}</h1>
           <p>{{practice()?'Revisão livre':dueCards().length+' cards pendentes'}}</p>
         </div>
       </div>

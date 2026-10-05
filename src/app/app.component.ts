@@ -215,7 +215,8 @@ export class AppComponent implements OnInit {
  private mergeLearning(saved:StudyDay[]):StudyDay[]{return saved.sort((a,b)=>b.date.localeCompare(a.date));}
  private recordActivity(label:string,kind:'learning'|'review'){const date=today();const next=this.history().map(d=>({...d,learning:[...d.learning],reviews:[...d.reviews]}));let day=next.find(d=>d.date===date);if(!day){day={date,learning:[],reviews:[]};next.push(day)}const list=kind==='learning'?day.learning:day.reviews;if(!list.includes(label))list.push(label);this.history.set(next.sort((a,b)=>b.date.localeCompare(a.date)));cache('study-history',this.history());if(kind==='review')write('study_activity?on_conflict=activity_date,kind,label',{activity_date:date,kind,label},'POST','resolution=ignore-duplicates,return=minimal')}
  private saveReview(label:string){this.recordActivity(label,'review')}
- reviewLabel(){const subject=this.subject();const topic=this.topic();const name=subject==='AWS'?'AWS IA':subject||'';return topic==='Todos'?name:`${name} — ${topic}`;}
+ subjectLabel(){const key=this.subject();return this.subjectConfigs().find(s=>(s.deck_key||s.name)===key)?.name||(key==='AWS'?'AWS IA':key)||''}
+ reviewLabel(){const subject=this.subject();const topic=this.topic();const name=this.subjectLabel();return topic==='Todos'?name:`${name} — ${topic}`;}
  formatDate(date:string){const [y,m,d]=date.split('-');return `${d}/${m}/${y}`;}
  subjectCards=computed(()=>this.subject()?this.cards().filter(c=>c.subject===this.subject()):[]);
  topics=computed(()=>['Todos',...Array.from(new Set(this.subjectCards().map(c=>c.topic)))]);
