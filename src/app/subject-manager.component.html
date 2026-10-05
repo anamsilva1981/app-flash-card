@@ -1,35 +1,20 @@
 <section class="subject-manager">
-  <div class="manager-head">
-    <div><span>ROTINA DE ESTUDOS</span><h2>Matérias</h2><p>Cadastre as matérias e escolha em quais dias você pretende estudá-las.</p></div>
-    <button class="add" (click)="openNew()">＋ Nova</button>
-  </div>
-
-  <div class="tabs">
-    <button [class.active]="!showArchived()" (click)="showArchived.set(false)">Ativas</button>
-    <button [class.active]="showArchived()" (click)="showArchived.set(true)">Arquivadas</button>
-  </div>
-
-  @if(formOpen()){
-    <div class="subject-form">
-      <div class="form-title"><b>{{editingId()?'Editar matéria':'Nova matéria'}}</b><button (click)="close()">×</button></div>
-      <label>Nome da matéria<input #nameInput [value]="name()" (input)="name.set(nameInput.value)" placeholder="Ex.: Matemática"></label>
-      <div class="days-label">Dias de estudo</div>
-      <div class="days">
-        @for(day of week;track day.value){<button [class.active]="selectedDays().includes(day.value)" (click)="toggleDay(day.value)">{{day.short}}</button>}
-      </div>
-      <button class="save" (click)="save()">Salvar matéria</button>
-    </div>
+@if(selectedSubject(); as current){
+  <div class="detail-head"><button class="back" (click)="closeSubject()">‹</button><div><span>MATÉRIA</span><h2>{{current.name}}</h2><p>{{dayLabel(current.days)}}</p></div></div>
+  <div class="detail-tabs"><button [class.active]="detailTab()==='flashcards'" (click)="detailTab.set('flashcards')">Flashcards</button><button [class.active]="detailTab()==='topics'" (click)="detailTab.set('topics')">Tópicos</button></div>
+  @if(detailTab()==='flashcards'){
+    <div class="section-actions"><div><b>Flashcards</b><span>{{subjectCards().length}} cadastrados</span></div><button (click)="addFlashcard()">＋ Adicionar</button></div>
+    @if(dueCards().length){<button class="primary-card" (click)="reviewDue()"><div><b>Revisar agora</b><span>{{dueCards().length}} card(s) para revisar hoje</span></div><strong>›</strong></button>}
+    @else {<div class="done-card"><b>✓ Todos os flashcards de hoje foram revisados</b><span>Você pode encerrar por hoje ou revisar novamente.</span><button (click)="reviewAgain()">Revisar novamente</button></div>}
+  } @else {
+    <div class="section-actions"><div><b>Tópicos a estudar</b><span>{{subjectTopics().length}} pendente(s)</span></div><button (click)="addTopic()">＋ Adicionar</button></div>
+    <div class="topic-list">@for(item of subjectTopics();track item.id){<button class="topic-card" (click)="openTopic(item)"><div><b>{{item.title}}</b><span>Prioridade {{item.priority}}</span></div><strong>›</strong></button>} @empty {<div class="empty">Nenhum tópico pendente nesta matéria.</div>}</div>
+    @if(selectedTopic(); as item){<div class="topic-detail"><div class="form-title"><b>{{item.title}}</b><button (click)="closeTopic()">×</button></div>@if(item.notes){<div class="topic-field"><span>Observação</span><p>{{item.notes}}</p></div>}@if(item.link){<div class="topic-field"><span>Material</span><a [href]="item.link" target="_blank" rel="noopener noreferrer">Abrir link ↗</a></div>}<div class="topic-field"><span>Prioridade</span><p>{{item.priority}}</p></div></div>}
   }
-
-  <div class="subject-list">
-    @for(item of visibleSubjects();track item.id){
-      <article class="subject-row">
-        <div><b>{{item.name}}</b><span>{{dayLabel(item.days)}}</span></div>
-        <div class="actions">
-          @if(!item.archived){<button (click)="edit(item)" aria-label="Editar">✎</button><button (click)="archive(item)" aria-label="Arquivar">Arquivar</button>}
-          @else{<button (click)="restore(item)">Restaurar</button>}
-        </div>
-      </article>
-    } @empty {<div class="empty">Nenhuma matéria {{showArchived()?'arquivada':'ativa'}}.</div>}
-  </div>
+} @else {
+  <div class="manager-head"><div><span>ROTINA DE ESTUDOS</span><h2>Matérias</h2><p>Toque em uma matéria para abrir flashcards e tópicos.</p></div><button class="add" (click)="openNew()">＋ Nova</button></div>
+  <div class="tabs"><button [class.active]="!showArchived()" (click)="showArchived.set(false)">Ativas</button><button [class.active]="showArchived()" (click)="showArchived.set(true)">Arquivadas</button></div>
+  @if(formOpen()){<div class="subject-form"><div class="form-title"><b>{{editingId()?'Editar matéria':'Nova matéria'}}</b><button (click)="close()">×</button></div><label>Nome da matéria<input #nameInput [value]="name()" (input)="name.set(nameInput.value)" placeholder="Ex.: Matemática"></label><div class="days-label">Dias de estudo</div><div class="days">@for(day of week;track day.value){<button [class.active]="selectedDays().includes(day.value)" (click)="toggleDay(day.value)">{{day.short}}</button>}</div><button class="save" (click)="save()">Salvar matéria</button></div>}
+  <div class="subject-list">@for(item of visibleSubjects();track item.id){<article class="subject-row" [class.clickable]="!item.archived"><button class="subject-main" (click)="openSubject(item)" [disabled]="item.archived"><b>{{item.name}}</b><span>{{dayLabel(item.days)}}</span></button><div class="actions">@if(!item.archived){<button (click)="edit(item)" aria-label="Editar">✎</button><button (click)="archive(item)" aria-label="Arquivar">Arquivar</button>}@else{<button (click)="restore(item)">Restaurar</button>}</div></article>} @empty {<div class="empty">Nenhuma matéria {{showArchived()?'arquivada':'ativa'}}.</div>}</div>
+}
 </section>
