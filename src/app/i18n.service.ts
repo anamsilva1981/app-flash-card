@@ -207,7 +207,7 @@ export class I18nService {
   private initialLocale(): Locale {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved === 'en' || saved === 'pt-BR') return saved;
-    return navigator.language.toLowerCase().startsWith('pt') ? 'pt-BR' : 'en';
+    return 'pt-BR';
   }
 
   private apply(node: Node, force = false): void {
