@@ -1,4 +1,5 @@
 <main class="app-shell">
+@if(updateReady()){<div class="update-banner">Uma nova versão está pronta.<button (click)="reloadApp()">Atualizar</button></div>}
 @if(syncStatus().startsWith('Offline')||syncStatus().includes('aguardando')){<p class="sync-banner" role="status">{{syncStatus()}}</p>}
 @if(subject()){
   <section class="review-page">

@@ -127,3 +127,5 @@ button{font:inherit}
 .inbox-list{background:white;border:1px solid #e7e1ff;border-radius:18px;padding:16px;margin:20px 0}.inbox-list summary{cursor:pointer;font-weight:700}.inbox-row{display:flex;gap:8px;border-top:1px solid #eee9f8;padding:12px 0}.inbox-row button{border:0;background:transparent;color:#3b345c;min-height:44px;cursor:pointer}.inbox-row button:first-child{flex:1;text-align:left;display:grid;gap:6px}.inbox-row small{color:#737087}.import-backup{display:block;padding:20px;background:white;border:1px solid #e7e1ff;border-radius:16px;margin-top:16px}.import-backup input{display:block;width:100%;margin-top:12px}
 
 .sync-banner{position:relative;padding:12px 16px;border-radius:12px;background:#fff4db;color:#644b13;font-size:13px;margin-bottom:16px}
+
+.update-banner{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#ece7ff;border-radius:14px;padding:14px;margin-bottom:18px;font-size:13px;color:#4338a3}.update-banner button{border:0;background:#5147ed;color:white;border-radius:10px;min-height:40px;padding:8px 14px;cursor:pointer}

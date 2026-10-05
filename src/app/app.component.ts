@@ -1,4 +1,5 @@
-import { Component, computed, signal, OnInit, ViewChild } from '@angular/core';
+import { SwUpdate } from '@angular/service-worker';
+import { Component, computed, signal, OnInit, inject, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -15,6 +16,10 @@ const today=()=>new Date().toLocaleDateString('en-CA',{timeZone:'America/Sao_Pau
 const addDays=(n:number)=>{const date=new Date(today()+'T12:00:00Z');date.setUTCDate(date.getUTCDate()+n);return date.toISOString().slice(0,10)};
 @Component({selector:'app-root',standalone:true,imports:[FormsModule,SubjectManagerComponent,MatButtonModule,MatCardModule,MatChipsModule,MatExpansionModule],templateUrl:'./app.component.html',styleUrl:'./app.component.css'})
 export class AppComponent implements OnInit {
+ updateReady=signal(false);private updates=inject(SwUpdate);
+ constructor(){if(this.updates.isEnabled)this.updates.versionUpdates.subscribe(event=>{if(event.type==='VERSION_READY')this.updateReady.set(true)})}
+ reloadApp(){window.location.reload()}
+
  activeTab=signal<'home'|'studyPlan'|'progress'|'history'|'settings'>('home');
  studyItems=signal<StudyItem[]>(cached('study-queue',[])); studySubjects=signal<string[]>(['AWS IA','JavaScript','Padrões de Projeto','Angular','React','Arquitetura','Java']); studyFormOpen=signal(false); studyTitle=signal(''); studySubject=signal(''); studyNotes=signal(''); studyLink=signal(''); studyPriority=signal<'baixa'|'media'|'alta'>('media'); editingStudyId=signal<string|null>(null); subjectFormOpen=signal(false); newSubjectName=signal('');
  historyMonth=signal(new Date(today()+'T12:00:00'));
@@ -219,7 +224,7 @@ export class AppComponent implements OnInit {
  studyDaysInMonth=computed(()=>{const y=this.historyMonth().getFullYear(),m=this.historyMonth().getMonth();return this.history().filter(d=>{const dt=new Date(d.date+'T12:00:00');return dt.getFullYear()===y&&dt.getMonth()===m&&(d.learning.length||d.reviews.length)}).length;});
  changeHistoryMonth(offset:number){const d=this.historyMonth();this.historyMonth.set(new Date(d.getFullYear(),d.getMonth()+offset,1));this.selectedHistoryDate.set(null)}
  selectHistoryDate(date:string|null){if(date)this.selectedHistoryDate.set(date)}
- setTab(tab:'home'|'studyPlan'|'progress'|'history'|'settings'){this.activeTab.set(tab);if(tab==='history'&&!this.selectedHistoryDate()){const latest=this.history().find(d=>d.learning.length||d.reviews.length);if(latest){const dt=new Date(latest.date+'T12:00:00');this.historyMonth.set(new Date(dt.getFullYear(),dt.getMonth(),1));}}}
+ setTab(tab:'home'|'studyPlan'|'progress'|'history'|'settings'){this.activeTab.set(tab);if(tab==='home')this.deckPicker.set(false);if(tab==='history'&&!this.selectedHistoryDate()){const latest=this.history().find(d=>d.learning.length||d.reviews.length);if(latest){const dt=new Date(latest.date+'T12:00:00');this.historyMonth.set(new Date(dt.getFullYear(),dt.getMonth(),1));}}}
  sessionLimit=signal<number>(cached('review-session-limit',10));sessionIds=signal<number[]>([]);sessionPosition=signal(0);practice=signal(false);deckPicker=signal(false);syncStatus=syncStatus;
  subjectConfigs=subjectConfigs;
  todaysSubjects=computed(()=>this.subjectConfigs().filter(s=>!s.archived&&s.days.includes(new Date(today()+'T12:00:00').getDay())));
