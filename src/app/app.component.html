@@ -89,7 +89,7 @@
           <label>Link <small>(opcional)</small><input #linkInput type="url" [value]="studyLink()" (input)="studyLink.set(linkInput.value)" placeholder="https://..."></label>
           <div class="priority-label">Prioridade <small>(opcional)</small></div>
           <div class="priority-buttons"><button [class.active]="studyPriority()==='baixa'" (click)="studyPriority.set('baixa')">Baixa</button><button [class.active]="studyPriority()==='media'" (click)="studyPriority.set('media')">Média</button><button [class.active]="studyPriority()==='alta'" (click)="studyPriority.set('alta')">Alta</button></div>
-          <button class="primary-action" [disabled]="studySaving()" (click)="saveStudyItem()">{{editingStudyId()?'Salvar alterações':'Adicionar'}}</button>
+          @if(studyError()){<p role="alert">{{studyError()}}</p>}<button class="primary-action" [disabled]="studySaving()" (click)="saveStudyItem()">{{editingStudyId()?'Salvar alterações':'Adicionar'}}</button>
         </section></div>
       }
 

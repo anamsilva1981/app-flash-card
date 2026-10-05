@@ -183,16 +183,12 @@ export class AppComponent implements OnInit {
  ];
  cards=signal<Card[]>(this.load());
  history=signal<StudyDay[]>(cached<StudyDay[]>('study-history',[]));
- private learningSeed:StudyDay[]=[
-  {date:'2026-10-03',learning:['Padrões de Projeto — padrões criacionais, estruturais e comportamentais','Padrões de Projeto — estudo individual dos 22 padrões clássicos','AWS IA — IA Responsável'],reviews:[]},
-  {date:'2026-10-02',learning:['JavaScript — 3.1 — Visão geral e definições','AWS IA — Fundamentos de Machine Learning','Padrões de Projeto — Classificação dos padrões'],reviews:[]}
- ];
  studyError=signal(''); studySaving=signal(false);
  @ViewChild(SubjectManagerComponent) manager?:SubjectManagerComponent;
  syncSubjectNames(names:string[]){this.studySubjects.update(v=>Array.from(new Set([...v,...names])))}
  openTopicForm(name:string){this.syncSubjectNames([name]);this.openStudyForm();this.studySubject.set(name)}
  renameStudySubject(change:{previous:string;name:string}){this.studyItems.update(v=>v.map(i=>i.subject===change.previous?{...i,subject:change.name}:i));cache('study-queue',this.studyItems())}
- ngOnInit(){this.subjectConfigs.set(cached('study-subject-config',[]));this.configChanged(this.subjectConfigs());this.displayName.set(cached('display-name',accountSession()?.user.user_metadata?.['display_name']||''));void this.initializeRemoteState();window.addEventListener('online',this.reconnect);window.addEventListener('study-profile-changed',this.profileChanged);this.reminderTimer=window.setInterval(()=>this.checkReminder(),30000)}
+ ngOnInit(){if(localStorage.getItem('study-open-settings')==='yes'){localStorage.removeItem('study-open-settings');this.activeTab.set('settings')}this.subjectConfigs.set(cached('study-subject-config',[]));this.configChanged(this.subjectConfigs());this.displayName.set(cached('display-name',accountSession()?.user.user_metadata?.['display_name']||''));void this.initializeRemoteState();window.addEventListener('online',this.reconnect);window.addEventListener('study-profile-changed',this.profileChanged);this.reminderTimer=window.setInterval(()=>this.checkReminder(),30000)}
  private reconnect=()=>void this.initializeRemoteState();private profileChanged=()=>this.displayName.set(cached('display-name',''));private reminderTimer=0;
  ngOnDestroy(){window.removeEventListener('online',this.reconnect);window.removeEventListener('study-profile-changed',this.profileChanged);window.clearInterval(this.reminderTimer)}
  private async initializeRemoteState(){if(!accountSession())return;const scope=accountScope();await flush();if(scope!==accountScope())return;if(hasPending())return;await loadSubjectConfig();await flush();if(hasPending())return;await this.loadRemoteCards();await this.loadRemotePreferences();await Promise.all([this.loadRemoteHistory(),this.loadRemoteProgress(),this.loadStudyQueue()]);this.configChanged(subjectConfigs());}

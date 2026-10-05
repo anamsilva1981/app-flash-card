@@ -8,8 +8,8 @@ export class SessionComponent {
  loading=signal(true);ready=signal(false);mode=signal<'login'|'signup'|'reset'|'password'>('login');email='';password='';name='';accepted=false;busy=signal(false);message=signal('');
  page=signal(new URLSearchParams(location.search).get('page')||'');
  constructor(){
-  supabase.auth.onAuthStateChange((event,session)=>{accountSession.set(session);if(event==='PASSWORD_RECOVERY'){this.mode.set('password');this.ready.set(false);this.loading.set(false);return}if(event==='SIGNED_OUT'){this.ready.set(false);this.loading.set(false)}if(session)setTimeout(()=>this.enter(session.user.id),0)});
-  void supabase.auth.getSession().then(({data})=>{accountSession.set(data.session);this.loading.set(false);if(data.session)this.enter(data.session.user.id);else if(localStorage.getItem('study-guest-entered')==='yes')this.enter('guest')});
+  supabase.auth.onAuthStateChange((event,session)=>{accountSession.set(session);if(event==='PASSWORD_RECOVERY'){this.mode.set('password');this.ready.set(false);this.loading.set(false);return}if(event==='SIGNED_OUT'){this.ready.set(false);this.loading.set(false)}if(session)setTimeout(()=>{if(this.mode()!=='password')this.enter(session.user.id)},0)});
+  void supabase.auth.getSession().then(({data})=>{accountSession.set(data.session);this.loading.set(false);if(data.session&&this.mode()!=='password')this.enter(data.session.user.id);else if(localStorage.getItem('study-guest-entered')==='yes')this.enter('guest')});
   window.addEventListener('study-account-exit',()=>{this.ready.set(false);this.message.set('');this.password='';localStorage.removeItem('study-guest-entered');setScope('guest')});
  }
  enter(id:string){setScope(id);this.loading.set(false);this.ready.set(true)}
@@ -27,5 +27,6 @@ export class SessionComponent {
   if(this.password.length<8)throw new Error('Use uma senha de pelo menos 8 caracteres.');const {error}=await supabase.auth.updateUser({password:this.password});if(error)throw error;this.password='';this.enter(accountSession()!.user.id);
  }else{const {error}=await supabase.auth.signInWithPassword({email:this.email.trim(),password:this.password});if(error)throw error;this.password=''}
  }catch(error:any){this.message.set(error?.message==='Invalid login credentials'?'E-mail ou senha incorretos.':error?.message==='Email not confirmed'?'Confirme seu e-mail antes de entrar.':error?.code==='email_address_not_authorized'?'O cadastro por e-mail ainda está em preparação. Você pode continuar sem conta.':error?.status===429?'Aguarde um pouco antes de tentar novamente.':error?.message||'Não foi possível conectar. Tente novamente.')}finally{this.busy.set(false)}}
+ beginDeletion(){localStorage.setItem('study-open-settings','yes');this.closePage();if(!accountSession()){this.ready.set(false);this.mode.set('login')}}
  closePage(){history.replaceState(null,'',location.pathname);this.page.set('')}
 }

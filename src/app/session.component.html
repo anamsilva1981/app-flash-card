@@ -9,7 +9,7 @@
 <h2>Exportar e excluir</h2><p>Você pode exportar seus estudos no Perfil. Eles ficam armazenados enquanto sua conta existir. A exclusão da conta remove o cadastro e os dados vinculados na nuvem. Backups que você baixou e cópias em outros dispositivos precisam ser removidos por você.</p>
 <p><a href="?page=delete">Solicitar exclusão da conta</a></p><h2>Contato</h2><p>Envie uma solicitação em Perfil → Suporte. Você também pode acessar o <a href="https://github.com/anamsilva1981" target="_blank" rel="noopener noreferrer">perfil público da responsável no GitHub</a>.</p>
 }@else{
-<h1>Excluir sua conta</h1><p>Para confirmar sua identidade, entre no aplicativo com a conta que deseja excluir. Depois acesse Perfil → Excluir conta.</p><p>O procedimento remove sua conta, matérias, tópicos, flashcards, progresso e pedidos de suporte da nuvem. Você pode baixar um backup antes. Arquivos exportados e cópias em outros dispositivos não são apagados automaticamente.</p><p>Se precisar de ajuda, use Perfil → Suporte.</p><button class="primary-action" (click)="closePage()">Entrar para excluir minha conta</button>
+<h1>Excluir sua conta</h1><p>Para confirmar sua identidade, entre no aplicativo com a conta que deseja excluir. Depois acesse Perfil → Excluir conta.</p><p>O procedimento remove sua conta, matérias, tópicos, flashcards, progresso e pedidos de suporte da nuvem. Você pode baixar um backup antes. Arquivos exportados e cópias em outros dispositivos não são apagados automaticamente.</p><p>Se precisar de ajuda, use Perfil → Suporte.</p><button class="primary-action" (click)="beginDeletion()">Entrar para excluir minha conta</button>
 }</main>
 }@else if(loading()){
 <main class="auth-page"><p role="status">Preparando seus estudos…</p></main>
