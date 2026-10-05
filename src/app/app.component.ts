@@ -1,16 +1,17 @@
-import { Component, computed, signal, OnInit } from '@angular/core';
+import { Component, computed, signal, OnInit, HostListener, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { SubjectManagerComponent } from './subject-manager.component';
 type Rating = 'again'|'hard'|'good'|'easy';
 interface Card { id:number; subject:'AWS'|'JavaScript'|'Padrões de Projeto'|'Angular'|'React'; topic:string; question:string; answer:string; explanation:string; example:string; due:string; interval:number; }
 interface StudyDay { date:string; learning:string[]; reviews:string[]; }
 interface StudyItem { id:string; title:string; subject:string; notes:string; link:string; priority:'baixa'|'media'|'alta'; status:'todo'|'done'; completed_at:string|null; }
 const DAY=86400000;
-const today=()=>new Date().toISOString().slice(0,10);
+const today=()=>new Date().toLocaleDateString('en-CA',{timeZone:'America/Sao_Paulo'});
 const addDays=(n:number)=>new Date(Date.now()+n*DAY).toISOString().slice(0,10);
-@Component({selector:'app-root',standalone:true,imports:[MatButtonModule,MatCardModule,MatChipsModule,MatExpansionModule],templateUrl:'./app.component.html',styleUrl:'./app.component.css'})
+@Component({selector:'app-root',standalone:true,imports:[SubjectManagerComponent,MatButtonModule,MatCardModule,MatChipsModule,MatExpansionModule],templateUrl:'./app.component.html',styleUrl:'./app.component.css'})
 export class AppComponent implements OnInit {
  private readonly supabaseUrl='https://elzkhndhkkkfxvtbhilt.supabase.co';
  private readonly supabaseKey='sb_publishable_YFZqSuAst3q1ERiC3HA71A_u4fmIP9j';
@@ -177,6 +178,12 @@ export class AppComponent implements OnInit {
   {date:'2026-10-03',learning:['Padrões de Projeto — padrões criacionais, estruturais e comportamentais','Padrões de Projeto — estudo individual dos 22 padrões clássicos','AWS IA — IA Responsável'],reviews:[]},
   {date:'2026-10-02',learning:['JavaScript — 3.1 — Visão geral e definições','AWS IA — Fundamentos de Machine Learning','Padrões de Projeto — Classificação dos padrões'],reviews:[]}
  ];
+ studyError=signal(''); studySaving=signal(false);
+ @ViewChild(SubjectManagerComponent) manager?:SubjectManagerComponent;
+ syncSubjectNames(names:string[]){this.studySubjects.update(v=>Array.from(new Set([...v,...names])))}
+ openTopicForm(name:string){this.syncSubjectNames([name]);this.openStudyForm();this.studySubject.set(name)}
+ @HostListener('window:open-study-subject',['$event']) openStudySubject(event:CustomEvent){this.activeTab.set('studyPlan');setTimeout(()=>{const item=this.manager?.subjects().find(s=>s.name===event.detail);if(item)this.manager?.openSubject(item)},0)}
+ async renameStudySubject(change:{previous:string;name:string}){const res=await this.api('study_queue?subject=eq.'+encodeURIComponent(change.previous),{method:'PATCH',body:JSON.stringify({subject:change.name})});if(res.ok)this.studyItems.update(v=>v.map(i=>i.subject===change.previous?{...i,subject:change.name}:i));else this.studyError.set('Não foi possível atualizar a matéria dos tópicos.')}
  ngOnInit(){void this.initializeRemoteState();}
  private async initializeRemoteState(){await this.loadRemoteHistory();await this.loadRemoteProgress();await this.loadStudySubjects();await this.loadStudyQueue();}
  private async api(path:string,options:RequestInit={}){return fetch(this.supabaseUrl+'/rest/v1/'+path,{...options,headers:{apikey:this.supabaseKey,Authorization:'Bearer '+this.supabaseKey,'Content-Type':'application/json',Prefer:'return=minimal',...(options.headers||{})}})}
@@ -185,7 +192,8 @@ export class AppComponent implements OnInit {
  openStudyForm(){this.editingStudyId.set(null);this.studyFormOpen.set(true);this.studyTitle.set('');this.studyNotes.set('');this.studyLink.set('');this.studyPriority.set('media')}
  editStudyItem(item:StudyItem){this.editingStudyId.set(item.id);this.studyTitle.set(item.title);this.studySubject.set(item.subject);this.studyNotes.set(item.notes||'');this.studyLink.set(item.link||'');this.studyPriority.set(item.priority);this.studyFormOpen.set(true)}
  closeStudyForm(){this.studyFormOpen.set(false);this.editingStudyId.set(null)}
- async saveStudyItem(){const title=this.studyTitle().trim();if(!title)return;const payload={title,subject:this.studySubject(),notes:this.studyNotes().trim()||null,link:this.normalizeLink(this.studyLink()),priority:this.studyPriority()};try{const id=this.editingStudyId();if(id){const res=await this.api('study_queue?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(payload)});if(res.ok)this.studyItems.update(v=>v.map(x=>x.id===id?{...x,...payload,link:payload.link||'',notes:payload.notes||''}:x));}else{const res=await this.api('study_queue',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({...payload,status:'todo'})});if(res.ok){const rows:any[]=await res.json();if(rows[0])this.studyItems.update(v=>[...v,rows[0]]);}}this.closeStudyForm();}catch{}}
+ async saveStudyItem(){const title=this.studyTitle().trim();if(!title||this.studySaving())return;this.studySaving.set(true);this.studyError.set('');const payload={title,subject:this.studySubject(),notes:this.studyNotes().trim()||null,link:this.normalizeLink(this.studyLink()),priority:this.studyPriority()};try{const id=this.editingStudyId();const res=await this.api(id?'study_queue?id=eq.'+encodeURIComponent(id):'study_queue',{method:id?'PATCH':'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(id?payload:{...payload,status:'todo'})});if(!res.ok)throw new Error();const rows:StudyItem[]=await res.json();if(!rows[0])throw new Error();this.studyItems.update(v=>id?v.map(x=>x.id===id?rows[0]:x):[...v,rows[0]]);this.closeStudyForm()}catch{this.studyError.set('Não foi possível salvar o tópico. Tente novamente.')}finally{this.studySaving.set(false)}}
+
  normalizeLink(value:string){const v=value.trim();if(!v)return null;return /^https?:\/\//i.test(v)?v:'https://'+v}
  async addStudySubject(){const name=this.newSubjectName().trim();if(!name)return;try{const res=await this.api('study_subjects',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({name})});if(res.ok){const rows:any[]=await res.json();const saved=rows[0]?.name||name;this.studySubjects.update(v=>v.includes(saved)?v:[...v,saved]);this.studySubject.set(saved);this.newSubjectName.set('');this.subjectFormOpen.set(false);}}catch{}}
  async completeStudyItem(item:StudyItem){if(item.status==='done')return;const completedAt=new Date().toISOString();try{const res=await this.api('study_queue?id=eq.'+encodeURIComponent(item.id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({status:'done',completed_at:completedAt})});if(!res.ok)return;this.studyItems.update(v=>v.map(x=>x.id===item.id?{...x,status:'done',completed_at:completedAt}:x));const label=item.subject+' — '+item.title;await this.api('study_activity?on_conflict=activity_date,kind,label',{method:'POST',headers:{Prefer:'resolution=ignore-duplicates,return=minimal'},body:JSON.stringify({activity_date:today(),kind:'learning',label})});await this.loadRemoteHistory();}catch{}}

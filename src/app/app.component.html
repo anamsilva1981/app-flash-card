@@ -89,8 +89,9 @@
     </section>
   } @else if(activeTab()==='studyPlan'){
     <section class="panel-page study-plan-page">
-      <div class="page-heading"><div><span>PLANO DE ESTUDO</span><h1>A estudar</h1><p>Guarde aqui os assuntos que você quer aprender depois.</p></div><div class="page-icon">✓</div></div>
-      <button class="add-study-button" (click)="openStudyForm()">＋ Adicionar tópico</button>
+      <div class="page-heading"><div><span>PLANO DE ESTUDO</span><h1>Estudar</h1></div><div class="page-icon">✓</div></div>
+      <app-subject-manager [flashcards]="cards()" [studyItems]="studyItems()" (addTopicRequested)="openTopicForm($event)" (editTopicRequested)="editStudyItem($event)" (completeTopicRequested)="completeStudyItem($event)" (subjectsChanged)="syncSubjectNames($event)" (subjectRenamed)="renameStudySubject($event)" (reviewRequested)="openSubject($any($event))" />
+      @if(studyError()){<p role="alert">{{studyError()}}</p>}
       @if(studyFormOpen()){
         <section class="study-form">
           <div class="form-head"><h2>{{editingStudyId()?'Editar tópico':'Adicionar tópico'}}</h2><button (click)="closeStudyForm()">×</button></div>
@@ -102,21 +103,10 @@
           <label>Link <small>(opcional)</small><input #linkInput type="url" [value]="studyLink()" (input)="studyLink.set(linkInput.value)" placeholder="https://..."></label>
           <div class="priority-label">Prioridade <small>(opcional)</small></div>
           <div class="priority-buttons"><button [class.active]="studyPriority()==='baixa'" (click)="studyPriority.set('baixa')">Baixa</button><button [class.active]="studyPriority()==='media'" (click)="studyPriority.set('media')">Média</button><button [class.active]="studyPriority()==='alta'" (click)="studyPriority.set('alta')">Alta</button></div>
-          <button class="primary-action" (click)="saveStudyItem()">{{editingStudyId()?'Salvar alterações':'Adicionar'}}</button>
+          <button class="primary-action" [disabled]="studySaving()" (click)="saveStudyItem()">{{editingStudyId()?'Salvar alterações':'Adicionar'}}</button>
         </section>
       }
-      <section class="study-queue">
-        @if(todoStudyItems().length){
-          @for(item of todoStudyItems();track item.id){
-            <div class="study-item">
-              <button class="study-check" (click)="completeStudyItem(item)" aria-label="Marcar como estudado"></button>
-              <div><b>{{item.title}}</b><span class="subject-tag">{{item.subject}}</span><div class="item-links">@if(item.notes){<button class="details-button" (click)="editStudyItem(item)">Detalhes</button>}@if(item.link){<a class="resource-link" [href]="item.link" target="_blank" rel="noopener noreferrer">🔗 Abrir link</a>}</div></div>
-              <div class="study-item-actions"><button (click)="editStudyItem(item)" aria-label="Editar tópico">✎</button><span class="priority-dot" [class]="item.priority"></span></div>
-            </div>
-          }
-        } @else {<div class="empty-study"><b>Tudo estudado por enquanto ✓</b><span>Adicione um novo assunto quando encontrar algo que queira aprender.</span></div>}
-      </section>
-      @if(completedStudyItems().length){<div class="completed-note">✓ {{completedStudyItems().length}} tópico(s) concluído(s) e registrado(s) no Histórico.</div>}
+
     </section>
   } @else if(activeTab()==='progress'){
     <section class="panel-page">

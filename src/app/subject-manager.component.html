@@ -3,13 +3,20 @@
   <div class="detail-head"><button class="back" (click)="closeSubject()">‹</button><div><span>MATÉRIA</span><h2>{{current.name}}</h2><p>{{dayLabel(current.days)}}</p></div></div>
   <div class="detail-tabs"><button [class.active]="detailTab()==='flashcards'" (click)="detailTab.set('flashcards')">Flashcards</button><button [class.active]="detailTab()==='topics'" (click)="detailTab.set('topics')">Tópicos</button></div>
   @if(detailTab()==='flashcards'){
-    <div class="section-actions"><div><b>Flashcards</b><span>{{subjectCards().length}} cadastrados</span></div><button (click)="addFlashcard()">＋ Adicionar</button></div>
-    @if(dueCards().length){<button class="primary-card" (click)="reviewDue()"><div><b>Revisar agora</b><span>{{dueCards().length}} card(s) para revisar hoje</span></div><strong>›</strong></button>}
+    <div class="section-actions"><div><b>Flashcards</b><span>{{subjectCards().length}} cadastrados</span></div></div>
+    @if(!subjectCards().length){<div class="empty">Nenhum flashcard cadastrado nesta matéria.</div>}
+    @else if(dueCards().length){<button class="primary-card" (click)="reviewDue()"><div><b>Revisar agora</b><span>{{dueCards().length}} card(s) para revisar hoje</span></div><strong>›</strong></button>}
     @else {<div class="done-card"><b>✓ Todos os flashcards de hoje foram revisados</b><span>Você pode encerrar por hoje ou revisar novamente.</span><button (click)="reviewAgain()">Revisar novamente</button></div>}
   } @else {
-    <div class="section-actions"><div><b>Tópicos a estudar</b><span>{{subjectTopics().length}} pendente(s)</span></div><button (click)="addTopic()">＋ Adicionar</button></div>
-    <div class="topic-list">@for(item of subjectTopics();track item.id){<button class="topic-card" (click)="openTopic(item)"><div><b>{{item.title}}</b><span>Prioridade {{item.priority}}</span></div><strong>›</strong></button>} @empty {<div class="empty">Nenhum tópico pendente nesta matéria.</div>}</div>
-    @if(selectedTopic(); as item){<div class="topic-detail"><div class="form-title"><b>{{item.title}}</b><button (click)="closeTopic()">×</button></div>@if(item.notes){<div class="topic-field"><span>Observação</span><p>{{item.notes}}</p></div>}@if(item.link){<div class="topic-field"><span>Material</span><a [href]="item.link" target="_blank" rel="noopener noreferrer">Abrir link ↗</a></div>}<div class="topic-field"><span>Prioridade</span><p>{{item.priority}}</p></div></div>}
+    <div class="topic-view-tabs"><button [class.active]="topicView()==='todo'" (click)="topicView.set('todo');closeTopic()">A estudar</button><button [class.active]="topicView()==='done'" (click)="topicView.set('done');closeTopic()">Estudados</button></div>
+    <div class="section-actions"><div><b>{{topicView()==='todo'?'Tópicos a estudar':'Tópicos estudados'}}</b><span>{{subjectTopics().length}} tópico(s)</span></div><button (click)="addTopic()">＋ Adicionar</button></div>
+    <div class="topic-list">@for(item of subjectTopics();track item.id){<article class="topic-row">
+      @if(item.status==='todo'){<button class="topic-check" (click)="completeTopic(item)" [attr.aria-label]="'Marcar como estudado: '+item.title">✓</button>}@else{<span class="topic-done">✓</span>}
+      <button class="topic-main" (click)="openTopic(item)"><b>{{item.title}}</b><span>{{item.status==='done'?'Estudado em '+formatCompleted(item.completed_at):'Prioridade '+item.priority}}</span></button>
+      <button class="topic-edit" (click)="editTopic(item)" [attr.aria-label]="'Editar tópico: '+item.title">✎</button>
+    </article>} @empty {<div class="empty">{{topicView()==='todo'?'Nenhum tópico pendente nesta matéria.':'Os tópicos concluídos aparecerão aqui para você consultar e revisar.'}}</div>}</div>
+
+    @if(selectedTopic(); as item){<div class="topic-detail"><div class="form-title"><b>{{item.title}}</b><button (click)="closeTopic()">×</button></div>@if(item.notes){<div class="topic-field"><span>Observação</span><p>{{item.notes}}</p></div>}@if(item.link){<div class="topic-field"><span>Material</span><a [href]="item.link" target="_blank" rel="noopener noreferrer">Abrir link ↗</a></div>}<div class="topic-field"><span>Prioridade</span><p>{{item.priority}}</p></div><button class="save" (click)="editTopic(item)">Editar tópico</button></div>}
   }
 } @else {
   <div class="manager-head"><div><span>ROTINA DE ESTUDOS</span><h2>Matérias</h2><p>Toque em uma matéria para abrir flashcards e tópicos.</p></div><button class="add" (click)="openNew()">＋ Nova</button></div>
