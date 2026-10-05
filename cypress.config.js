@@ -1,6 +1,4 @@
-const { defineConfig } = require('cypress');
-
-module.exports = defineConfig({
+module.exports = {
   e2e: {
     baseUrl: 'http://127.0.0.1:4200',
     supportFile: 'cypress/support/e2e.js',
@@ -11,4 +9,4 @@ module.exports = defineConfig({
     screenshotOnRunFailure: true,
     defaultCommandTimeout: 8000
   }
-});
+};
