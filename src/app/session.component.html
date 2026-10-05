@@ -17,9 +17,7 @@
 <app-root/>
 }@else{
 <main class="auth-page"><div class="auth-brand"><app-icon name="cards"/><span>App Flash Card</span></div><span class="auth-eyebrow">APRENDA UM POUCO TODOS OS DIAS</span><h1>{{mode()==='signup'?'Seu próximo aprendizado começa aqui':mode()==='reset'?'Recupere seu acesso':mode()==='password'?'Escolha uma nova senha':'Bem-vinda de volta'}}</h1><p>Organize o que estudar. Revise o que aprendeu.</p>
-@if(mode()==='signup-success'){
-<div class="auth-success" role="status"><h2>Conta criada ✓</h2><p>{{message()}}</p><button type="button" class="primary-action" (click)="switchMode('login')">Ir para o login</button></div>
-}@else{
+@if(mode()!=='signup-success'){
 <form (ngSubmit)="submit()">
 @if(mode()==='signup'){<label>Seu nome<input name="name" [(ngModel)]="name" autocomplete="given-name" maxlength="80" required></label>}
 @if(mode()!=='password'){<label>E-mail<input name="email" [(ngModel)]="email" type="email" autocomplete="email" required></label>}
@@ -29,8 +27,10 @@
 }
 @if(mode()==='signup'){<label class="consent"><input type="checkbox" name="accepted" [(ngModel)]="accepted" required><span>Li como meus dados são usados na <a href="?page=privacy">política de privacidade</a>.</span></label>}
 <button type="submit" class="primary-action" [disabled]="busy()">{{busy()?'Aguarde…':mode()==='signup'?'Criar conta':mode()==='reset'?'Enviar link':mode()==='password'?'Salvar nova senha':'Entrar'}}</button>
-@if(message()){<p class="form-message" role="status">{{message()}}</p>}
 </form>
 <div class="auth-links">@if(mode()==='login'){<button (click)="switchMode('reset')">Esqueci minha senha</button><button (click)="switchMode('signup')">Criar uma conta</button>}@else{<button (click)="switchMode('login')">Já tenho uma conta</button>}</div>
 }<a class="privacy-link" href="?page=privacy">Privacidade</a></main>
+}
+@if(notice()){
+<div class="modal-layer auth-notice-layer" role="presentation"><div class="modal-backdrop"></div><section class="modal-sheet auth-notice" role="dialog" aria-modal="true" [attr.aria-labelledby]="'auth-notice-title'"><div class="notice-icon" [class.success]="notice()!.type==='success'" [class.error]="notice()!.type==='error'">{{notice()!.type==='success'?'✓':notice()!.type==='error'?'!':'i'}}</div><h2 id="auth-notice-title">{{notice()!.title}}</h2><p>{{notice()!.text}}</p><button type="button" class="primary-action" (click)="closeNotice()">{{mode()==='signup-success'?'Ir para o login':'Entendi'}}</button></section></div>
 }
