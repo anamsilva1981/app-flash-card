@@ -9,11 +9,12 @@ export class SessionComponent {
  page=signal(new URLSearchParams(location.search).get('page')||'');
  constructor(){
   supabase.auth.onAuthStateChange((event,session)=>{accountSession.set(session);if(event==='PASSWORD_RECOVERY'){this.mode.set('password');this.ready.set(false);this.loading.set(false);return}if(event==='SIGNED_OUT'){this.ready.set(false);this.loading.set(false)}if(session)setTimeout(()=>{if(this.mode()!=='password')this.enter(session.user.id)},0)});
-  void supabase.auth.getSession().then(({data})=>{accountSession.set(data.session);this.loading.set(false);if(data.session&&this.mode()!=='password')this.enter(data.session.user.id);else if(localStorage.getItem('study-guest-entered')==='yes')this.enter('guest')});
+  void supabase.auth.getSession().then(({data})=>{accountSession.set(data.session);this.loading.set(false);if(data.session&&this.mode()!=='password')this.enter(data.session.user.id);else this.guest()});
   window.addEventListener('study-account-exit',()=>{this.ready.set(false);this.message.set('');this.password='';localStorage.removeItem('study-guest-entered');setScope('guest')});
  }
  enter(id:string){setScope(id);this.loading.set(false);this.ready.set(true)}
  guest(){accountSession.set(null);localStorage.setItem('study-guest-entered','yes');this.enter('guest')}
+ showAccount(mode:'login'|'signup'='signup'){this.ready.set(false);this.mode.set(mode);this.message.set('');this.password=''}
  switchMode(mode:'login'|'signup'|'reset'){this.mode.set(mode);this.message.set('');this.password=''}
  async submit(){if(this.busy())return;this.message.set('');this.busy.set(true);try{
  const redirect=new URL(location.pathname,location.origin).href;
