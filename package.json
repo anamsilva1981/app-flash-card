@@ -5,7 +5,10 @@
   "scripts": {
     "start": "ng serve",
     "build": "ng build",
-    "test": "node tests.mjs"
+    "test": "node tests.mjs",
+    "test:e2e": "cypress run",
+    "test:e2e:open": "cypress open",
+    "test:e2e:ci": "start-server-and-test start http://localhost:4200 test:e2e"
   },
   "dependencies": {
     "@angular/animations": "20.3.33",
@@ -28,6 +31,8 @@
     "@angular/cli": "^20.3.0",
     "@angular/compiler-cli": "^20.3.0",
     "@types/node": "26.6.4",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.2",
+    "cypress": "^15.0.0",
+    "start-server-and-test": "^2.0.13"
   }
 }
