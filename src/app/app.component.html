@@ -158,11 +158,11 @@
     <section class="panel-page">
       <div class="page-heading"><div><span>PREFERÊNCIAS</span><h1>Configurações</h1><p>Ajustes da sua rotina de estudos.</p></div><div class="page-icon">⚙</div></div>
       <section class="settings-card">
-        <div class="setting-row"><div><b>🔀 Ordem dos cards</b><span>Mais antigos primeiro</span></div><span class="toggle on"></span></div>
-        <div class="setting-row"><div><b>↻ Revisão espaçada</b><span>Agenda automática de revisão</span></div><span class="toggle on"></span></div>
+        <div class="setting-row"><div><b>🔀 Ordem dos cards</b><span>Mais antigos primeiro</span></div><span class="status-chip">Ativo</span></div>
+        <div class="setting-row"><div><b>↻ Revisão espaçada</b><span>Agenda automática de revisão</span></div><span class="status-chip">Ativo</span></div>
         <div class="setting-row"><div><b>💾 Seus estudos</b><span>{{syncStatus()}}</span></div><span class="status-chip">Ativo</span></div>
       </section>
-      <button class="primary-action" (click)="exportBackup()">Baixar backup dos estudos</button><p class="backup-note">Inclui matérias, rotina, tópicos, progresso e histórico.</p><label class="import-backup">Importar backup<input type="file" accept="application/json,.json" (change)="importBackup($event)"></label>@if(backupMessage()){<p role="status">{{backupMessage()}}</p>}
+      <a class="primary-action backup-download" href="#" download (click)="exportBackup($event)">Baixar backup dos estudos</a><p class="backup-note">Inclui matérias, rotina, tópicos, progresso e histórico.</p><label class="import-backup">Importar backup<input type="file" accept="application/json,.json" (change)="importBackup($event)"></label>@if(backupMessage()){<p role="status">{{backupMessage()}}</p>}
     </section>
   }
 
