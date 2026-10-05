@@ -17,7 +17,7 @@ describe('Telas e fluxos principais do produto',()=>{
     cy.contains('ROTINA DE ESTUDOS').should('be.visible');
     cy.contains('button','Angular').click();
     cy.contains('button','Tópicos').click();
-    cy.contains('Signals').should('be.visible');
+    cy.contains('Signals').filter(':visible').should('have.length.at.least',1);
     cy.contains('button','Adicionar').click();
     cy.contains('Adicionar tópico').should('be.visible');
     cy.get('input[placeholder="Ex.: Template Literals"]').type('Standalone Components');
@@ -67,6 +67,11 @@ describe('Telas e fluxos principais do produto',()=>{
   it('cobre revisão de flashcards e avaliação',()=>{
     cy.contains('nav button','Estudar').click();
     cy.contains('button','Angular').click();
+    cy.contains('button','Criar card').click();
+    cy.get('.card-editor input[placeholder="Ex.: Fundamentos"]').type('Revisão E2E');
+    cy.get('.card-editor textarea').eq(0).type('Pergunta para revisão?');
+    cy.get('.card-editor textarea').eq(1).type('Resposta para revisão.');
+    cy.contains('button','Salvar flashcard').click();
     cy.contains('button',/Revisar agora|Revisar novamente/).click();
     cy.contains('Progresso da sessão').should('be.visible');
     cy.contains('button','Virar card').click();
