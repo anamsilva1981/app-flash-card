@@ -221,14 +221,21 @@ export class I18nService {
   private translateTextNode(node: Text, force = false): void {
     const value = node.nodeValue ?? '';
     if (!value.trim()) return;
+
+    if (!force && this.language() === 'pt-BR') {
+      this.textSource.set(node, value);
+      return;
+    }
+
     let source = this.textSource.get(node);
     if (!source) {
       source = value;
       this.textSource.set(node, source);
-    } else if (!force && this.language() === 'en' && value !== this.translate(source)) {
+    } else if (!force && value !== this.translate(source)) {
       source = value;
       this.textSource.set(node, source);
     }
+
     const target = this.language() === 'en' ? this.translate(source) : source;
     if (value !== target) node.nodeValue = target;
   }
@@ -241,14 +248,21 @@ export class I18nService {
       sources = new Map<string, string>();
       this.attributeSource.set(element, sources);
     }
+
+    if (!force && this.language() === 'pt-BR') {
+      sources.set(attribute, value);
+      return;
+    }
+
     let source = sources.get(attribute);
     if (!source) {
       source = value;
       sources.set(attribute, source);
-    } else if (!force && this.language() === 'en' && value !== this.translate(source)) {
+    } else if (!force && value !== this.translate(source)) {
       source = value;
       sources.set(attribute, source);
     }
+
     const target = this.language() === 'en' ? this.translate(source) : source;
     if (value !== target) element.setAttribute(attribute, target);
   }
