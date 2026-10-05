@@ -24,6 +24,9 @@
 @if(mode()==='signup'){<label>Seu nome<input name="name" [(ngModel)]="name" autocomplete="given-name" maxlength="80" required></label>}
 @if(mode()!=='password'){<label>E-mail<input name="email" [(ngModel)]="email" type="email" autocomplete="email" required></label>}
 @if(mode()!=='reset'){<label>Senha<input name="password" [(ngModel)]="password" type="password" [attr.autocomplete]="mode()==='login'?'current-password':'new-password'" [minlength]="mode()==='login'?1:8" required></label>}
+@if(mode()==='signup'||mode()==='password'){
+<div class="password-rules" aria-live="polite"><span [class.valid]="passwordChecks().length">✓ 8 caracteres</span><span [class.valid]="passwordChecks().upper">✓ Letra maiúscula</span><span [class.valid]="passwordChecks().lower">✓ Letra minúscula</span><span [class.valid]="passwordChecks().number">✓ Número</span><span [class.valid]="passwordChecks().special">✓ Caractere especial</span></div>
+}
 @if(mode()==='signup'){<label class="consent"><input type="checkbox" name="accepted" [(ngModel)]="accepted" required><span>Li como meus dados são usados na <a href="?page=privacy">política de privacidade</a>.</span></label>}
 <button type="submit" class="primary-action" [disabled]="busy()">{{busy()?'Aguarde…':mode()==='signup'?'Criar conta':mode()==='reset'?'Enviar link':mode()==='password'?'Salvar nova senha':'Entrar'}}</button>
 @if(message()){<p class="form-message" role="status">{{message()}}</p>}
