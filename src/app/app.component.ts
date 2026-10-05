@@ -7,7 +7,7 @@ import { SubjectManagerComponent } from './subject-manager.component';
 type Rating = 'again'|'hard'|'good'|'easy';
 interface Card { id:number; subject:'AWS'|'JavaScript'|'Padrões de Projeto'|'Angular'|'React'; topic:string; question:string; answer:string; explanation:string; example:string; due:string; interval:number; }
 interface StudyDay { date:string; learning:string[]; reviews:string[]; }
-interface StudyItem { id:string; title:string; subject:string; notes:string; link:string; priority:'baixa'|'media'|'alta'; status:'todo'|'done'; completed_at:string|null; }
+interface StudyItem { id:string; title:string; subject:string; notes:string; link:string|null; priority:'baixa'|'media'|'alta'; status:'todo'|'done'; completed_at:string|null; }
 const DAY=86400000;
 const today=()=>new Date().toLocaleDateString('en-CA',{timeZone:'America/Sao_Paulo'});
 const addDays=(n:number)=>new Date(Date.now()+n*DAY).toISOString().slice(0,10);

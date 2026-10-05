@@ -1,7 +1,7 @@
 import { Component, computed, signal, Input, Output, EventEmitter } from '@angular/core';
 
 interface ManagedSubject { id:string; name:string; days:number[]; archived:boolean; }
-interface StudyItem { id:string; title:string; subject:string; notes:string; link:string; priority:'baixa'|'media'|'alta'; status:'todo'|'done'; completed_at:string|null; }
+interface StudyItem { id:string; title:string; subject:string; notes:string; link:string|null; priority:'baixa'|'media'|'alta'; status:'todo'|'done'; completed_at:string|null; }
 interface Flashcard { id:number; subject:string; topic:string; question:string; due:string; }
 
 @Component({selector:'app-subject-manager',standalone:true,templateUrl:'./subject-manager.component.html',styleUrl:'./subject-manager.component.css'})
