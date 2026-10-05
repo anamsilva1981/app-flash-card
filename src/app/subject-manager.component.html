@@ -1,0 +1,35 @@
+<section class="subject-manager">
+  <div class="manager-head">
+    <div><span>ROTINA DE ESTUDOS</span><h2>Matérias</h2><p>Cadastre as matérias e escolha em quais dias você pretende estudá-las.</p></div>
+    <button class="add" (click)="openNew()">＋ Nova</button>
+  </div>
+
+  <div class="tabs">
+    <button [class.active]="!showArchived()" (click)="showArchived.set(false)">Ativas</button>
+    <button [class.active]="showArchived()" (click)="showArchived.set(true)">Arquivadas</button>
+  </div>
+
+  @if(formOpen()){
+    <div class="subject-form">
+      <div class="form-title"><b>{{editingId()?'Editar matéria':'Nova matéria'}}</b><button (click)="close()">×</button></div>
+      <label>Nome da matéria<input #nameInput [value]="name()" (input)="name.set(nameInput.value)" placeholder="Ex.: Matemática"></label>
+      <div class="days-label">Dias de estudo</div>
+      <div class="days">
+        @for(day of week;track day.value){<button [class.active]="selectedDays().includes(day.value)" (click)="toggleDay(day.value)">{{day.short}}</button>}
+      </div>
+      <button class="save" (click)="save()">Salvar matéria</button>
+    </div>
+  }
+
+  <div class="subject-list">
+    @for(item of visibleSubjects();track item.id){
+      <article class="subject-row">
+        <div><b>{{item.name}}</b><span>{{dayLabel(item.days)}}</span></div>
+        <div class="actions">
+          @if(!item.archived){<button (click)="edit(item)" aria-label="Editar">✎</button><button (click)="archive(item)" aria-label="Arquivar">Arquivar</button>}
+          @else{<button (click)="restore(item)">Restaurar</button>}
+        </div>
+      </article>
+    } @empty {<div class="empty">Nenhuma matéria {{showArchived()?'arquivada':'ativa'}}.</div>}
+  </div>
+</section>
