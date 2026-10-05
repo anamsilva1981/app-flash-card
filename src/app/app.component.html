@@ -93,6 +93,34 @@
         <span>cards no total para revisar hoje</span>
       </section>
     </section>
+  } @else if(activeTab()==='studyPlan'){
+    <section class="panel-page study-plan-page">
+      <div class="page-heading"><div><span>PLANO DE ESTUDO</span><h1>A estudar</h1><p>Guarde aqui os assuntos que você quer aprender depois.</p></div><div class="page-icon">✓</div></div>
+      <button class="add-study-button" (click)="openStudyForm()">＋ Adicionar tópico</button>
+      @if(studyFormOpen()){
+        <section class="study-form">
+          <div class="form-head"><h2>Adicionar tópico</h2><button (click)="closeStudyForm()">×</button></div>
+          <label>Título do tópico<input #titleInput [value]="studyTitle()" (input)="studyTitle.set(titleInput.value)" placeholder="Ex.: Template Literals"></label>
+          <label>Matéria<select #subjectInput [value]="studySubject()" (change)="studySubject.set(subjectInput.value)"><option>JavaScript</option><option>AWS IA</option><option>Angular</option><option>React</option><option>Padrões de Projeto</option><option>Arquitetura</option><option>Java</option></select></label>
+          <label>Descrição <small>(opcional)</small><textarea #notesInput [value]="studyNotes()" (input)="studyNotes.set(notesInput.value)" placeholder="Detalhes, links ou observações..."></textarea></label>
+          <div class="priority-label">Prioridade <small>(opcional)</small></div>
+          <div class="priority-buttons"><button [class.active]="studyPriority()==='baixa'" (click)="studyPriority.set('baixa')">Baixa</button><button [class.active]="studyPriority()==='media'" (click)="studyPriority.set('media')">Média</button><button [class.active]="studyPriority()==='alta'" (click)="studyPriority.set('alta')">Alta</button></div>
+          <button class="primary-action" (click)="addStudyItem()">Adicionar</button>
+        </section>
+      }
+      <section class="study-queue">
+        @if(todoStudyItems().length){
+          @for(item of todoStudyItems();track item.id){
+            <div class="study-item">
+              <button class="study-check" (click)="completeStudyItem(item)" aria-label="Marcar como estudado"></button>
+              <div><b>{{item.title}}</b><span class="subject-tag">{{item.subject}}</span>@if(item.notes){<p>{{item.notes}}</p>}</div>
+              <span class="priority-dot" [class]="item.priority"></span>
+            </div>
+          }
+        } @else {<div class="empty-study"><b>Tudo estudado por enquanto ✓</b><span>Adicione um novo assunto quando encontrar algo que queira aprender.</span></div>}
+      </section>
+      @if(completedStudyItems().length){<div class="completed-note">✓ {{completedStudyItems().length}} tópico(s) concluído(s) e registrado(s) no Histórico.</div>}
+    </section>
   } @else if(activeTab()==='progress'){
     <section class="panel-page">
       <div class="page-heading"><div><span>SEUS ESTUDOS</span><h1>Meu progresso</h1><p>Acompanhe seu ritmo de revisão.</p></div><div class="page-icon">📊</div></div>
@@ -163,8 +191,9 @@
     </section>
   }
 
-  <nav class="bottom-nav">
+  <nav class="bottom-nav five">
     <button [class.active]="activeTab()==='home'" (click)="setTab('home')"><span>⌂</span><b>Início</b></button>
+    <button [class.active]="activeTab()==='studyPlan'" (click)="setTab('studyPlan')"><span>✓</span><b>A estudar</b></button>
     <button [class.active]="activeTab()==='progress'" (click)="setTab('progress')"><span>▥</span><b>Progresso</b></button>
     <button [class.active]="activeTab()==='history'" (click)="setTab('history')"><span>🗓</span><b>Histórico</b></button>
     <button [class.active]="activeTab()==='settings'" (click)="setTab('settings')"><span>⚙</span><b>Configurações</b></button>
