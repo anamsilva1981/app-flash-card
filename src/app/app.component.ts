@@ -6,6 +6,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 type Rating = 'again'|'hard'|'good'|'easy';
 interface Card { id:number; subject:'AWS'|'JavaScript'|'Padrões de Projeto'|'Angular'|'React'; topic:string; question:string; answer:string; explanation:string; example:string; due:string; interval:number; }
 interface StudyDay { date:string; learning:string[]; reviews:string[]; }
+interface StudyItem { id:string; title:string; subject:string; notes:string; priority:'baixa'|'media'|'alta'; status:'todo'|'done'; completed_at:string|null; }
 const DAY=86400000;
 const today=()=>new Date().toISOString().slice(0,10);
 const addDays=(n:number)=>new Date(Date.now()+n*DAY).toISOString().slice(0,10);
@@ -13,7 +14,8 @@ const addDays=(n:number)=>new Date(Date.now()+n*DAY).toISOString().slice(0,10);
 export class AppComponent implements OnInit {
  private readonly supabaseUrl='https://elzkhndhkkkfxvtbhilt.supabase.co';
  private readonly supabaseKey='sb_publishable_YFZqSuAst3q1ERiC3HA71A_u4fmIP9j';
- activeTab=signal<'home'|'progress'|'history'|'settings'>('home');
+ activeTab=signal<'home'|'studyPlan'|'progress'|'history'|'settings'>('home');
+ studyItems=signal<StudyItem[]>([]); studyFormOpen=signal(false); studyTitle=signal(''); studySubject=signal('JavaScript'); studyNotes=signal(''); studyPriority=signal<'baixa'|'media'|'alta'>('media');
  historyMonth=signal(new Date(today()+'T12:00:00'));
  selectedHistoryDate=signal<string|null>(null);
  subject=signal<'AWS'|'JavaScript'|'Padrões de Projeto'|'Angular'|'React'|'Arquitetura'|'Java'|null>(null); topic=signal('Todos'); flipped=signal(false); explanationOpen=signal(false); index=signal(0);
@@ -176,8 +178,15 @@ export class AppComponent implements OnInit {
   {date:'2026-10-02',learning:['JavaScript — 3.1 — Visão geral e definições','AWS IA — Fundamentos de Machine Learning','Padrões de Projeto — Classificação dos padrões'],reviews:[]}
  ];
  ngOnInit(){void this.initializeRemoteState();}
- private async initializeRemoteState(){await this.loadRemoteHistory();await this.loadRemoteProgress();}
+ private async initializeRemoteState(){await this.loadRemoteHistory();await this.loadRemoteProgress();await this.loadStudyQueue();}
  private async api(path:string,options:RequestInit={}){return fetch(this.supabaseUrl+'/rest/v1/'+path,{...options,headers:{apikey:this.supabaseKey,Authorization:'Bearer '+this.supabaseKey,'Content-Type':'application/json',Prefer:'return=minimal',...(options.headers||{})}})}
+ private async loadStudyQueue(){try{const res=await this.api('study_queue?select=id,title,subject,notes,priority,status,completed_at&order=created_at.asc');if(res.ok)this.studyItems.set(await res.json());}catch{}}
+ openStudyForm(){this.studyFormOpen.set(true);this.studyTitle.set('');this.studyNotes.set('');this.studyPriority.set('media')}
+ closeStudyForm(){this.studyFormOpen.set(false)}
+ async addStudyItem(){const title=this.studyTitle().trim();if(!title)return;const payload={title,subject:this.studySubject(),notes:this.studyNotes().trim()||null,priority:this.studyPriority(),status:'todo'};try{const res=await this.api('study_queue',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(payload)});if(res.ok){const rows:any[]=await res.json();if(rows[0])this.studyItems.update(v=>[...v,rows[0]]);this.closeStudyForm();}}catch{}}
+ async completeStudyItem(item:StudyItem){if(item.status==='done')return;const completedAt=new Date().toISOString();try{const res=await this.api('study_queue?id=eq.'+encodeURIComponent(item.id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({status:'done',completed_at:completedAt})});if(!res.ok)return;this.studyItems.update(v=>v.map(x=>x.id===item.id?{...x,status:'done',completed_at:completedAt}:x));const label=item.subject+' — '+item.title;await this.api('study_activity?on_conflict=activity_date,kind,label',{method:'POST',headers:{Prefer:'resolution=ignore-duplicates,return=minimal'},body:JSON.stringify({activity_date:today(),kind:'learning',label})});await this.loadRemoteHistory();}catch{}}
+ todoStudyItems=computed(()=>this.studyItems().filter(x=>x.status==='todo'));
+ completedStudyItems=computed(()=>this.studyItems().filter(x=>x.status==='done'));
  private async loadRemoteHistory(){try{const res=await this.api('study_activity?select=activity_date,kind,label&order=activity_date.desc,created_at.asc');if(!res.ok)return;const rows:any[]=await res.json();const days=new Map<string,StudyDay>();for(const row of rows){if(!days.has(row.activity_date))days.set(row.activity_date,{date:row.activity_date,learning:[],reviews:[]});const day=days.get(row.activity_date)!;const target=row.kind==='learning'?day.learning:day.reviews;if(!target.includes(row.label))target.push(row.label);}this.history.set(this.mergeLearning([...days.values()]));}catch{}}
  private async loadRemoteProgress(){try{const res=await this.api('seed_card_progress?select=card_id,due,interval');if(!res.ok)return;const rows:any[]=await res.json();if(rows.length){const map=new Map(rows.map(r=>[Number(r.card_id),r]));this.cards.set(this.cards().map(card=>{const p=map.get(card.id);return p?{...card,due:p.due,interval:Number(p.interval)}:card;}));localStorage.setItem('flashcards',JSON.stringify(this.cards()));}else{this.restoreCompletedReviewsFromHistory();}}catch{}}
  private restoreCompletedReviewsFromHistory(){const reviewedToday=this.history().find(d=>d.date===today())?.reviews||[];if(!reviewedToday.length)return;const next=this.cards().map(card=>{const name=card.subject==='AWS'?'AWS IA':card.subject;const full=`${name} — ${card.topic}`;const completed=reviewedToday.includes(name)||reviewedToday.includes(full);return completed&&card.due<=today()?{...card,due:addDays(1),interval:1}:card;});this.cards.set(next);localStorage.setItem('flashcards',JSON.stringify(next));for(const card of next.filter(x=>x.due===addDays(1)&&x.interval===1))void this.saveRemoteProgress(card,'restored');}
@@ -200,7 +209,7 @@ export class AppComponent implements OnInit {
  studyDaysInMonth=computed(()=>{const y=this.historyMonth().getFullYear(),m=this.historyMonth().getMonth();return this.history().filter(d=>{const dt=new Date(d.date+'T12:00:00');return dt.getFullYear()===y&&dt.getMonth()===m&&(d.learning.length||d.reviews.length)}).length;});
  changeHistoryMonth(offset:number){const d=this.historyMonth();this.historyMonth.set(new Date(d.getFullYear(),d.getMonth()+offset,1));this.selectedHistoryDate.set(null)}
  selectHistoryDate(date:string|null){if(date)this.selectedHistoryDate.set(date)}
- setTab(tab:'home'|'progress'|'history'|'settings'){this.activeTab.set(tab);if(tab==='history'&&!this.selectedHistoryDate()){const latest=this.history().find(d=>d.learning.length||d.reviews.length);if(latest){const dt=new Date(latest.date+'T12:00:00');this.historyMonth.set(new Date(dt.getFullYear(),dt.getMonth(),1));}}}
+ setTab(tab:'home'|'studyPlan'|'progress'|'history'|'settings'){this.activeTab.set(tab);if(tab==='history'&&!this.selectedHistoryDate()){const latest=this.history().find(d=>d.learning.length||d.reviews.length);if(latest){const dt=new Date(latest.date+'T12:00:00');this.historyMonth.set(new Date(dt.getFullYear(),dt.getMonth(),1));}}}
  card=computed(()=>this.dueCards()[this.index()%Math.max(this.dueCards().length,1)]);
  progress=computed(()=>this.dueCards().length?String(this.index()+1)+' / '+String(this.dueCards().length):'0 / 0');
  private shuffle<T>(items:T[]):T[]{const copy=[...items];for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]];}return copy;}
