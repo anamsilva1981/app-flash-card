@@ -10,11 +10,10 @@ export class SessionComponent {
  constructor(){
   window.addEventListener('study-account-required',(event:any)=>{try{sessionStorage.setItem('study-pending-action',JSON.stringify(event?.detail||{}))}catch{}this.showAccount('signup')});
   supabase.auth.onAuthStateChange((event,session)=>{accountSession.set(session);if(event==='PASSWORD_RECOVERY'){this.mode.set('password');this.ready.set(false);this.loading.set(false);return}if(event==='SIGNED_OUT'){this.ready.set(false);this.loading.set(false)}if(session)setTimeout(()=>{if(this.mode()!=='password'&&this.mode()!=='signup-success')this.enter(session.user.id)},0)});
-  void supabase.auth.getSession().then(({data})=>{accountSession.set(data.session);this.loading.set(false);if(data.session&&this.mode()!=='password'&&this.mode()!=='signup-success')this.enter(data.session.user.id);else this.guest()});
+  void supabase.auth.getSession().then(({data})=>{accountSession.set(data.session);this.loading.set(false);if(data.session&&this.mode()!=='password'&&this.mode()!=='signup-success')this.enter(data.session.user.id)});
   window.addEventListener('study-account-exit',()=>{this.ready.set(false);this.message.set('');this.password='';localStorage.removeItem('study-guest-entered');setScope('guest')});
  }
  enter(id:string){setScope(id);this.loading.set(false);this.ready.set(true);if(id!=='guest')window.setTimeout(()=>window.dispatchEvent(new CustomEvent('study-account-ready')),0)}
- guest(){accountSession.set(null);localStorage.setItem('study-guest-entered','yes');this.enter('guest')}
  showAccount(mode:'login'|'signup'='signup'){this.ready.set(false);this.mode.set(mode);this.message.set('');this.password=''}
  switchMode(mode:'login'|'signup'|'reset'){this.mode.set(mode);this.message.set('');this.password=''}
  async submit(){if(this.busy())return;this.message.set('');this.busy.set(true);try{
@@ -28,7 +27,7 @@ export class SessionComponent {
  }else if(this.mode()==='password'){
   if(this.password.length<8)throw new Error('Use uma senha de pelo menos 8 caracteres.');const {error}=await supabase.auth.updateUser({password:this.password});if(error)throw error;this.password='';this.enter(accountSession()!.user.id);
  }else{const {error}=await supabase.auth.signInWithPassword({email:this.email.trim(),password:this.password});if(error)throw error;this.password=''}
- }catch(error:any){this.message.set(error?.message==='Invalid login credentials'?'E-mail ou senha incorretos.':error?.message==='Email not confirmed'?'Confirme seu e-mail antes de entrar.':error?.code==='email_address_not_authorized'?'O cadastro por e-mail ainda está em preparação. Você pode continuar sem conta.':(error?.code==='over_email_send_rate_limit'||error?.status===429)?'Muitas tentativas de envio de e-mail foram feitas em pouco tempo. Aguarde alguns minutos e tente novamente.':error?.message||'Não foi possível conectar. Tente novamente.')}finally{this.busy.set(false)}}
+ }catch(error:any){this.message.set(error?.message==='Invalid login credentials'?'E-mail ou senha incorretos.':error?.message==='Email not confirmed'?'Confirme seu e-mail antes de entrar.':error?.code==='email_address_not_authorized'?'Não foi possível concluir o cadastro com este e-mail. Tente novamente ou use outro endereço.':(error?.code==='over_email_send_rate_limit'||error?.status===429)?'Muitas tentativas de envio de e-mail foram feitas em pouco tempo. Aguarde alguns minutos e tente novamente.':error?.message||'Não foi possível conectar. Tente novamente.')}finally{this.busy.set(false)}}
  beginDeletion(){localStorage.setItem('study-open-settings','yes');this.closePage();if(!accountSession()){this.ready.set(false);this.mode.set('login')}}
  closePage(){history.replaceState(null,'',location.pathname);this.page.set('')}
 }
