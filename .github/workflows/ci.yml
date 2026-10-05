@@ -1,0 +1,58 @@
+name: Pull Request Quality Gate
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Angular
+        run: npm run build -- --base-href /app-flash-card/
+
+      - name: Test study rules
+        run: npm test
+
+      - name: Start app for E2E
+        run: |
+          npm start -- --host 127.0.0.1 > /tmp/app-flash-card.log 2>&1 &
+          for i in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:4200 >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/app-flash-card.log
+          exit 1
+
+      - name: Cypress E2E
+        run: npm run e2e
+
+      - name: Upload Cypress screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+          if-no-files-found: ignore
