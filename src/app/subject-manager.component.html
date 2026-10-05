@@ -1,4 +1,5 @@
 <section class="subject-manager">
+@if(error()){<p role="alert">{{error()}}</p>}
 @if(selectedSubject(); as current){
   <div class="detail-head"><button class="back" (click)="closeSubject()">‹</button><div><span>MATÉRIA</span><h2>{{current.name}}</h2><p>{{dayLabel(current.days)}}</p></div></div>
   <div class="detail-tabs"><button [class.active]="detailTab()==='flashcards'" (click)="detailTab.set('flashcards')">Flashcards</button><button [class.active]="detailTab()==='topics'" (click)="detailTab.set('topics')">Tópicos</button></div>

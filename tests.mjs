@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import ts from 'typescript';
+import {build} from 'esbuild';
+const schedule=ts.transpileModule(readFileSync('src/app/review-schedule.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.ES2022}}).outputText;
+const {intervalFor,sortTopics}=await import('data:text/javascript;base64,'+Buffer.from(schedule).toString('base64'));
+assert.equal(intervalFor(0,'good'),4);assert.equal(intervalFor(4,'good'),9);assert.equal(intervalFor(9,'good'),20);assert.equal(intervalFor(20,'again'),1);assert.equal(intervalFor(365,'easy'),365);
+const topics=[{priority:'baixa',created_at:'2026-01-01',id:1},{priority:'alta',created_at:'2026-01-03',id:2},{priority:'alta',created_at:'2026-01-02',id:3}];assert.deepEqual(sortTopics(topics).map(x=>x.id),[3,2,1]);assert.equal(topics[0].id,1);
+const memory=new Map();globalThis.localStorage={getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,v)};
+globalThis.window={addEventListener(){},setInterval(){}};
+let offline=true;const requests=[];globalThis.fetch=async (url,options)=>{if(offline)throw new Error('offline');requests.push({url,body:JSON.parse(options.body)});return new Response(null,{status:204})};
+const compiled=await build({entryPoints:['src/app/sync.ts'],bundle:true,write:false,format:'esm',platform:'node',plugins:[{name:'angular-test-signals',setup(b){b.onResolve({filter:/^@angular\/core$/},()=>({path:'core',namespace:'mock'}));b.onLoad({filter:/.*/,namespace:'mock'},()=>({contents:'export const signal=x=>{const s=()=>x;s.set=v=>x=v;return s}'}))}}]});
+const sync=await import('data:text/javascript;base64,'+Buffer.from(compiled.outputFiles[0].text).toString('base64'));
+sync.write('study_queue?on_conflict=id',{id:'a',title:'offline topic'});await new Promise(r=>setTimeout(r,0));assert.equal(sync.hasPending(),true);assert.equal(JSON.parse(memory.get('study-pending-v1')).length,1);
+sync.write('rpc/complete_study_topic',{topic_id:'a'});await new Promise(r=>setTimeout(r,0));assert.equal(JSON.parse(memory.get('study-pending-v1')).length,2);
+offline=false;await sync.flush();assert.equal(sync.hasPending(),false);assert.equal(requests[0].body.title,'offline topic');assert.equal(requests[1].body.topic_id,'a');assert.equal(sync.syncStatus(),'Sincronizado');
+// Rejecting a request must preserve it for retry; no silent data loss.
+globalThis.fetch=async()=>new Response('temporary failure',{status:503});sync.write('seed_card_progress?on_conflict=card_id',{card_id:7,interval:9});await new Promise(r=>setTimeout(r,0));assert.equal(sync.hasPending(),true);globalThis.fetch=async()=>new Response(null,{status:204});await sync.flush();assert.equal(sync.hasPending(),false);
+const current=readFileSync('src/app/app.component.ts','utf8');const {execFileSync}=await import('node:child_process');const old=execFileSync('git',['show','HEAD:src/app/app.component.ts'],{encoding:'utf8'});const seed=s=>s.slice(s.indexOf(' private seed:'),s.indexOf(' cards=signal'));assert.equal(seed(current),seed(old));
+const sw=JSON.parse(readFileSync('dist/app-flash-card/browser/ngsw.json','utf8'));assert.ok(sw.hashTable['/app-flash-card/index.html']);assert.ok(Object.keys(sw.hashTable).some(x=>x.endsWith('.js')));
+console.log('Passed: progressive intervals, priorities, offline replay, retry after rejection, original card preservation and offline shell manifest.');

@@ -1,4 +1,5 @@
 <main class="app-shell">
+@if(syncStatus().startsWith('Offline')||syncStatus().includes('aguardando')){<p class="sync-banner" role="status">{{syncStatus()}}</p>}
 @if(subject()){
   <section class="review-page">
     <header class="review-header">
@@ -7,30 +8,25 @@
         <div class="mini-icon">{{subjectIcon(subject()!)}}</div>
         <div>
           <h1>{{subject()==='AWS'?'AWS IA':subject()}}</h1>
-          <p>{{dueCards().length}} cards para revisar hoje</p>
+          <p>{{practice()?'Revisão livre':dueCards().length+' cards pendentes'}}</p>
         </div>
       </div>
-      <button class="icon-button" (click)="reset()" aria-label="Reiniciar">↻</button>
+      
     </header>
 
     <div class="progress-row">
-      <div class="progress-copy"><span>Progresso de hoje</span><b>{{progress()}}</b></div>
-      <div class="progress-track"><div class="progress-fill" [style.width.%]="dueCards().length ? ((index()+1)/dueCards().length)*100 : 100"></div></div>
+      <div class="progress-copy"><span>Progresso da sessão</span><b>{{progress()}}</b></div>
+      <div class="progress-track"><div class="progress-fill" [style.width.%]="sessionIds().length ? (sessionPosition()/sessionIds().length)*100 : 0"></div></div>
     </div>
 
-    <div class="topic-title">Escolha o conteúdo</div>
-    <nav class="topics">
-      @for(t of topics();track t){
-        <button [class.active]="topic()===t" (click)="choose(t)">{{t}}</button>
-      }
-    </nav>
-
+    <label class="topic-title" for="topic-filter">Conteúdo</label><select id="topic-filter" class="topic-select" [ngModel]="topic()" (ngModelChange)="choose($event)">@for(t of topics();track t){<option [value]="t">{{t}}</option>}</select>
+    <label class="topic-title" for="session-size">Tamanho da sessão</label><select id="session-size" class="topic-select" [ngModel]="sessionLimit()" (ngModelChange)="setSessionLimit(+$event)"><option [ngValue]="10">10 cards</option><option [ngValue]="20">20 cards</option><option [ngValue]="30">30 cards</option><option [ngValue]="0">Todos os pendentes</option></select>
     @if(card();as c){
       <section class="study">
         <div class="meta"><span>{{c.topic}}</span><b>{{progress()}}</b></div>
         <button class="flashcard" (click)="reveal()" [class.flipped]="flipped()">
           <div class="flashcard-badge">{{flipped()?'RESPOSTA':'PERGUNTA'}}</div>
-          <div class="flashcard-icon">{{subjectIcon(c.subject)}}</div>
+          
           <div class="flashcard-content">{{flipped()?c.answer:c.question}}</div>
           <small>{{flipped()?'Avalie abaixo como foi lembrar':'Toque para ver a resposta'}}</small>
         </button>
@@ -52,51 +48,42 @@
             </div>
           }
           <div class="ratings">
-            <button (click)="rate('again')"><b>Não sei</b><small>amanhã</small></button>
-            <button (click)="rate('hard')"><b>Difícil</b><small>2 dias</small></button>
-            <button (click)="rate('good')"><b>Sei</b><small>4 dias</small></button>
-            <button (click)="rate('easy')"><b>Fácil</b><small>7 dias</small></button>
+            <button (click)="rate('again')"><b>Não sei</b><small>{{practice()?'Prática':nextInterval('again')+' dia(s)'}}</small></button>
+            <button (click)="rate('hard')"><b>Difícil</b><small>{{practice()?'Prática':nextInterval('hard')+' dia(s)'}}</small></button>
+            <button (click)="rate('good')"><b>Sei</b><small>{{practice()?'Prática':nextInterval('good')+' dia(s)'}}</small></button>
+            <button (click)="rate('easy')"><b>Fácil</b><small>{{practice()?'Prática':nextInterval('easy')+' dia(s)'}}</small></button>
           </div>
         } @else {
           <button class="primary-action" (click)="reveal()">Virar card</button>
         }
       </section>
     } @else {
-      <section class="done"><div>✓</div><h2>Revisão concluída</h2><p>Você não tem mais cards vencendo hoje neste conteúdo.</p></section>
+      <section class="done"><div>✓</div><h2>Revisão concluída</h2><p>Você concluiu esta sessão. {{dueCards().length}} cards continuam pendentes neste conteúdo.</p>@if(dueCards().length&&!practice()){<button class="primary-action" (click)="startSession()">Próxima sessão</button>}<button class="new-subject-button" (click)="back()">Voltar ao início</button></section>
     }
   </section>
 } @else {
   @if(activeTab()==='home'){
-    <section class="home-page review-dashboard">
-      <header class="dashboard-heading"><div><span>REVISÃO</span><h1>Revisar flashcards</h1><p>Escolha uma matéria para começar.</p></div><div class="dashboard-illustration">▣</div></header>
-      <section class="today-review">
-        <div class="review-ring"><strong>{{totalDue()}}</strong><span>cards<br>pendentes</span></div>
-        <div class="today-copy"><h2>Sua revisão de hoje</h2><p>Continue de onde parou!</p><div class="today-track"><div [style.width.%]="cards().length ? ((cards().length-totalDue())/cards().length)*100 : 100"></div></div><div class="today-meta"><span>✓ {{cards().length-totalDue()}} cards em dia</span><b>{{totalDue()}} pendentes</b></div></div>
-      </section>
-      <div class="subjects-heading"><h2>Matérias</h2></div>
-      <section class="review-subjects">
-        @for(s of ['AWS','JavaScript','Padrões de Projeto','Angular','React'];track s){
-          <button class="review-subject-card" [class.completed]="subjectDue($any(s))===0" [attr.data-subject]="s" (click)="openSubject($any(s))">
-            <div class="review-subject-icon">{{subjectIcon(s)}}</div>
-            <div class="review-subject-info"><h3>{{s==='AWS'?'AWS IA':s}}</h3>
-              @if(subjectDue($any(s))===0){<p class="complete-copy">Revisão concluída hoje</p><div class="subject-progress complete"><div style="width:100%"></div></div><small>{{subjectTotal($any(s))}} de {{subjectTotal($any(s))}} cards</small>}
-              @else {<p>{{subjectDue($any(s))}} cards para revisar</p><div class="subject-progress"><div [style.width.%]="subjectTotal($any(s)) ? ((subjectTotal($any(s))-subjectDue($any(s)))/subjectTotal($any(s)))*100 : 0"></div></div><small>{{subjectTotal($any(s))-subjectDue($any(s))}} de {{subjectTotal($any(s))}} cards</small>}
-            </div>
-            <div class="review-subject-status">{{subjectDue($any(s))===0?'✓':subjectDue($any(s))}}</div><b class="review-chevron">›</b>
-          </button>
-        }
-      </section>
+    <section class="home-page">
+      @if(deckPicker()){
+        <section class="deck-picker"><header class="deck-picker-header"><button (click)="deckPicker.set(false)" aria-label="Voltar">‹</button><div><span>REVISÃO</span><h1>Revisar flashcards</h1><p>Uma sessão de cada vez.</p></div></header><div class="deck-picker-summary"><b>{{totalDue()}}</b><span>cards aguardando revisão</span></div><div class="deck-picker-list">@for(s of activeSubjects();track s.id){@if(subjectTotal($any(s.deck_key||s.name))){<button class="deck-choice" (click)="openSubject($any(s.deck_key||s.name))"><span class="deck-choice-icon">{{subjectIcon(s.deck_key||s.name)}}</span><span><b>{{s.name}}</b><small>{{subjectDue($any(s.deck_key||s.name))}} cards pendentes</small></span><strong>›</strong></button>}}</div></section>
+      } @else {
+      <header class="daily-header"><div><h1>Olá!</h1><p>Vamos aprender um pouco hoje?</p></div><button class="daily-profile" (click)="setTab('settings')" aria-label="Abrir perfil"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></button></header>
+      <section class="daily-section"><button class="review-today-card" (click)="deckPicker.set(true)"><span class="daily-card-icon"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="3" width="15" height="17" rx="3"/><path d="M3 7v13a2 2 0 0 0 2 2M10 8h7M10 12h7M10 16h4"/></svg></span><span><b>Revisar flashcards</b><small>{{totalDue()}} cards pendentes · sessões de {{sessionLimit()||'todos os'}} cards</small></span><strong>›</strong></button></section>
+      <section class="daily-section"><div class="daily-section-title"><h2>Matérias de hoje</h2><span>{{todaysSubjects().length}}</span></div><div class="daily-subjects">@for(s of todaysSubjects();track s.id){<button class="daily-subject" [attr.data-subject]="s.deck_key==='AWS'?'AWS IA':s.deck_key||s.name" (click)="goToSubject(s.name)"><span class="daily-subject-icon">{{subjectIcon(s.deck_key||s.name)}}</span><span><b>{{s.name}}</b><small>{{nextTopic(s.name)?.title||'Nenhum tópico pendente'}}</small><small>{{pendingTopics(s.name)}} tópicos a estudar</small></span><strong>›</strong></button>}@empty{<div class="daily-empty">Nenhuma matéria programada para hoje.<button (click)="setTab('studyPlan')">Organizar minha rotina</button></div>}</div></section>
+      <button class="quick-add" (click)="setTab('studyPlan');openStudyForm()" aria-label="Capturar um tópico">＋</button>
+      }
     </section>
   } @else if(activeTab()==='studyPlan'){
     <section class="panel-page study-plan-page">
       <div class="page-heading"><div><span>PLANO DE ESTUDO</span><h1>Estudar</h1></div><div class="page-icon">✓</div></div>
-      <app-subject-manager [flashcards]="cards()" [studyItems]="studyItems()" (addTopicRequested)="openTopicForm($event)" (editTopicRequested)="editStudyItem($event)" (completeTopicRequested)="completeStudyItem($event)" (subjectsChanged)="syncSubjectNames($event)" (subjectRenamed)="renameStudySubject($event)" (reviewRequested)="openSubject($any($event))" />
+      <app-subject-manager [flashcards]="cards()" [studyItems]="studyItems()" (addTopicRequested)="openTopicForm($event)" (editTopicRequested)="editStudyItem($event)" (completeTopicRequested)="completeStudyItem($event)" (subjectsChanged)="syncSubjectNames($event)" (configChanged)="configChanged($event)" (practiceRequested)="openPractice($event)" (subjectRenamed)="renameStudySubject($event)" (reviewRequested)="openSubject($any($event))" />
+      @if(todoStudyItems().length){<details class="inbox-list"><summary>Todos os tópicos pendentes · {{todoStudyItems().length}}</summary>@for(item of todoStudyItems();track item.id){<div class="inbox-row"><button (click)="editStudyItem(item)"><b>{{item.title}}</b><small>{{item.subject||'Caixa de entrada'}} · {{item.priority}}</small></button><button (click)="completeStudyItem(item)" [attr.aria-label]="'Concluir '+item.title">✓</button></div>}</details>}
       @if(studyError()){<p role="alert">{{studyError()}}</p>}
       @if(studyFormOpen()){
         <section class="study-form">
           <div class="form-head"><h2>{{editingStudyId()?'Editar tópico':'Adicionar tópico'}}</h2><button (click)="closeStudyForm()">×</button></div>
           <label>Título do tópico<input #titleInput [value]="studyTitle()" (input)="studyTitle.set(titleInput.value)" placeholder="Ex.: Template Literals"></label>
-          <label>Matéria<select [ngModel]="studySubject()" (ngModelChange)="studySubject.set($event)">@for(s of studySubjects();track s){<option [value]="s">{{s}}</option>}</select></label>
+          <label>Matéria <small>(opcional)</small><select [ngModel]="studySubject()" (ngModelChange)="studySubject.set($event)"><option value="">Caixa de entrada</option>@for(s of studySubjects();track s){<option [value]="s">{{s}}</option>}</select></label>
           <button class="new-subject-button" (click)="subjectFormOpen.set(true)">＋ Adicionar nova matéria</button>
           @if(subjectFormOpen()){<div class="new-subject-form"><input #newSubjectInput [value]="newSubjectName()" (input)="newSubjectName.set(newSubjectInput.value)" placeholder="Nome da nova matéria"><button (click)="addStudySubject()">Adicionar</button><button class="cancel" (click)="subjectFormOpen.set(false)">Cancelar</button></div>}
           <label>Observação <small>(opcional)</small><textarea #notesInput [value]="studyNotes()" (input)="studyNotes.set(notesInput.value)" placeholder="Anotações sobre o que você quer estudar..."></textarea></label>
@@ -130,9 +117,9 @@
     </section>
   } @else if(activeTab()==='history'){
     <section class="panel-page history-page">
-      <div class="page-heading"><div><span>SEUS ESTUDOS</span><h1>Histórico</h1><p>Veja quando você aprendeu e revisou cada conteúdo.</p></div><div class="page-icon">🗓</div></div>
+      <div class="page-heading"><div><span>SEUS ESTUDOS</span><h1>Evolução</h1><p>Veja quando você aprendeu e revisou cada conteúdo.</p></div><div class="page-icon">🗓</div></div>
 
-      <section class="calendar-card">
+      <div class="stats-grid"><div class="stat purple"><b>{{totalDue()}}</b><span>Cards pendentes</span></div><div class="stat green"><b>{{completedStudyItems().length}}</b><span>Tópicos estudados</span></div><div class="stat amber"><b>{{history().length}}</b><span>Dias com atividade</span></div></div><section class="calendar-card">
         <div class="calendar-header">
           <button (click)="changeHistoryMonth(-1)" aria-label="Mês anterior">‹</button>
           <div><h2>{{monthLabel()}}</h2><span>{{studyDaysInMonth()}} {{studyDaysInMonth()===1?'dia':'dias'}} de estudo neste mês</span></div>
@@ -170,20 +157,19 @@
     <section class="panel-page">
       <div class="page-heading"><div><span>PREFERÊNCIAS</span><h1>Configurações</h1><p>Ajustes da sua rotina de estudos.</p></div><div class="page-icon">⚙</div></div>
       <section class="settings-card">
-        <div class="setting-row"><div><b>🔀 Ordem dos cards</b><span>Aleatória por matéria</span></div><span class="toggle on"></span></div>
+        <div class="setting-row"><div><b>🔀 Ordem dos cards</b><span>Mais antigos primeiro</span></div><span class="toggle on"></span></div>
         <div class="setting-row"><div><b>↻ Revisão espaçada</b><span>Agenda automática de revisão</span></div><span class="toggle on"></span></div>
-        <div class="setting-row"><div><b>💾 Progresso local</b><span>Salvo neste dispositivo</span></div><span class="status-chip">Ativo</span></div>
+        <div class="setting-row"><div><b>💾 Seus estudos</b><span>{{syncStatus()}}</span></div><span class="status-chip">Ativo</span></div>
       </section>
-      <button class="danger-action" (click)="reset()">Reiniciar progresso</button>
+      <button class="primary-action" (click)="exportBackup()">Baixar backup dos estudos</button><p class="backup-note">Inclui matérias, rotina, tópicos, progresso e histórico.</p><label class="import-backup">Importar backup<input type="file" accept="application/json,.json" (change)="importBackup($event)"></label>@if(backupMessage()){<p role="status">{{backupMessage()}}</p>}
     </section>
   }
 
-  <nav class="bottom-nav five">
-    <button [class.active]="activeTab()==='home'" (click)="setTab('home')"><span>⌂</span><b>Início</b></button>
-    <button [class.active]="activeTab()==='studyPlan'" (click)="setTab('studyPlan')"><span>✓</span><b>A estudar</b></button>
-    <button [class.active]="activeTab()==='progress'" (click)="setTab('progress')"><span>▥</span><b>Progresso</b></button>
-    <button [class.active]="activeTab()==='history'" (click)="setTab('history')"><span>🗓</span><b>Histórico</b></button>
-    <button [class.active]="activeTab()==='settings'" (click)="setTab('settings')"><span>⚙</span><b>Configurações</b></button>
+  <nav class="bottom-nav four">
+    <button [class.active]="activeTab()==='home'" (click)="setTab('home')"><span><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10H15v-7H9v7H3Z"/></svg></span><b>Início</b></button>
+    <button [class.active]="activeTab()==='studyPlan'" (click)="setTab('studyPlan')"><span><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="15" height="17" rx="3"/><path d="M3 7v13M10 8h7M10 12h7M10 16h4"/></svg></span><b>Estudar</b></button>
+    <button [class.active]="activeTab()==='history'" (click)="setTab('history')"><span><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4M17 3v4M3 11h18M8 15h1M15 15h1"/></svg></span><b>Histórico</b></button>
+    <button [class.active]="activeTab()==='settings'" (click)="setTab('settings')"><span><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></span><b>Perfil</b></button>
   </nav>
 }
 </main>
