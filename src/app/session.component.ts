@@ -5,11 +5,11 @@ import { AppIconComponent } from './app-icon.component';
 import { accountSession, setScope, supabase } from './account';
 @Component({selector:'app-session',standalone:true,imports:[FormsModule,AppComponent,AppIconComponent],templateUrl:'./session.component.html'})
 export class SessionComponent {
- loading=signal(true);ready=signal(false);mode=signal<'login'|'signup'|'reset'|'password'>('login');email='';password='';name='';accepted=false;busy=signal(false);message=signal('');
+ loading=signal(true);ready=signal(false);mode=signal<'login'|'signup'|'signup-success'|'reset'|'password'>('login');email='';password='';name='';accepted=false;busy=signal(false);message=signal('');
  page=signal(new URLSearchParams(location.search).get('page')||'');
  constructor(){
-  supabase.auth.onAuthStateChange((event,session)=>{accountSession.set(session);if(event==='PASSWORD_RECOVERY'){this.mode.set('password');this.ready.set(false);this.loading.set(false);return}if(event==='SIGNED_OUT'){this.ready.set(false);this.loading.set(false)}if(session)setTimeout(()=>{if(this.mode()!=='password')this.enter(session.user.id)},0)});
-  void supabase.auth.getSession().then(({data})=>{accountSession.set(data.session);this.loading.set(false);if(data.session&&this.mode()!=='password')this.enter(data.session.user.id);else if(localStorage.getItem('study-guest-entered')==='yes')this.enter('guest')});
+  supabase.auth.onAuthStateChange((event,session)=>{accountSession.set(session);if(event==='PASSWORD_RECOVERY'){this.mode.set('password');this.ready.set(false);this.loading.set(false);return}if(event==='SIGNED_OUT'){this.ready.set(false);this.loading.set(false)}if(session)setTimeout(()=>{if(this.mode()!=='password'&&this.mode()!=='signup-success')this.enter(session.user.id)},0)});
+  void supabase.auth.getSession().then(({data})=>{accountSession.set(data.session);this.loading.set(false);if(data.session&&this.mode()!=='password'&&this.mode()!=='signup-success')this.enter(data.session.user.id);else if(localStorage.getItem('study-guest-entered')==='yes')this.enter('guest')});
   window.addEventListener('study-account-exit',()=>{this.ready.set(false);this.message.set('');this.password='';localStorage.removeItem('study-guest-entered');setScope('guest')});
  }
  enter(id:string){setScope(id);this.loading.set(false);this.ready.set(true)}
@@ -20,7 +20,7 @@ export class SessionComponent {
  if(this.mode()==='signup'){
   if(!this.accepted||!this.name.trim()||this.password.length<8)throw new Error('Informe seu nome, uma senha de pelo menos 8 caracteres e confirme a leitura da privacidade.');
   const {data,error}=await supabase.auth.signUp({email:this.email.trim(),password:this.password,options:{data:{display_name:this.name.trim()},emailRedirectTo:redirect}});if(error)throw error;
-  this.password='';this.message.set(data.session?'Conta criada.':'Confira seu e-mail para confirmar a conta e depois entre.');
+  this.password='';this.mode.set('signup-success');this.message.set(data.session?'Sua conta foi criada com sucesso. Você já pode continuar para o aplicativo.':'Sua conta foi criada com sucesso. Enviamos um e-mail de confirmação para '+this.email.trim()+'. Confirme o e-mail antes de entrar.');
  }else if(this.mode()==='reset'){
   const {error}=await supabase.auth.resetPasswordForEmail(this.email.trim(),{redirectTo:redirect});if(error)throw error;this.message.set('Se o e-mail estiver cadastrado, você receberá um link para redefinir a senha.');
  }else if(this.mode()==='password'){
