@@ -103,12 +103,12 @@
         <div class="stat amber"><b>{{history().length}}</b><span>Dias no histórico</span></div>
       </div>
       <section class="progress-list">
-        @for(s of ['AWS','JavaScript','Padrões de Projeto','Angular','React','Arquitetura','Java'];track s){
+        @for(s of activeSubjects();track s.id){
           <div class="progress-item">
-            <app-subject-badge [subject]="s"/>
+            <app-subject-badge [subject]="s.deck_key||s.name"/>
             <div class="progress-info">
-              <div class="progress-label"><b>{{s==='AWS'?'AWS IA':s}}</b><span>{{subjectDue($any(s))}} pendentes</span></div>
-              <div class="mini-track"><div [style.width.%]="subjectTotal($any(s)) ? ((subjectTotal($any(s))-subjectDue($any(s)))/subjectTotal($any(s)))*100 : 0"></div></div>
+              <div class="progress-label"><b>{{s.name}}</b><span>{{subjectDue(s.deck_key||s.name)}} pendentes</span></div>
+              <div class="mini-track"><div [style.width.%]="subjectTotal(s.deck_key||s.name) ? ((subjectTotal(s.deck_key||s.name)-subjectDue(s.deck_key||s.name))/subjectTotal(s.deck_key||s.name))*100 : 0"></div></div>
             </div>
           </div>
         }
