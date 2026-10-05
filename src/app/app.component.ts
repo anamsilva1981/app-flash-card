@@ -1,3 +1,4 @@
+import { AppIconComponent, SubjectBadgeComponent } from './app-icon.component';
 import { SwUpdate } from '@angular/service-worker';
 import { Component, computed, signal, OnInit, inject, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -14,7 +15,7 @@ interface StudyDay { date:string; learning:string[]; reviews:string[]; }
 interface StudyItem { id:string; title:string; subject:string; notes:string; link:string|null; priority:'baixa'|'media'|'alta'; status:'todo'|'done'; completed_at:string|null; created_at?:string; }
 const today=()=>new Date().toLocaleDateString('en-CA',{timeZone:'America/Sao_Paulo'});
 const addDays=(n:number)=>{const date=new Date(today()+'T12:00:00Z');date.setUTCDate(date.getUTCDate()+n);return date.toISOString().slice(0,10)};
-@Component({selector:'app-root',standalone:true,imports:[FormsModule,SubjectManagerComponent,MatButtonModule,MatCardModule,MatChipsModule,MatExpansionModule],templateUrl:'./app.component.html',styleUrl:'./app.component.css'})
+@Component({selector:'app-root',standalone:true,imports:[AppIconComponent,SubjectBadgeComponent,FormsModule,SubjectManagerComponent,MatButtonModule,MatCardModule,MatChipsModule,MatExpansionModule],templateUrl:'./app.component.html',styleUrl:'./app.component.css'})
 export class AppComponent implements OnInit {
  updateReady=signal(false);private updates=inject(SwUpdate);
  constructor(){if(this.updates.isEnabled)this.updates.versionUpdates.subscribe(event=>{if(event.type==='VERSION_READY')this.updateReady.set(true)})}
@@ -227,6 +228,8 @@ export class AppComponent implements OnInit {
  setTab(tab:'home'|'studyPlan'|'progress'|'history'|'settings'){this.activeTab.set(tab);if(tab==='home')this.deckPicker.set(false);if(tab==='history'&&!this.selectedHistoryDate()){const latest=this.history().find(d=>d.learning.length||d.reviews.length);if(latest){const dt=new Date(latest.date+'T12:00:00');this.historyMonth.set(new Date(dt.getFullYear(),dt.getMonth(),1));}}}
  sessionLimit=signal<number>(cached('review-session-limit',10));sessionIds=signal<number[]>([]);sessionPosition=signal(0);practice=signal(false);deckPicker=signal(false);syncStatus=syncStatus;
  subjectConfigs=subjectConfigs;
+ streak=computed(()=>{const active=new Set(this.history().filter(d=>d.learning.length||d.reviews.length).map(d=>d.date));let date=new Date(today()+'T12:00:00Z');if(!active.has(today()))date.setUTCDate(date.getUTCDate()-1);let count=0;while(active.has(date.toISOString().slice(0,10))){count++;date.setUTCDate(date.getUTCDate()-1)}return count});
+ openDeck(name:string){if(this.subjectDue(name as any))this.openSubject(name as any);else this.openPractice(name)}
  todaysSubjects=computed(()=>this.subjectConfigs().filter(s=>!s.archived&&s.days.includes(new Date(today()+'T12:00:00').getDay())));
  activeSubjects=computed(()=>this.subjectConfigs().filter(s=>!s.archived));
  configChanged(value:ManagedSubject[]){this.subjectConfigs.set(value);this.studySubjects.set(value.filter(s=>!s.archived).map(s=>s.name))}

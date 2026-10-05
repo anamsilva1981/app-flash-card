@@ -11,7 +11,8 @@
           "/*.css",
           "/*.js",
           "/manifest.webmanifest",
-          "/icon.svg"
+          "/icon.svg",
+          "/media/**"
         ]
       }
     }
