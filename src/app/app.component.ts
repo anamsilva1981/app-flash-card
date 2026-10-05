@@ -15,7 +15,7 @@ export class AppComponent implements OnInit {
  private readonly supabaseUrl='https://elzkhndhkkkfxvtbhilt.supabase.co';
  private readonly supabaseKey='sb_publishable_YFZqSuAst3q1ERiC3HA71A_u4fmIP9j';
  activeTab=signal<'home'|'studyPlan'|'progress'|'history'|'settings'>('home');
- studyItems=signal<StudyItem[]>([]); studyFormOpen=signal(false); studyTitle=signal(''); studySubject=signal('JavaScript'); studyNotes=signal(''); studyPriority=signal<'baixa'|'media'|'alta'>('media');
+ studyItems=signal<StudyItem[]>([]); studySubjects=signal<string[]>(['AWS IA','JavaScript','Padrões de Projeto','Angular','React','Arquitetura','Java']); studyFormOpen=signal(false); studyTitle=signal(''); studySubject=signal('JavaScript'); studyNotes=signal(''); studyPriority=signal<'baixa'|'media'|'alta'>('media'); editingStudyId=signal<string|null>(null); subjectFormOpen=signal(false); newSubjectName=signal('');
  historyMonth=signal(new Date(today()+'T12:00:00'));
  selectedHistoryDate=signal<string|null>(null);
  subject=signal<'AWS'|'JavaScript'|'Padrões de Projeto'|'Angular'|'React'|'Arquitetura'|'Java'|null>(null); topic=signal('Todos'); flipped=signal(false); explanationOpen=signal(false); index=signal(0);
@@ -178,12 +178,15 @@ export class AppComponent implements OnInit {
   {date:'2026-10-02',learning:['JavaScript — 3.1 — Visão geral e definições','AWS IA — Fundamentos de Machine Learning','Padrões de Projeto — Classificação dos padrões'],reviews:[]}
  ];
  ngOnInit(){void this.initializeRemoteState();}
- private async initializeRemoteState(){await this.loadRemoteHistory();await this.loadRemoteProgress();await this.loadStudyQueue();}
+ private async initializeRemoteState(){await this.loadRemoteHistory();await this.loadRemoteProgress();await this.loadStudySubjects();await this.loadStudyQueue();}
  private async api(path:string,options:RequestInit={}){return fetch(this.supabaseUrl+'/rest/v1/'+path,{...options,headers:{apikey:this.supabaseKey,Authorization:'Bearer '+this.supabaseKey,'Content-Type':'application/json',Prefer:'return=minimal',...(options.headers||{})}})}
+ private async loadStudySubjects(){try{const res=await this.api('study_subjects?select=name&order=created_at.asc');if(res.ok){const rows:any[]=await res.json();if(rows.length)this.studySubjects.set(rows.map(r=>r.name));}}catch{}}
  private async loadStudyQueue(){try{const res=await this.api('study_queue?select=id,title,subject,notes,priority,status,completed_at&order=created_at.asc');if(res.ok)this.studyItems.set(await res.json());}catch{}}
- openStudyForm(){this.studyFormOpen.set(true);this.studyTitle.set('');this.studyNotes.set('');this.studyPriority.set('media')}
- closeStudyForm(){this.studyFormOpen.set(false)}
- async addStudyItem(){const title=this.studyTitle().trim();if(!title)return;const payload={title,subject:this.studySubject(),notes:this.studyNotes().trim()||null,priority:this.studyPriority(),status:'todo'};try{const res=await this.api('study_queue',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(payload)});if(res.ok){const rows:any[]=await res.json();if(rows[0])this.studyItems.update(v=>[...v,rows[0]]);this.closeStudyForm();}}catch{}}
+ openStudyForm(){this.editingStudyId.set(null);this.studyFormOpen.set(true);this.studyTitle.set('');this.studyNotes.set('');this.studyPriority.set('media')}
+ editStudyItem(item:StudyItem){this.editingStudyId.set(item.id);this.studyTitle.set(item.title);this.studySubject.set(item.subject);this.studyNotes.set(item.notes||'');this.studyPriority.set(item.priority);this.studyFormOpen.set(true)}
+ closeStudyForm(){this.studyFormOpen.set(false);this.editingStudyId.set(null)}
+ async saveStudyItem(){const title=this.studyTitle().trim();if(!title)return;const payload={title,subject:this.studySubject(),notes:this.studyNotes().trim()||null,priority:this.studyPriority()};try{const id=this.editingStudyId();if(id){const res=await this.api('study_queue?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(payload)});if(res.ok)this.studyItems.update(v=>v.map(x=>x.id===id?{...x,...payload,notes:payload.notes||''}:x));}else{const res=await this.api('study_queue',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({...payload,status:'todo'})});if(res.ok){const rows:any[]=await res.json();if(rows[0])this.studyItems.update(v=>[...v,rows[0]]);}}this.closeStudyForm();}catch{}}
+ async addStudySubject(){const name=this.newSubjectName().trim();if(!name)return;try{const res=await this.api('study_subjects',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({name})});if(res.ok){const rows:any[]=await res.json();const saved=rows[0]?.name||name;this.studySubjects.update(v=>v.includes(saved)?v:[...v,saved]);this.studySubject.set(saved);this.newSubjectName.set('');this.subjectFormOpen.set(false);}}catch{}}
  async completeStudyItem(item:StudyItem){if(item.status==='done')return;const completedAt=new Date().toISOString();try{const res=await this.api('study_queue?id=eq.'+encodeURIComponent(item.id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({status:'done',completed_at:completedAt})});if(!res.ok)return;this.studyItems.update(v=>v.map(x=>x.id===item.id?{...x,status:'done',completed_at:completedAt}:x));const label=item.subject+' — '+item.title;await this.api('study_activity?on_conflict=activity_date,kind,label',{method:'POST',headers:{Prefer:'resolution=ignore-duplicates,return=minimal'},body:JSON.stringify({activity_date:today(),kind:'learning',label})});await this.loadRemoteHistory();}catch{}}
  todoStudyItems=computed(()=>this.studyItems().filter(x=>x.status==='todo'));
  completedStudyItems=computed(()=>this.studyItems().filter(x=>x.status==='done'));
