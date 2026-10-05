@@ -30,4 +30,16 @@ describe('Autenticação e páginas públicas',()=>{
     cy.contains('Excluir sua conta').should('be.visible');
     cy.contains('Entrar para excluir minha conta').should('be.visible');
   });
+
+  it('alterna para inglês e mantém o idioma após recarregar',()=>{
+    cy.visit('/');
+    cy.get('.language-switcher').should('contain.text','EN').click();
+    cy.contains('Welcome back').should('be.visible');
+    cy.get('html').should('have.attr','lang','en');
+    cy.window().then(win=>expect(win.localStorage.getItem('study-locale')).to.eq('en'));
+    cy.reload();
+    cy.contains('Welcome back').should('be.visible');
+    cy.get('.language-switcher').should('contain.text','PT');
+    cy.get('html').should('have.attr','lang','en');
+  });
 });
