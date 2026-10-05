@@ -16,16 +16,20 @@ export class SessionComponent {
  enter(id:string){setScope(id);this.loading.set(false);this.ready.set(true);if(id!=='guest')window.setTimeout(()=>window.dispatchEvent(new CustomEvent('study-account-ready')),0)}
  showAccount(mode:'login'|'signup'='signup'){this.ready.set(false);this.mode.set(mode);this.message.set('');this.password=''}
  switchMode(mode:'login'|'signup'|'reset'){this.mode.set(mode);this.message.set('');this.password=''}
+ passwordChecks(){const value=this.password;return {length:value.length>=8,upper:/[A-Z]/.test(value),lower:/[a-z]/.test(value),number:/\d/.test(value),special:/[^A-Za-z0-9]/.test(value)}}
+ passwordValid(){const checks=this.passwordChecks();return checks.length&&checks.upper&&checks.lower&&checks.number&&checks.special}
+ passwordError(){return 'A senha deve ter pelo menos 8 caracteres, com letra maiúscula, letra minúscula, número e caractere especial.'}
  async submit(){if(this.busy())return;this.message.set('');this.busy.set(true);try{
  const redirect=new URL(location.pathname,location.origin).href;
  if(this.mode()==='signup'){
-  if(!this.accepted||!this.name.trim()||this.password.length<8)throw new Error('Informe seu nome, uma senha de pelo menos 8 caracteres e confirme a leitura da privacidade.');
+  if(!this.accepted||!this.name.trim())throw new Error('Informe seu nome e confirme a leitura da privacidade.');
+  if(!this.passwordValid())throw new Error(this.passwordError());
   const {data,error}=await supabase.auth.signUp({email:this.email.trim(),password:this.password,options:{data:{display_name:this.name.trim()},emailRedirectTo:redirect}});if(error)throw error;
   this.password='';this.mode.set('signup-success');this.message.set(data.session?'Sua conta foi criada com sucesso. Você já pode continuar para o aplicativo.':'Sua conta foi criada com sucesso. Enviamos um e-mail de confirmação para '+this.email.trim()+'. Confirme o e-mail antes de entrar.');
  }else if(this.mode()==='reset'){
   const {error}=await supabase.auth.resetPasswordForEmail(this.email.trim(),{redirectTo:redirect});if(error)throw error;this.message.set('Se o e-mail estiver cadastrado, você receberá um link para redefinir a senha.');
  }else if(this.mode()==='password'){
-  if(this.password.length<8)throw new Error('Use uma senha de pelo menos 8 caracteres.');const {error}=await supabase.auth.updateUser({password:this.password});if(error)throw error;this.password='';this.enter(accountSession()!.user.id);
+  if(!this.passwordValid())throw new Error(this.passwordError());const {error}=await supabase.auth.updateUser({password:this.password});if(error)throw error;this.password='';this.enter(accountSession()!.user.id);
  }else{const {error}=await supabase.auth.signInWithPassword({email:this.email.trim(),password:this.password});if(error)throw error;this.password=''}
  }catch(error:any){this.message.set(error?.message==='Invalid login credentials'?'E-mail ou senha incorretos.':error?.message==='Email not confirmed'?'Confirme seu e-mail antes de entrar.':error?.code==='email_address_not_authorized'?'Não foi possível concluir o cadastro com este e-mail. Tente novamente ou use outro endereço.':(error?.code==='over_email_send_rate_limit'||error?.status===429)?'Muitas tentativas de envio de e-mail foram feitas em pouco tempo. Aguarde alguns minutos e tente novamente.':error?.message||'Não foi possível conectar. Tente novamente.')}finally{this.busy.set(false)}}
  beginDeletion(){localStorage.setItem('study-open-settings','yes');this.closePage();if(!accountSession()){this.ready.set(false);this.mode.set('login')}}
