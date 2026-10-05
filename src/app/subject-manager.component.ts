@@ -1,3 +1,4 @@
+import { A11yModule } from '@angular/cdk/a11y';
 import { AppIconComponent, SubjectBadgeComponent } from './app-icon.component';
 import { Component, computed, signal, Input, Output, EventEmitter } from '@angular/core';
 import { api, cache, cached, write, flush, hasPending, syncStatus } from './sync';
@@ -7,7 +8,7 @@ export interface ManagedSubject { id:string; name:string; days:number[]; archive
 interface StudyItem { id:string; title:string; subject:string; notes:string; link:string|null; priority:'baixa'|'media'|'alta'; status:'todo'|'done'; completed_at:string|null; created_at?:string; }
 interface Flashcard { id:number; subject:string; topic:string; question:string; due:string; }
 
-@Component({selector:'app-subject-manager',standalone:true,imports:[AppIconComponent,SubjectBadgeComponent],templateUrl:'./subject-manager.component.html',styleUrl:'./subject-manager.component.css'})
+@Component({selector:'app-subject-manager',standalone:true,imports:[A11yModule,AppIconComponent,SubjectBadgeComponent],templateUrl:'./subject-manager.component.html',styleUrl:'./subject-manager.component.css'})
 export class SubjectManagerComponent {
  readonly week=[{value:1,short:'Seg'},{value:2,short:'Ter'},{value:3,short:'Qua'},{value:4,short:'Qui'},{value:5,short:'Sex'},{value:6,short:'Sáb'},{value:0,short:'Dom'}];
  subjects=subjectConfigs; formOpen=signal(false); editingId=signal<string|null>(null); name=signal(''); selectedDays=signal<number[]>([]); showArchived=signal(false);

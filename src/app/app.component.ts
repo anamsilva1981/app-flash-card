@@ -1,3 +1,4 @@
+import { A11yModule } from '@angular/cdk/a11y';
 import { AppIconComponent, SubjectBadgeComponent } from './app-icon.component';
 import { SwUpdate } from '@angular/service-worker';
 import { Component, computed, signal, OnInit, inject, ViewChild } from '@angular/core';
@@ -15,7 +16,7 @@ interface StudyDay { date:string; learning:string[]; reviews:string[]; }
 interface StudyItem { id:string; title:string; subject:string; notes:string; link:string|null; priority:'baixa'|'media'|'alta'; status:'todo'|'done'; completed_at:string|null; created_at?:string; }
 const today=()=>new Date().toLocaleDateString('en-CA',{timeZone:'America/Sao_Paulo'});
 const addDays=(n:number)=>{const date=new Date(today()+'T12:00:00Z');date.setUTCDate(date.getUTCDate()+n);return date.toISOString().slice(0,10)};
-@Component({selector:'app-root',standalone:true,imports:[AppIconComponent,SubjectBadgeComponent,FormsModule,SubjectManagerComponent,MatButtonModule,MatCardModule,MatChipsModule,MatExpansionModule],templateUrl:'./app.component.html',styleUrl:'./app.component.css'})
+@Component({selector:'app-root',standalone:true,imports:[A11yModule,AppIconComponent,SubjectBadgeComponent,FormsModule,SubjectManagerComponent,MatButtonModule,MatCardModule,MatChipsModule,MatExpansionModule],templateUrl:'./app.component.html',styleUrl:'./app.component.css'})
 export class AppComponent implements OnInit {
  updateReady=signal(false);private updates=inject(SwUpdate);
  constructor(){if(this.updates.isEnabled)this.updates.versionUpdates.subscribe(event=>{if(event.type==='VERSION_READY')this.updateReady.set(true)})}
