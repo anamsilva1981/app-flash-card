@@ -18,11 +18,14 @@ describe('Telas e fluxos principais do produto',()=>{
     cy.contains('button','Angular').click();
     cy.contains('button','Tópicos').click();
     cy.contains('Signals').filter(':visible').should('have.length.at.least',1);
-    cy.contains('button','Adicionar').click();
-    cy.contains('Adicionar tópico').should('be.visible');
-    cy.get('input[placeholder="Ex.: Template Literals"]').type('Standalone Components');
-    cy.contains('button','Alta').click();
-    cy.contains('button','Adicionar').last().click();
+    cy.contains('button','Adicionar').filter(':visible').click();
+    cy.get('.study-form').should('be.visible').within(()=>{
+      cy.contains('Adicionar tópico').should('be.visible');
+      cy.get('input[placeholder="Ex.: Template Literals"]').type('Standalone Components');
+      cy.contains('button','Alta').click();
+      cy.contains('button','Adicionar').click();
+    });
+    cy.get('.study-form').should('not.exist');
     cy.contains('Standalone Components').should('exist');
   });
 
