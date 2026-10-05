@@ -99,13 +99,15 @@
       <button class="add-study-button" (click)="openStudyForm()">＋ Adicionar tópico</button>
       @if(studyFormOpen()){
         <section class="study-form">
-          <div class="form-head"><h2>Adicionar tópico</h2><button (click)="closeStudyForm()">×</button></div>
+          <div class="form-head"><h2>{{editingStudyId()?'Editar tópico':'Adicionar tópico'}}</h2><button (click)="closeStudyForm()">×</button></div>
           <label>Título do tópico<input #titleInput [value]="studyTitle()" (input)="studyTitle.set(titleInput.value)" placeholder="Ex.: Template Literals"></label>
-          <label>Matéria<select #subjectInput [value]="studySubject()" (change)="studySubject.set(subjectInput.value)"><option>JavaScript</option><option>AWS IA</option><option>Angular</option><option>React</option><option>Padrões de Projeto</option><option>Arquitetura</option><option>Java</option></select></label>
+          <label>Matéria<select #subjectInput [value]="studySubject()" (change)="studySubject.set(subjectInput.value)">@for(s of studySubjects();track s){<option [value]="s">{{s}}</option>}</select></label>
+          <button class="new-subject-button" (click)="subjectFormOpen.set(true)">＋ Adicionar nova matéria</button>
+          @if(subjectFormOpen()){<div class="new-subject-form"><input #newSubjectInput [value]="newSubjectName()" (input)="newSubjectName.set(newSubjectInput.value)" placeholder="Nome da nova matéria"><button (click)="addStudySubject()">Adicionar</button><button class="cancel" (click)="subjectFormOpen.set(false)">Cancelar</button></div>}
           <label>Descrição <small>(opcional)</small><textarea #notesInput [value]="studyNotes()" (input)="studyNotes.set(notesInput.value)" placeholder="Detalhes, links ou observações..."></textarea></label>
           <div class="priority-label">Prioridade <small>(opcional)</small></div>
           <div class="priority-buttons"><button [class.active]="studyPriority()==='baixa'" (click)="studyPriority.set('baixa')">Baixa</button><button [class.active]="studyPriority()==='media'" (click)="studyPriority.set('media')">Média</button><button [class.active]="studyPriority()==='alta'" (click)="studyPriority.set('alta')">Alta</button></div>
-          <button class="primary-action" (click)="addStudyItem()">Adicionar</button>
+          <button class="primary-action" (click)="saveStudyItem()">{{editingStudyId()?'Salvar alterações':'Adicionar'}}</button>
         </section>
       }
       <section class="study-queue">
@@ -114,7 +116,7 @@
             <div class="study-item">
               <button class="study-check" (click)="completeStudyItem(item)" aria-label="Marcar como estudado"></button>
               <div><b>{{item.title}}</b><span class="subject-tag">{{item.subject}}</span>@if(item.notes){<p>{{item.notes}}</p>}</div>
-              <span class="priority-dot" [class]="item.priority"></span>
+              <div class="study-item-actions"><button (click)="editStudyItem(item)" aria-label="Editar tópico">✎</button><span class="priority-dot" [class]="item.priority"></span></div>
             </div>
           }
         } @else {<div class="empty-study"><b>Tudo estudado por enquanto ✓</b><span>Adicione um novo assunto quando encontrar algo que queira aprender.</span></div>}
