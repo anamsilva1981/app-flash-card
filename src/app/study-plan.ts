@@ -42,3 +42,11 @@ export function renameStudyItemsSubject(items: StudyItem[], previous: string, na
 export function completeStudyItem(items: StudyItem[], id: string, completedAt: string): StudyItem[] {
   return items.map(item => item.id === id ? { ...item, status: 'done', completed_at: completedAt } : item);
 }
+
+export function pendingStudyItems(items: StudyItem[], subject: string): StudyItem[] {
+  return sortStudyItems(items.filter(item => item.status === 'todo' && item.subject === subject));
+}
+
+export function nextStudyItem(items: StudyItem[], subject: string): StudyItem | undefined {
+  return pendingStudyItems(items, subject)[0];
+}
