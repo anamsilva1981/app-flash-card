@@ -1,24 +1,17 @@
-interface ReminderInput {
+export interface ReminderPolicyInput {
   enabled: boolean;
-  permission: NotificationPermission | 'denied';
-  now: Date;
-  days: number[];
-  time: string;
-  shown: string;
+  permissionGranted: boolean;
+  localTime: string;
+  currentDay: number;
+  allowedDays: number[];
+  configuredTime: string;
+  shownToday: boolean;
 }
 
-export function reminderShouldFire(input: ReminderInput): { fire: boolean; today: string } {
-  const today = input.now.toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
-  if (!input.enabled || input.permission !== 'granted') return { fire: false, today };
-
-  const localTime = input.now.toLocaleTimeString('pt-BR', {
-    timeZone: 'America/Sao_Paulo',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-  const day = new Date(today + 'T12:00:00').getDay();
-  return {
-    fire: localTime === input.time && input.days.includes(day) && input.shown !== today,
-    today
-  };
+export function shouldShowReminder(input: ReminderPolicyInput): boolean {
+  return input.enabled
+    && input.permissionGranted
+    && input.localTime === input.configuredTime
+    && input.allowedDays.includes(input.currentDay)
+    && !input.shownToday;
 }
