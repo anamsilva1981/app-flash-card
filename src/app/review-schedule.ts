@@ -8,3 +8,25 @@ export function sortTopics<T extends {priority:string;created_at?:string;complet
  const rank:Record<string,number>={alta:0,media:1,baixa:2};
  return [...items].sort((a,b)=>done?(b.completed_at||'').localeCompare(a.completed_at||''):(rank[a.priority]-rank[b.priority]||(a.created_at||'').localeCompare(b.created_at||'')));
 }
+
+export interface ReviewCard {
+ id:number;
+ subject:string;
+ topic:string;
+ due:string;
+ interval:number;
+}
+
+export function dueReviewCards<T extends ReviewCard>(cards:T[],subject:string|null,topic:string,today:string):T[]{
+ if(!subject)return [];
+ return cards.filter(card=>card.subject===subject&&card.due<=today&&(topic==='Todos'||card.topic===topic)).sort((a,b)=>a.due.localeCompare(b.due)||a.id-b.id);
+}
+
+export function buildReviewSession<T extends ReviewCard>(cards:T[],limit:number):number[]{
+ return cards.slice(0,limit||cards.length).map(card=>card.id);
+}
+
+export function rateReviewCard<T extends ReviewCard>(card:T,rating:Rating,due:string):T{
+ const days=intervalFor(card.interval,rating);
+ return {...card,due,interval:days};
+}
