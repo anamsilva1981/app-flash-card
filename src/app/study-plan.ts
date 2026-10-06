@@ -24,7 +24,7 @@ export function sortStudyItems(items: StudyItem[], completed = false): StudyItem
   const priority = { alta: 0, media: 1, baixa: 2 };
   return [...items].sort((a, b) => {
     if (completed) {
-      return (b.completed_at || b.created_at || '').localeCompare(a.completed_at || a.created_at || '');
+      return (b.completed_at || '').localeCompare(a.completed_at || '');
     }
     return priority[a.priority] - priority[b.priority]
       || (a.created_at || '').localeCompare(b.created_at || '');
