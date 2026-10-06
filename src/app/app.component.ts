@@ -17,6 +17,7 @@ import { onboardingStepFor } from './onboarding';
 import { createBackup, parseBackup } from './backup';
 import { Card, cardTopics, cardsForSubject, countDueCards, countSubjectCards, createCard, upsertCard } from './flashcard';
 import { mergeCardProgress, restoreCompletedReviews } from './progress';
+import { activeSubjects, subjectsForToday } from './subject-selectors';
 import { ManagedSubject, SubjectManagerComponent, subjectConfigs, loadSubjectConfig } from './subject-manager.component';
 type Rating = 'again'|'hard'|'good'|'easy';
 const today=()=>new Date().toLocaleDateString('en-CA',{timeZone:'America/Sao_Paulo'});
@@ -237,8 +238,8 @@ export class AppComponent implements OnInit {
  subjectConfigs=subjectConfigs;
  streak=computed(()=>studyStreak(this.history(),today()));
  openDeck(name:string){if(this.subjectDue(name as any))this.openSubject(name as any);else this.openPractice(name)}
- todaysSubjects=computed(()=>this.subjectConfigs().filter(s=>!s.archived&&s.days.includes(new Date(today()+'T12:00:00').getDay())));
- activeSubjects=computed(()=>this.subjectConfigs().filter(s=>!s.archived));
+ todaysSubjects=computed(()=>subjectsForToday(this.subjectConfigs(),today()));
+ activeSubjects=computed(()=>activeSubjects(this.subjectConfigs()));
  configChanged(value:ManagedSubject[]){this.subjectConfigs.set(value);this.studySubjects.set(value.filter(s=>!s.archived).map(s=>s.name))}
  nextTopic(name:string){return nextStudyItem(this.studyItems(),name)}
  pendingTopics(name:string){return pendingStudyItems(this.studyItems(),name).length}
