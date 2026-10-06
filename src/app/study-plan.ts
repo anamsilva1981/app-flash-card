@@ -30,3 +30,15 @@ export function sortStudyItems(items: StudyItem[], completed = false): StudyItem
       || (a.created_at || '').localeCompare(b.created_at || '');
   });
 }
+
+export function upsertStudyItem(items: StudyItem[], item: StudyItem, editingId: string | null): StudyItem[] {
+  return editingId ? items.map(current => current.id === editingId ? item : current) : [...items, item];
+}
+
+export function renameStudyItemsSubject(items: StudyItem[], previous: string, name: string): StudyItem[] {
+  return items.map(item => item.subject === previous ? { ...item, subject: name } : item);
+}
+
+export function completeStudyItem(items: StudyItem[], id: string, completedAt: string): StudyItem[] {
+  return items.map(item => item.id === id ? { ...item, status: 'done', completed_at: completedAt } : item);
+}
