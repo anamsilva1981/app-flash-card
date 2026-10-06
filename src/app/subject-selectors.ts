@@ -1,10 +1,15 @@
-import { ManagedSubject } from './subject-manager.component';
+import { ManagedSubject } from "./subject-manager.component";
 
 export function activeSubjects(subjects: ManagedSubject[]): ManagedSubject[] {
-  return subjects.filter(subject => !subject.archived);
+  return subjects.filter((subject) => !subject.archived);
 }
 
-export function subjectsForToday(subjects: ManagedSubject[], today: string): ManagedSubject[] {
-  const day = new Date(today + 'T12:00:00').getDay();
-  return activeSubjects(subjects).filter(subject => subject.days.includes(day));
+export function subjectsForToday(
+  subjects: ManagedSubject[],
+  today: string,
+): ManagedSubject[] {
+  const day = new Date(today + "T12:00:00").getDay();
+  return activeSubjects(subjects).filter((subject) =>
+    subject.days.includes(day),
+  );
 }

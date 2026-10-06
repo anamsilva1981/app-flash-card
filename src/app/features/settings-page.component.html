@@ -1,0 +1,64 @@
+<section class="panel-page">
+  <div class="page-heading">
+    <div>
+      <span>{{ "ui.preferencias" | t }}</span>
+      <h1>{{ "ui.configuracoes" | t }}</h1>
+      <p>{{ "ui.ajustesDaSuaRotinaDe" | t }}</p>
+    </div>
+    <div class="page-icon"><app-icon name="settings" /></div>
+  </div>
+  <app-account-panel />
+  <section class="settings-card">
+    <div class="setting-row">
+      <div class="setting-icon"><app-icon name="cards" /></div>
+      <div>
+        <b>{{ "ui.ordemDosCards" | t }}</b
+        ><span>{{ "ui.maisAntigosPrimeiro" | t }}</span>
+      </div>
+      <span class="status-chip">{{ "ui.ativo" | t }}</span>
+    </div>
+    <div class="setting-row">
+      <div class="setting-icon"><app-icon name="repeat" /></div>
+      <div>
+        <b>{{ "ui.revisaoEspacada" | t }}</b
+        ><span>{{ "ui.agendaAutomaticaDeRevisao" | t }}</span>
+      </div>
+      <span class="status-chip">{{ "ui.ativo" | t }}</span>
+    </div>
+    <div class="setting-row">
+      <div class="setting-icon"><app-icon name="save" /></div>
+      <div>
+        <b>{{ "ui.seusEstudos" | t }}</b
+        ><span>{{ vm.syncStatus() }}</span>
+      </div>
+      <span class="status-chip">{{ "ui.ativo" | t }}</span>
+    </div>
+  </section>
+  <a
+    class="primary-action backup-download"
+    href="#"
+    download
+    (click)="vm.exportBackup($event)"
+    ><app-icon name="download" />{{ "ui.baixarBackupDosEstudos" | t }}</a
+  >
+  <p class="backup-note">
+    {{ "ui.incluiBaralhosRotinaTopicosFlashcards" | t }}
+  </p>
+  @if (vm.legacyAvailable()) {
+    <div class="account-actions">
+      <button (click)="vm.recoverLegacy()">
+        {{ "ui.recuperarEstudosAnterioresDesteDispositivo" | t }}
+      </button>
+    </div>
+  }
+  <label class="import-backup"
+    >{{ "ui.importarBackup" | t
+    }}<input
+      type="file"
+      accept="application/json,.json"
+      (change)="vm.importBackup($event)"
+  /></label>
+  @if (vm.backupMessage()) {
+    <p role="status">{{ vm.backupMessage() }}</p>
+  }
+</section>

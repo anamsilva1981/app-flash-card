@@ -54,18 +54,23 @@ Fluxo principal:
 ## Decisões técnicas que este projeto demonstra
 
 ### Arquitetura Front-end
+
 A aplicação usa Angular standalone e separa responsabilidades de autenticação, sincronização, revisão espaçada, gerenciamento de matérias e experiência principal.
 
 ### Persistência e sincronização
+
 O Supabase é responsável pela autenticação e pelos dados na nuvem. O navegador mantém os dados necessários para experiência offline e sincroniza alterações quando possível.
 
 ### Internacionalização
+
 A interface possui alternância **PT / EN**, preferência persistida em `localStorage` e atualização de `document.documentElement.lang`, mantendo o idioma escolhido durante novas sessões.
 
 ### Qualidade
+
 O projeto possui testes automatizados para fluxos críticos e Cypress para validar a experiência ponta a ponta antes de refatorações e mudanças estruturais.
 
 ### Produto e UX
+
 O desenvolvimento considera experiência mobile-first, onboarding, estados vazios, feedback de sincronização, acessibilidade, fluxo de autenticação e continuidade do aprendizado.
 
 ## Estrutura
@@ -167,18 +172,23 @@ Main flow:
 ## Engineering highlights
 
 ### Front-end architecture
+
 The application uses Angular standalone APIs and separates authentication, synchronization, spaced-repetition logic, subject management and the main user experience into distinct responsibilities.
 
 ### Persistence and synchronization
+
 Supabase handles authentication and cloud data. The browser keeps the state required for offline usage and synchronizes pending changes when possible.
 
 ### Internationalization
+
 The interface supports **PT / EN** switching, persists the selected locale in `localStorage`, and updates `document.documentElement.lang` for accessibility and semantic correctness.
 
 ### Quality
+
 Automated tests cover critical product rules, while Cypress validates end-to-end user flows before structural refactors and feature changes.
 
 ### Product and UX
+
 The project includes mobile-first interaction design, onboarding, empty states, synchronization feedback, authentication flows, accessibility concerns and learning-continuity decisions.
 
 ## Run locally

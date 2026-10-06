@@ -1,36 +1,221 @@
-@if(page()==='privacy'||page()==='delete'){
-<main class="public-page"><a href="?">Voltar ao aplicativo</a>
-@if(page()==='privacy'){
-<h1>Privacidade dos seus estudos</h1><p>Atualizada em {{config.privacyUpdatedAt}}. Responsável: {{config.ownerName}}. Aplicativo: App Flash Card.</p>
-<h2>O que armazenamos</h2><p>Ao criar uma conta, armazenamos seu e-mail, nome e os estudos que você cadastrar: matérias, rotina, tópicos, flashcards e histórico. A autenticação e o armazenamento em nuvem são fornecidos pelo Supabase. As senhas são tratadas pelo serviço de autenticação e não ficam disponíveis para leitura pelo aplicativo.</p>
-<h2>Para que usamos</h2><p>Para permitir seu acesso, sincronizar seus estudos, calcular revisões e atender solicitações de suporte. Não usamos publicidade nem vendemos seus dados. O aplicativo não inclui ferramentas de análise de comportamento.</p>
-<h2>No seu dispositivo</h2><p>Uma cópia dos estudos e da sessão fica no navegador para permitir uso offline. Use apenas em dispositivos confiáveis. Uma cópia local pode ser mantida no dispositivo para uso offline. Faça backups no Perfil.</p>
-<h2>Lembretes</h2><p>Notificações do navegador são opcionais e dependem de sua permissão. Só funcionam enquanto o aplicativo está aberto. Para lembretes com o aplicativo fechado, você pode importar a agenda de estudo no seu calendário. O serviço de calendário escolhido por você tratará esses eventos conforme sua própria política.</p>
-<h2>Exportar e excluir</h2><p>Você pode exportar seus estudos no Perfil. Eles ficam armazenados enquanto sua conta existir. A exclusão da conta remove o cadastro e os dados vinculados na nuvem. Backups que você baixou e cópias em outros dispositivos precisam ser removidos por você.</p>
-<p><a href="?page=delete">Solicitar exclusão da conta</a></p><h2>Contato</h2><p>Envie uma solicitação em Perfil → Suporte. Você também pode acessar o <a [href]="config.supportUrl" target="_blank" rel="noopener noreferrer">canal de contato da responsável</a>.</p>
-}@else{
-<h1>Excluir sua conta</h1><p>Para confirmar sua identidade, entre no aplicativo com a conta que deseja excluir. Depois acesse Perfil → Excluir conta.</p><p>O procedimento remove sua conta, matérias, tópicos, flashcards, progresso e pedidos de suporte da nuvem. Você pode baixar um backup antes. Arquivos exportados e cópias em outros dispositivos não são apagados automaticamente.</p><p>Se precisar de ajuda, use Perfil → Suporte.</p><button class="primary-action" (click)="beginDeletion()">Entrar para excluir minha conta</button>
-}</main>
-}@else if(loading()){
-<main class="auth-page"><p role="status">Preparando seus estudos…</p></main>
-}@else if(ready()){
-<app-root/>
-}@else{
-<main class="auth-page"><div class="auth-brand"><app-icon name="cards"/><span>App Flash Card</span></div><span class="auth-eyebrow">APRENDA UM POUCO TODOS OS DIAS</span><h1>{{mode()==='signup'?'Seu próximo aprendizado começa aqui':mode()==='reset'?'Recupere seu acesso':mode()==='password'?'Escolha uma nova senha':'Bem-vinda de volta'}}</h1><p>Organize o que estudar. Revise o que aprendeu.</p>
-@if(mode()!=='signup-success'){
-<form (ngSubmit)="submit()">
-@if(mode()==='signup'){<label>Seu nome<input name="name" [(ngModel)]="name" autocomplete="given-name" maxlength="80" required></label>}
-@if(mode()!=='password'){<label>E-mail<input name="email" [(ngModel)]="email" type="email" autocomplete="email" required></label>}
-@if(mode()!=='reset'){<label>Senha<input name="password" [(ngModel)]="password" type="password" [attr.autocomplete]="mode()==='login'?'current-password':'new-password'" [minlength]="mode()==='login'?1:8" required></label>}
-@if(mode()==='signup'||mode()==='password'){
-<div class="password-rules" aria-live="polite"><span [class.valid]="passwordChecks().length">✓ 8 caracteres</span><span [class.valid]="passwordChecks().upper">✓ Letra maiúscula</span><span [class.valid]="passwordChecks().lower">✓ Letra minúscula</span><span [class.valid]="passwordChecks().number">✓ Número</span><span [class.valid]="passwordChecks().special">✓ Caractere especial</span></div>
+<app-language-switcher />
+@if (page() === "privacy" || page() === "delete") {
+  <main class="public-page">
+    <a href="?">{{ "ui.voltarAoAplicativo" | t }}</a>
+    @if (page() === "privacy") {
+      <h1>{{ "ui.privacidadeDosSeusEstudos" | t }}</h1>
+      <p>
+        {{
+          "privacy.metadata"
+            | t: { date: config.privacyUpdatedAt, owner: config.ownerName }
+        }}
+      </p>
+      <h2>{{ "ui.oQueArmazenamos" | t }}</h2>
+      <p>
+        {{ "ui.aoCriarUmaContaArmazenamos" | t }}
+      </p>
+      <h2>{{ "ui.paraQueUsamos" | t }}</h2>
+      <p>
+        {{ "ui.paraPermitirSeuAcessoSincronizar" | t }}
+      </p>
+      <h2>{{ "ui.noSeuDispositivo" | t }}</h2>
+      <p>
+        {{ "ui.umaCopiaDosEstudosE" | t }}
+      </p>
+      <h2>{{ "ui.lembretes" | t }}</h2>
+      <p>
+        {{ "ui.notificacoesDoNavegadorSaoOpcionais" | t }}
+      </p>
+      <h2>{{ "ui.exportarEExcluir" | t }}</h2>
+      <p>
+        {{ "ui.vocePodeExportarSeusEstudos" | t }}
+      </p>
+      <p>
+        <a href="?page=delete">{{ "ui.solicitarExclusaoDaConta" | t }}</a>
+      </p>
+      <h2>{{ "ui.contato" | t }}</h2>
+      <p>
+        {{ "ui.envieUmaSolicitacaoEmPerfil" | t
+        }}<a
+          [href]="config.supportUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          >{{ "ui.canalDeContatoDaResponsavel" | t }}</a
+        >.
+      </p>
+    } @else {
+      <h1>{{ "ui.excluirSuaConta" | t }}</h1>
+      <p>
+        {{ "ui.paraConfirmarSuaIdentidadeEntre" | t }}
+      </p>
+      <p>
+        {{ "ui.oProcedimentoRemoveSuaConta" | t }}
+      </p>
+      <p>{{ "ui.sePrecisarDeAjudaUse" | t }}</p>
+      <button class="primary-action" (click)="beginDeletion()">
+        {{ "ui.entrarParaExcluirMinhaConta" | t }}
+      </button>
+    }
+  </main>
+} @else if (loading()) {
+  <main class="auth-page">
+    <p role="status">{{ "ui.preparandoSeusEstudos" | t }}</p>
+  </main>
+} @else if (ready()) {
+  @for (id of [accountId()]; track id) {
+    <app-root />
+  }
+} @else {
+  <main class="auth-page">
+    <div class="auth-brand">
+      <app-icon name="cards" /><span>App Flash Card</span>
+    </div>
+    <span class="auth-eyebrow">{{ "ui.aprendaUMPOUCOTODOSOS" | t }}</span>
+    <h1>
+      {{
+        mode() === "signup"
+          ? ("ui.seuProximoAprendizadoComecaAqui" | t)
+          : mode() === "reset"
+            ? ("ui.recupereSeuAcesso" | t)
+            : mode() === "password"
+              ? ("ui.escolhaUmaNovaSenha" | t)
+              : ("ui.bemvindaDeVolta" | t)
+      }}
+    </h1>
+    <p>{{ "ui.organizeOQueEstudarRevise" | t }}</p>
+    @if (mode() !== "signup-success") {
+      <form (ngSubmit)="submit()">
+        @if (mode() === "signup") {
+          <label
+            >{{ "ui.seuNome" | t
+            }}<input
+              name="name"
+              [(ngModel)]="name"
+              autocomplete="given-name"
+              maxlength="80"
+              required
+          /></label>
+        }
+        @if (mode() !== "password") {
+          <label
+            >{{ "ui.email" | t
+            }}<input
+              name="email"
+              [(ngModel)]="email"
+              type="email"
+              autocomplete="email"
+              required
+          /></label>
+        }
+        @if (mode() !== "reset") {
+          <label
+            >{{ "ui.senha" | t
+            }}<input
+              name="password"
+              [(ngModel)]="password"
+              type="password"
+              [attr.autocomplete]="
+                mode() === 'login' ? 'current-password' : 'new-password'
+              "
+              [minlength]="mode() === 'login' ? 1 : 8"
+              required
+          /></label>
+        }
+        @if (mode() === "signup" || mode() === "password") {
+          <div class="password-rules" aria-live="polite">
+            <span [class.valid]="passwordChecks().length">{{
+              "ui.8Caracteres_5" | t
+            }}</span
+            ><span [class.valid]="passwordChecks().upper">{{
+              "ui.letraMaiuscula_6" | t
+            }}</span
+            ><span [class.valid]="passwordChecks().lower">{{
+              "ui.letraMinuscula_7" | t
+            }}</span
+            ><span [class.valid]="passwordChecks().number">{{
+              "ui.numero_8" | t
+            }}</span
+            ><span [class.valid]="passwordChecks().special">{{
+              "ui.caractereEspecial_9" | t
+            }}</span>
+          </div>
+        }
+        @if (mode() === "signup") {
+          <label class="consent"
+            ><input
+              type="checkbox"
+              name="accepted"
+              [(ngModel)]="accepted"
+              required
+            /><span
+              >{{ "ui.liComoMeusDadosSao" | t
+              }}<a href="?page=privacy">{{ "ui.politicaDePrivacidade" | t }}</a
+              >.</span
+            ></label
+          >
+        }
+        <button type="submit" class="primary-action" [disabled]="busy()">
+          {{
+            busy()
+              ? ("ui.aguarde" | t)
+              : mode() === "signup"
+                ? ("ui.criarConta" | t)
+                : mode() === "reset"
+                  ? ("ui.enviarLink" | t)
+                  : mode() === "password"
+                    ? ("ui.salvarNovaSenha" | t)
+                    : ("ui.entrar" | t)
+          }}
+        </button>
+      </form>
+      <div class="auth-links">
+        @if (mode() === "login") {
+          <button (click)="switchMode('reset')">
+            {{ "ui.esqueciMinhaSenha" | t }}</button
+          ><button (click)="switchMode('signup')">
+            {{ "ui.criarUmaConta" | t }}
+          </button>
+        } @else {
+          <button (click)="switchMode('login')">
+            {{ "ui.jaTenhoUmaConta" | t }}
+          </button>
+        }
+      </div>
+    }
+    <a class="privacy-link" href="?page=privacy">{{ "ui.privacidade" | t }}</a>
+  </main>
 }
-@if(mode()==='signup'){<label class="consent"><input type="checkbox" name="accepted" [(ngModel)]="accepted" required><span>Li como meus dados são usados na <a href="?page=privacy">política de privacidade</a>.</span></label>}
-<button type="submit" class="primary-action" [disabled]="busy()">{{busy()?'Aguarde…':mode()==='signup'?'Criar conta':mode()==='reset'?'Enviar link':mode()==='password'?'Salvar nova senha':'Entrar'}}</button>
-</form>
-<div class="auth-links">@if(mode()==='login'){<button (click)="switchMode('reset')">Esqueci minha senha</button><button (click)="switchMode('signup')">Criar uma conta</button>}@else{<button (click)="switchMode('login')">Já tenho uma conta</button>}</div>
-}<a class="privacy-link" href="?page=privacy">Privacidade</a></main>
-}
-@if(notice()){
-<div class="modal-layer auth-notice-layer" role="presentation"><div class="modal-backdrop"></div><section class="modal-sheet auth-notice" role="dialog" aria-modal="true" [attr.aria-labelledby]="'auth-notice-title'"><div class="notice-icon" [class.success]="notice()!.type==='success'" [class.error]="notice()!.type==='error'">{{notice()!.type==='success'?'✓':notice()!.type==='error'?'!':'i'}}</div><h2 id="auth-notice-title">{{notice()!.title}}</h2><p>{{notice()!.text}}</p><button type="button" class="primary-action" (click)="closeNotice()">{{mode()==='signup-success'?'Ir para o login':'Entendi'}}</button></section></div>
+@if (notice()) {
+  <div class="modal-layer auth-notice-layer" role="presentation">
+    <div class="modal-backdrop"></div>
+    <section
+      class="modal-sheet auth-notice"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-labelledby]="'auth-notice-title'"
+    >
+      <div
+        class="notice-icon"
+        [class.success]="notice()!.type === 'success'"
+        [class.error]="notice()!.type === 'error'"
+      >
+        {{
+          notice()!.type === "success"
+            ? "✓"
+            : notice()!.type === "error"
+              ? "!"
+              : "i"
+        }}
+      </div>
+      <h2 id="auth-notice-title">{{ notice()!.title }}</h2>
+      <p>{{ notice()!.text }}</p>
+      <button type="button" class="primary-action" (click)="closeNotice()">
+        {{
+          mode() === "signup-success"
+            ? ("ui.irParaOLogin" | t)
+            : ("ui.entendi" | t)
+        }}
+      </button>
+    </section>
+  </div>
 }

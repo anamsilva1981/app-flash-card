@@ -9,9 +9,11 @@ export interface ReminderPolicyInput {
 }
 
 export function shouldShowReminder(input: ReminderPolicyInput): boolean {
-  return input.enabled
-    && input.permissionGranted
-    && input.localTime === input.configuredTime
-    && input.allowedDays.includes(input.currentDay)
-    && !input.shownToday;
+  return (
+    input.enabled &&
+    input.permissionGranted &&
+    input.localTime === input.configuredTime &&
+    input.allowedDays.includes(input.currentDay) &&
+    !input.shownToday
+  );
 }

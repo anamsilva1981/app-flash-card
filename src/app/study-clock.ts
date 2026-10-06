@@ -4,14 +4,26 @@ export function studyTimeZone(): string {
 }
 
 export function displayLocale(): string {
-  try { return localStorage.getItem('study-locale') || navigator.language || 'pt-BR'; }
-  catch { return 'pt-BR'; }
+  try {
+    return (
+      localStorage.getItem("study-locale") || navigator.language || "pt-BR"
+    );
+  } catch {
+    return "pt-BR";
+  }
 }
 
-export function studyDate(now = new Date(), timeZone = studyTimeZone()): string {
-  const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone, year: 'numeric', month: '2-digit', day: '2-digit'
+export function studyDate(
+  now = new Date(),
+  timeZone = studyTimeZone(),
+): string {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
   }).formatToParts(now);
-  const value = (type: string) => parts.find(part => part.type === type)!.value;
-  return `${value('year')}-${value('month')}-${value('day')}`;
+  const value = (type: string) =>
+    parts.find((part) => part.type === type)!.value;
+  return `${value("year")}-${value("month")}-${value("day")}`;
 }

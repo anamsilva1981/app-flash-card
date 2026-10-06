@@ -1,0 +1,133 @@
+<section class="panel-page history-page">
+  <div class="page-heading">
+    <div>
+      <span>{{ "ui.seusESTUDOS" | t }}</span>
+      <h1>{{ "ui.evolucao" | t }}</h1>
+      <p>{{ "ui.vejaQuandoVoceAprendeuE" | t }}</p>
+    </div>
+    <div class="page-icon"><app-icon name="calendar" /></div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat purple">
+      <b>{{ vm.totalDue() }}</b
+      ><span>{{ "ui.cardsPendentes" | t }}</span>
+    </div>
+    <div class="stat green">
+      <b>{{ vm.completedStudyItems().length }}</b
+      ><span>{{ "ui.topicosEstudados" | t }}</span>
+    </div>
+    <div class="stat amber">
+      <b>{{ vm.history().length }}</b
+      ><span>{{ "ui.diasComAtividade" | t }}</span>
+    </div>
+  </div>
+  <section class="calendar-card">
+    <div class="calendar-header">
+      <button
+        (click)="vm.changeHistoryMonth(-1)"
+        [attr.aria-label]="'ui.mesAnterior' | t"
+      >
+        <app-icon name="back" />
+      </button>
+      <div>
+        <h2>{{ vm.monthLabel() }}</h2>
+        <span>{{
+          "history.monthDays" | t: { count: vm.studyDaysInMonth() }
+        }}</span>
+      </div>
+      <button
+        (click)="vm.changeHistoryMonth(1)"
+        [attr.aria-label]="'ui.proximoMes' | t"
+      >
+        <app-icon name="chevron" />
+      </button>
+    </div>
+    <div class="weekdays">
+      <span>{{ "ui.dom" | t }}</span
+      ><span>{{ "ui.seg" | t }}</span
+      ><span>{{ "ui.ter" | t }}</span
+      ><span>{{ "ui.qua" | t }}</span
+      ><span>{{ "ui.qui" | t }}</span
+      ><span>{{ "ui.sex" | t }}</span
+      ><span>{{ "ui.sab" | t }}</span>
+    </div>
+    <div class="calendar-grid">
+      @for (day of vm.calendarDays(); track $index) {
+        @if (day.date) {
+          <button
+            class="calendar-day"
+            [class.has-activity]="day.learning || day.review"
+            [class.selected]="vm.selectedHistoryDate() === day.date"
+            [class.today]="day.today"
+            (click)="vm.selectHistoryDate(day.date)"
+          >
+            <span>{{ day.day }}</span>
+            <div class="day-markers">
+              @if (day.learning) {
+                <i class="learning"></i>
+              }
+              @if (day.review) {
+                <i class="review"></i>
+              }
+            </div>
+          </button>
+        } @else {
+          <div class="calendar-day empty"></div>
+        }
+      }
+    </div>
+    <div class="calendar-legend">
+      <span><i class="learning"></i> {{ "ui.aprendizado" | t }}</span
+      ><span><i class="review"></i> {{ "ui.revisao_13" | t }}</span>
+    </div>
+  </section>
+
+  @if (vm.selectedHistoryDay(); as day) {
+    <section class="day-detail">
+      <div class="detail-heading">
+        <div>
+          <span>{{ "ui.atividadeDODIA" | t }}</span>
+          <h2>{{ vm.formatDate(day.date) }}</h2>
+        </div>
+        <div class="detail-count">
+          {{ day.learning.length + day.reviews.length }}
+        </div>
+      </div>
+      <div class="detail-group learning-detail">
+        <div class="detail-icon"><app-icon name="book" /></div>
+        <div>
+          <b>{{ "ui.aprendizado" | t }}</b>
+          @if (day.learning.length) {
+            <ul>
+              @for (item of day.learning; track item) {
+                <li>{{ item }}</li>
+              }
+            </ul>
+          } @else {
+            <p>{{ "ui.nenhumConteudoNovoNesteDia" | t }}</p>
+          }
+        </div>
+      </div>
+      <div class="detail-group review-detail">
+        <div class="detail-icon"><app-icon name="repeat" /></div>
+        <div>
+          <b>{{ "ui.revisoes" | t }}</b>
+          @if (day.reviews.length) {
+            <ul>
+              @for (item of day.reviews; track item) {
+                <li>{{ item }}</li>
+              }
+            </ul>
+          } @else {
+            <p>{{ "ui.nenhumaRevisaoNesteDia" | t }}</p>
+          }
+        </div>
+      </div>
+    </section>
+  } @else {
+    <div class="calendar-hint">
+      {{ "ui.toqueEmUmDiaMarcado" | t }}
+    </div>
+  }
+</section>

@@ -33,11 +33,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Formatting and lint
+        run: npm run format:check && npm run lint
+
       - name: Build Angular
         run: npm run build -- --base-href /${{ github.event.repository.name }}/
 
       - name: Test study rules
-        run: npm test
+        run: npm run test:coverage
 
       - name: Start app for E2E
         run: |
@@ -61,3 +64,52 @@ jobs:
           name: cypress-screenshots
           path: cypress/screenshots
           if-no-files-found: ignore
+
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Prepare disposable backend
+        run: node scripts/prepare-integration.mjs
+      - name: Start local Supabase
+        run: npx --yes supabase@2.119.0 start --workdir tests/integration/backend -x realtime,storage-api,imgproxy,postgres-meta,studio,logflare,vector,supavisor
+      - name: Capture local connection
+        run: npx --yes supabase@2.119.0 status --workdir tests/integration/backend -o env > /tmp/flashcard-backend.env
+      - name: Serve deletion function
+        run: |
+          echo 'APP_ALLOWED_ORIGINS=http://127.0.0.1:4200' > /tmp/flashcard-edge.env
+          npx --yes supabase@2.119.0 functions serve --workdir tests/integration/backend --no-verify-jwt --env-file /tmp/flashcard-edge.env > /tmp/flashcard-edge.log 2>&1 &
+          for i in {1..30}; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:54321/functions/v1/delete-account)
+            if [ "$code" = '401' ]; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/flashcard-edge.log
+          exit 1
+      - name: Verify persistence, isolation, rollback and deletion
+        run: npm run test:integration
+      - name: Configure app for local backend
+        run: |
+          set -a
+          source /tmp/flashcard-backend.env
+          set +a
+          SUPABASE_URL="$API_URL" SUPABASE_PUBLISHABLE_KEY="$ANON_KEY" APP_OWNER_NAME="Integration fixture" APP_SUPPORT_URL="http://127.0.0.1:4200" APP_PRIVACY_UPDATED_AT="2026-01-01" npm run configure
+      - name: Start app
+        run: |
+          npx ng serve --host 127.0.0.1 > /tmp/flashcard-browser-app.log 2>&1 &
+          for i in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:4200 >/dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/flashcard-browser-app.log
+          exit 1
+      - name: Real browser persistence
+        run: CYPRESS_REAL_BACKEND=1 npm run e2e -- --spec cypress/integration/persistence.cy.js
+      - name: Stop disposable backend
+        if: always()
+        run: npx --yes supabase@2.119.0 stop --workdir tests/integration/backend --no-backup

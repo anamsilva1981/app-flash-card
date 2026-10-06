@@ -1,18 +1,19 @@
-import { StudyDay } from './study-history';
-import { StudyItem } from './study-plan';
-import { ManagedSubject } from './subject-manager.component';
-
-interface BackupCard {
-  id: number;
-  due: string;
-  interval: number;
-}
-
+import {
+  BackupData,
+  Card,
+  ManagedSubject,
+  StudyDay,
+  StudyItem,
+  OperationInput,
+} from "./models";
+import { validateBackup } from "./data/validation";
+import { normalizeRelations } from "./data/relations";
+import { normalizeStudyLink } from "./study-plan";
 export function createBackup(
-  cards: BackupCard[],
+  cards: Card[],
   subjects: ManagedSubject[],
   topics: StudyItem[],
-  history: StudyDay[]
+  history: StudyDay[],
 ) {
   return {
     version: 2,
@@ -20,49 +21,137 @@ export function createBackup(
     exported_at: new Date().toISOString(),
     subjects,
     topics,
-    progress: cards.map(card => ({ id: card.id, due: card.due, interval: card.interval })),
-    history
+    progress: cards.map((c) => ({
+      id: c.id,
+      due: c.due,
+      interval: c.interval,
+    })),
+    history,
   };
 }
-
-export function parseBackup(content: string): any {
-  const data = JSON.parse(content);
-  validateBackup(data);
-  if (data.version === 1 && !Array.isArray(data.cards)) {
-    throw new Error("Este backup antigo contém apenas progresso. Exporte um backup completo com os flashcards no aplicativo anterior.");
-  }
-  return data;
+export function parseBackup(content: string): BackupData {
+  return validateBackup(JSON.parse(content));
 }
-
-function validateBackup(data: any): void {
-  const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  const date = /^\d{4}-\d{2}-\d{2}$/;
-  if (!data || ![1, 2].includes(data.version) || !Array.isArray(data.subjects) || !Array.isArray(data.topics) || !Array.isArray(data.progress) || !Array.isArray(data.history)) throw new Error('Invalid backup');
-  if (data.subjects.some((s: any) => !uuid.test(s.id) || typeof s.name !== 'string' || !s.name.trim() || !Array.isArray(s.days) || s.days.some((d: any) => !Number.isInteger(d) || d < 0 || d > 6) || typeof s.archived !== 'boolean')) throw new Error('Invalid subjects');
-  if (data.topics.some((t: any) => !uuid.test(t.id) || typeof t.title !== 'string' || !t.title.trim() || typeof t.subject !== 'string' || typeof t.notes !== 'string' || !['todo', 'done'].includes(t.status) || !['alta', 'media', 'baixa'].includes(t.priority) || (t.link !== null && typeof t.link !== 'string') || (t.completed_at !== null && isNaN(Date.parse(t.completed_at))))) throw new Error('Invalid topics');
-  if (data.progress.some((p: any) => !Number.isSafeInteger(p.id) || !date.test(p.due) || !Number.isInteger(p.interval) || p.interval < 0 || p.interval > 365)) throw new Error('Invalid progress');
-  if (data.history.some((day: any) => !date.test(day.date) || !Array.isArray(day.learning) || !Array.isArray(day.reviews) || [...day.learning, ...day.reviews].some((x: any) => typeof x !== 'string'))) throw new Error('Invalid history');
-  if (data.cards !== undefined && (!Array.isArray(data.cards) || data.cards.some((card: any) => !Number.isSafeInteger(card.id) || card.id < 1 || ['subject', 'topic', 'question', 'answer', 'explanation', 'example'].some(key => typeof card[key] !== 'string') || !card.question.trim() || !card.answer.trim() || !date.test(card.due) || !Number.isInteger(card.interval) || card.interval < 0 || card.interval > 365))) throw new Error('Invalid cards');
-}
-export function mergeBackupCards(current: any[], incoming: any[]): { cards: any[]; added: any[] } {
-  const added = incoming.filter(card => !current.some(existing => existing.id === card.id));
+export function mergeBackupCards(current: Card[], incoming: Card[]) {
+  const added = incoming.filter(
+    (card) => !current.some((existing) => existing.id === card.id),
+  );
   return { cards: [...current, ...added], added };
 }
-
-export function mergeBackupSubjects(current: ManagedSubject[], incoming: any[]): { subjects: ManagedSubject[]; added: ManagedSubject[] } {
+export function mergeBackupSubjects(
+  current: ManagedSubject[],
+  incoming: ManagedSubject[],
+) {
   const added = incoming
-    .filter(raw => !current.some(subject => subject.id === raw.id || subject.name.toLowerCase() === raw.name.toLowerCase()))
-    .map(raw => ({ id: raw.id, name: raw.name.trim(), days: raw.days, archived: raw.archived, deck_key: typeof raw.deck_key === 'string' ? raw.deck_key : raw.name }));
+    .filter(
+      (raw) =>
+        !current.some(
+          (s) =>
+            s.id === raw.id || s.name.toLowerCase() === raw.name.toLowerCase(),
+        ),
+    )
+    .map((raw) => ({
+      ...raw,
+      name: raw.name.trim(),
+      deck_key: raw.deck_key || raw.name,
+    }));
   return { subjects: [...current, ...added], added };
 }
-
-export function mergeBackupHistory(current: StudyDay[], incoming: StudyDay[]): StudyDay[] {
-  const merged = current.map(day => ({ ...day, learning: [...day.learning], reviews: [...day.reviews] }));
+export function mergeBackupHistory(
+  current: StudyDay[],
+  incoming: StudyDay[],
+): StudyDay[] {
+  const merged = structuredClone(current);
   for (const day of incoming) {
-    let target = merged.find(existing => existing.date === day.date);
-    if (!target) { target = { date: day.date, learning: [], reviews: [] }; merged.push(target); }
-    for (const label of day.learning) if (!target.learning.includes(label)) target.learning.push(label);
-    for (const label of day.reviews) if (!target.reviews.includes(label)) target.reviews.push(label);
+    let target = merged.find((existing) => existing.date === day.date);
+    if (!target) {
+      target = { date: day.date, learning: [], reviews: [] };
+      merged.push(target);
+    }
+    target.learning = Array.from(
+      new Set([...target.learning, ...day.learning]),
+    );
+    target.reviews = Array.from(new Set([...target.reviews, ...day.reviews]));
   }
   return merged.sort((a, b) => b.date.localeCompare(a.date));
+}
+export interface BackupState {
+  cards: Card[];
+  subjects: ManagedSubject[];
+  queue: StudyItem[];
+  history: StudyDay[];
+}
+/** Validate and prepare everything before any cache, queue or signal is touched. */
+export function prepareBackup(
+  current: BackupState,
+  data: BackupData,
+): { state: BackupState; operations: OperationInput[] } {
+  const subjectMerge = mergeBackupSubjects(current.subjects, data.subjects);
+  const subjectIds = new Map(
+    data.subjects.map((s) => [
+      s.id,
+      subjectMerge.subjects.find(
+        (x) => x.id === s.id || x.name.toLowerCase() === s.name.toLowerCase(),
+      )!.id,
+    ]),
+  );
+  const incomingCards = data.cards.map((c) => ({
+    ...c,
+    ...(c.subject_id
+      ? { subject_id: subjectIds.get(c.subject_id) || c.subject_id }
+      : {}),
+  }));
+  const mergedCards = mergeBackupCards(current.cards, incomingCards);
+  const addedTopics = data.topics
+    .filter((t) => !current.queue.some((x) => x.id === t.id))
+    .map((t) => ({
+      ...t,
+      subject_id: t.subject_id
+        ? subjectIds.get(t.subject_id) || t.subject_id
+        : null,
+      link: t.link ? normalizeStudyLink(t.link) : null,
+    }));
+  const normalized = normalizeRelations({
+    subjects: subjectMerge.subjects,
+    cards: mergedCards.cards,
+    queue: [...current.queue, ...addedTopics],
+  });
+  const cards = normalized.cards.map((c) => {
+    const p = data.progress.find((x) => x.id === c.id);
+    return p && c.interval === 0
+      ? { ...c, due: p.due, interval: p.interval }
+      : c;
+  });
+  const state = {
+    ...normalized,
+    cards,
+    history: mergeBackupHistory(current.history, data.history),
+  };
+  const operations: OperationInput[] = [
+    ...subjectMerge.added.map((body) => ({ path: "study_subjects", body })),
+    ...addedTopics.map((t) => ({
+      path: "study_queue",
+      body: state.queue.find((x) => x.id === t.id)!,
+    })),
+    ...mergedCards.added.map((c) => ({
+      path: "account_cards",
+      body: state.cards.find((x) => x.id === c.id)!,
+    })),
+  ];
+  for (const card of state.cards) {
+    const old = current.cards.find((c) => c.id === card.id);
+    if (card.interval !== old?.interval || card.due !== old?.due)
+      operations.push({
+        path: "seed_card_progress",
+        body: { card_id: card.id, due: card.due, interval: card.interval },
+      });
+  }
+  for (const day of data.history)
+    for (const kind of ["learning", "review"] as const)
+      for (const label of kind === "learning" ? day.learning : day.reviews)
+        operations.push({
+          path: "study_activity",
+          body: { activity_date: day.date, kind, label },
+        });
+  return { state, operations };
 }

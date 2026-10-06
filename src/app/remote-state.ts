@@ -1,32 +1,36 @@
-import { Card } from './flashcard';
-import { historyFromRemote, StudyDay } from './study-history';
-import { StudyItem } from './study-plan';
-
-export type ApiReader = (path: string, options?: RequestInit) => Promise<Response>;
-
-export async function readRemoteCards(api: ApiReader): Promise<Card[] | null> {
-  const response = await api('account_cards');
-  return response.ok ? response.json() : null;
+import { Card, RemoteProgress, Preferences, StudyItem } from "./models";
+import { historyFromRemote, StudyDay } from "./study-history";
+import {
+  parseCards,
+  parseTopics,
+  parseActivity,
+  parseProgress,
+  parsePreferences,
+} from "./data/validation";
+export type ApiReader = (
+  path: string,
+  options?: RequestInit,
+) => Promise<Response>;
+async function read<T>(
+  api: ApiReader,
+  path: string,
+  parse: (value: unknown) => T,
+): Promise<T | null> {
+  const r = await api(path);
+  return r.ok ? parse(await r.json()) : null;
 }
-
-export async function readRemotePreferences(api: ApiReader): Promise<any | null> {
-  const response = await api('account_preferences');
-  return response.ok ? response.json() : null;
-}
-
-export async function readRemoteStudyQueue(api: ApiReader): Promise<StudyItem[] | null> {
-  const response = await api('study_queue?select=id,title,subject,notes,link,priority,status,completed_at,created_at&order=created_at.asc');
-  if (!response.ok) return null;
-  const rows: StudyItem[] = await response.json();
-  return rows.map(item => ({ ...item, notes: item.notes || '' }));
-}
-
-export async function readRemoteHistory(api: ApiReader): Promise<StudyDay[] | null> {
-  const response = await api('study_activity?select=activity_date,kind,label&order=activity_date.desc,created_at.asc');
-  return response.ok ? historyFromRemote(await response.json()) : null;
-}
-
-export async function readRemoteProgress(api: ApiReader): Promise<any[] | null> {
-  const response = await api('seed_card_progress?select=card_id,due,interval');
-  return response.ok ? response.json() : null;
-}
+export const readRemoteCards = (api: ApiReader): Promise<Card[] | null> =>
+  read(api, "account_cards", parseCards);
+export const readRemotePreferences = (
+  api: ApiReader,
+): Promise<Preferences | null> =>
+  read(api, "account_preferences", parsePreferences);
+export const readRemoteStudyQueue = (
+  api: ApiReader,
+): Promise<StudyItem[] | null> => read(api, "study_queue", parseTopics);
+export const readRemoteHistory = (api: ApiReader): Promise<StudyDay[] | null> =>
+  read(api, "study_activity", (x) => historyFromRemote(parseActivity(x)));
+export const readRemoteProgress = (
+  api: ApiReader,
+): Promise<RemoteProgress[] | null> =>
+  read(api, "seed_card_progress", parseProgress);

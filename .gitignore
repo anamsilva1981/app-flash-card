@@ -10,3 +10,9 @@
 .env.*
 !.env.example
 /src/app/app-config.generated.ts
+/.test-build
+/coverage
+/tests/integration/backend
+/tests/integration/.env
+/cypress/screenshots
+/cypress/videos
