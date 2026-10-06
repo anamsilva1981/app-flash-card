@@ -10,7 +10,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { api as syncedApi, cache, cached, write, flush, hasPending, syncStatus, writeRevision } from './sync';
 import { AccountPanelComponent } from './account-panel.component';
 import { accountSession, accountScope } from './account';
-import { buildReviewSession, dueReviewCards, intervalFor } from './review-schedule';
+import { buildReviewSession, dueReviewCards, intervalFor, totalDueCards } from './review-schedule';
 import { completeStudyItem as markStudyItemComplete, normalizeStudyLink, renameStudyItemsSubject, nextStudyItem, pendingStudyItems, sortStudyItems, StudyItem, upsertStudyItem } from './study-plan';
 import { addStudyActivity, buildCalendarDays, countStudyDaysInMonth, historyFromRemote, StudyDay, studyStreak } from './study-history';
 import { onboardingStepFor } from './onboarding';
@@ -75,7 +75,7 @@ export class AppComponent implements OnInit {
  subjectCards=computed(()=>cardsForSubject(this.cards(),this.subject()));
  topics=computed(()=>cardTopics(this.subjectCards()));
  dueCards=computed(()=>dueReviewCards(this.cards(),this.subject(),this.topic(),today()));
- totalDue=computed(()=>this.cards().filter(c=>c.due<=today()&&this.activeSubjects().some(s=>(s.deck_key||s.name)===c.subject)).length);
+ totalDue=computed(()=>totalDueCards(this.cards(),this.activeSubjects(),today()));
  subjectDue=(subject:string)=>countDueCards(this.cards(),subject,today());
  subjectTotal=(subject:string)=>countSubjectCards(this.cards(),subject);
  subjectIcon(subject:string){return ({AWS:'☁',JavaScript:'JS','Padrões de Projeto':'▱',Angular:'A',React:'⚛',Arquitetura:'⌂',Java:'☕'} as Record<string,string>)[subject]||'•';}
