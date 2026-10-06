@@ -30,3 +30,8 @@ export function rateReviewCard<T extends ReviewCard>(card:T,rating:Rating,due:st
  const days=intervalFor(card.interval,rating);
  return {...card,due,interval:days};
 }
+
+export function totalDueCards<T extends ReviewCard>(cards:T[],subjects:Array<{name:string;deck_key?:string}>,today:string):number{
+ const active=new Set(subjects.map(subject=>subject.deck_key||subject.name));
+ return cards.filter(card=>card.due<=today&&active.has(card.subject)).length;
+}
