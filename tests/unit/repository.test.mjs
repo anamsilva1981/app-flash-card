@@ -149,3 +149,18 @@ test("remote initialization validates the complete snapshot and preserves local 
   assert.equal(store.error(), "");
   injector.destroy();
 });
+
+test("rejects a backup that the server cannot accept before committing local data", async () => {
+  const { repository, store, injector } = services();
+  const { backup, card } = fixture();
+  await assert.rejects(
+    repository.importBackup({
+      ...backup,
+      cards: [{ ...card, question: "x".repeat(2_000_001) }],
+    }),
+    /batch limit/,
+  );
+  assert.deepEqual(store.cards(), []);
+  assert.deepEqual(app.cached("flashcards", []), []);
+  injector.destroy();
+});

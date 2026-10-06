@@ -259,6 +259,13 @@ export class StudyRepository {
         ...op,
         id: crypto.randomUUID(),
       }));
+      if (
+        operations.length > 10000 ||
+        new TextEncoder().encode(JSON.stringify(operations)).byteLength >
+          2_000_000
+      ) {
+        throw new Error("Backup exceeds the atomic batch limit");
+      }
       return {
         state: prepared.state,
         operations: operations.length
