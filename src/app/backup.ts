@@ -6,7 +6,6 @@ interface BackupCard {
   id: number;
   due: string;
   interval: number;
-  [key: string]: unknown;
 }
 
 export function createBackup(
