@@ -12,7 +12,7 @@ import { AccountPanelComponent } from './account-panel.component';
 import { accountSession, accountScope } from './account';
 import { buildReviewSession, dueReviewCards, intervalFor } from './review-schedule';
 import { completeStudyItem as markStudyItemComplete, normalizeStudyLink, renameStudyItemsSubject, sortStudyItems, StudyItem, upsertStudyItem } from './study-plan';
-import { buildCalendarDays, countStudyDaysInMonth, StudyDay, studyStreak } from './study-history';
+import { addStudyActivity, buildCalendarDays, countStudyDaysInMonth, StudyDay, studyStreak } from './study-history';
 import { onboardingStepFor } from './onboarding';
 import { ManagedSubject, SubjectManagerComponent, subjectConfigs, loadSubjectConfig } from './subject-manager.component';
 type Rating = 'again'|'hard'|'good'|'easy';
@@ -212,7 +212,7 @@ export class AppComponent implements OnInit {
  private restoreCompletedReviewsFromHistory(){const reviewedToday=this.history().find(d=>d.date===today())?.reviews||[];if(!reviewedToday.length)return;const next=this.cards().map(card=>{const name=card.subject==='AWS'?'AWS IA':card.subject;const full=`${name} — ${card.topic}`;const completed=reviewedToday.includes(name)||reviewedToday.includes(full);return completed&&card.due<=today()?{...card,due:addDays(1),interval:1}:card;});this.cards.set(next);cache('flashcards',next);for(const card of next.filter(x=>x.due===addDays(1)&&x.interval===1))void this.saveRemoteProgress(card,'restored');}
  private saveRemoteProgress(card:Card,rating:string){write('seed_card_progress?on_conflict=card_id',{card_id:card.id,due:card.due,interval:card.interval,rating,last_reviewed_at:new Date().toISOString(),updated_at:new Date().toISOString()});}
  private mergeLearning(saved:StudyDay[]):StudyDay[]{return saved.sort((a,b)=>b.date.localeCompare(a.date));}
- private recordActivity(label:string,kind:'learning'|'review'){const date=today();const next=this.history().map(d=>({...d,learning:[...d.learning],reviews:[...d.reviews]}));let day=next.find(d=>d.date===date);if(!day){day={date,learning:[],reviews:[]};next.push(day)}const list=kind==='learning'?day.learning:day.reviews;if(!list.includes(label))list.push(label);this.history.set(next.sort((a,b)=>b.date.localeCompare(a.date)));cache('study-history',this.history());if(kind==='review')write('study_activity?on_conflict=activity_date,kind,label',{activity_date:date,kind,label},'POST','resolution=ignore-duplicates,return=minimal')}
+ private recordActivity(label:string,kind:'learning'|'review'){const date=today();this.history.set(addStudyActivity(this.history(),date,label,kind));cache('study-history',this.history());if(kind==='review')write('study_activity?on_conflict=activity_date,kind,label',{activity_date:date,kind,label},'POST','resolution=ignore-duplicates,return=minimal')}
  private saveReview(label:string){this.recordActivity(label,'review')}
  subjectLabel(){const key=this.subject();return this.subjectConfigs().find(s=>(s.deck_key||s.name)===key)?.name||(key==='AWS'?'AWS IA':key)||''}
  reviewLabel(){const subject=this.subject();const topic=this.topic();const name=this.subjectLabel();return topic==='Todos'?name:`${name} — ${topic}`;}
