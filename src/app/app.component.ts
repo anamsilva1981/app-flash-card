@@ -11,7 +11,7 @@ import { api as syncedApi, cache, cached, write, flush, hasPending, syncStatus, 
 import { AccountPanelComponent } from './account-panel.component';
 import { accountSession, accountScope } from './account';
 import { buildReviewSession, dueReviewCards, intervalFor } from './review-schedule';
-import { completeStudyItem as markStudyItemComplete, normalizeStudyLink, renameStudyItemsSubject, sortStudyItems, StudyItem, upsertStudyItem } from './study-plan';
+import { completeStudyItem as markStudyItemComplete, normalizeStudyLink, renameStudyItemsSubject, nextStudyItem, pendingStudyItems, sortStudyItems, StudyItem, upsertStudyItem } from './study-plan';
 import { addStudyActivity, buildCalendarDays, countStudyDaysInMonth, StudyDay, studyStreak } from './study-history';
 import { onboardingStepFor } from './onboarding';
 import { createBackup, parseBackup } from './backup';
@@ -240,8 +240,8 @@ export class AppComponent implements OnInit {
  todaysSubjects=computed(()=>this.subjectConfigs().filter(s=>!s.archived&&s.days.includes(new Date(today()+'T12:00:00').getDay())));
  activeSubjects=computed(()=>this.subjectConfigs().filter(s=>!s.archived));
  configChanged(value:ManagedSubject[]){this.subjectConfigs.set(value);this.studySubjects.set(value.filter(s=>!s.archived).map(s=>s.name))}
- nextTopic(name:string){return this.todoStudyItems().find(i=>i.subject===name)}
- pendingTopics(name:string){return this.todoStudyItems().filter(i=>i.subject===name).length}
+ nextTopic(name:string){return nextStudyItem(this.studyItems(),name)}
+ pendingTopics(name:string){return pendingStudyItems(this.studyItems(),name).length}
  goToSubject(name:string){this.activeTab.set('studyPlan');setTimeout(()=>{const s=this.manager?.subjects().find(i=>i.name===name);if(s){this.manager?.openSubject(s);this.manager?.detailTab.set('topics')}},0)}
  setSessionLimit(value:number){this.sessionLimit.set(value);cache('review-session-limit',value);if(this.subject())this.startSession()}
  startSession(){const available=this.practice()?this.subjectCards().filter(c=>this.topic()==='Todos'||c.topic===this.topic()):this.dueCards();this.sessionIds.set(buildReviewSession(available,this.sessionLimit()));this.sessionPosition.set(0);this.flipped.set(false);this.explanationOpen.set(false)}
