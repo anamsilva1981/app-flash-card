@@ -13,6 +13,7 @@ import { accountSession, accountScope } from './account';
 import { buildReviewSession, dueReviewCards, intervalFor } from './review-schedule';
 import { completeStudyItem as markStudyItemComplete, normalizeStudyLink, renameStudyItemsSubject, sortStudyItems, StudyItem, upsertStudyItem } from './study-plan';
 import { buildCalendarDays, countStudyDaysInMonth, StudyDay, studyStreak } from './study-history';
+import { onboardingStepFor } from './onboarding';
 import { ManagedSubject, SubjectManagerComponent, subjectConfigs, loadSubjectConfig } from './subject-manager.component';
 type Rating = 'again'|'hard'|'good'|'easy';
 interface Card { id:number; subject:string; topic:string; question:string; answer:string; explanation:string; example:string; due:string; interval:number; }
@@ -265,7 +266,7 @@ export class AppComponent implements OnInit {
 
  displayName=signal('');onboardingDismissed=signal(cached('onboarding-dismissed',false));legacyAvailable=signal(!!localStorage.getItem('flashcards')||!!localStorage.getItem('study-queue'));
  cardEditor=signal(false);cardDraft={id:0,subject:'',topic:'',question:'',answer:'',explanation:'',example:'',due:today(),interval:0};cardError=signal('');
- onboardingStep(){if(this.onboardingDismissed())return 'done';const subjects=this.activeSubjects();if(!subjects.length)return 'deck';const first=subjects[0];if(!this.studyItems().some(i=>i.subject===first.name))return 'topic';if(!first.days?.length)return 'routine';if(!this.cards().some(c=>c.subject===(first.deck_key||first.name)||c.subject===first.name))return 'card';return 'done'}
+ onboardingStep(){return onboardingStepFor(this.onboardingDismissed(),this.activeSubjects(),this.studyItems(),this.cards())}
  startFirstSubject(){this.setTab('studyPlan');setTimeout(()=>this.manager?.openNew(),0)}
  startFirstTopic(){const first=this.activeSubjects()[0];if(!first)return this.startFirstSubject();this.setTab('studyPlan');setTimeout(()=>{this.manager?.openSubject(first);if(this.manager)this.manager.detailTab.set('topics');this.openTopicForm(first.name)},0)}
  startFirstRoutine(){const first=this.activeSubjects()[0];if(!first)return this.startFirstSubject();this.setTab('studyPlan');setTimeout(()=>this.manager?.edit(first),0)}
