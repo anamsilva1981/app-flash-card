@@ -61,3 +61,16 @@ export function studyStreak(history: StudyDay[], today: string): number {
   }
   return count;
 }
+
+export function addStudyActivity(history: StudyDay[], date: string, label: string, kind: 'learning' | 'review'): StudyDay[] {
+  const next = history.map(day => ({ ...day, learning: [...day.learning], reviews: [...day.reviews] }));
+  let current = next.find(day => day.date === date);
+  if (!current) {
+    current = { date, learning: [], reviews: [] };
+    next.push(current);
+  }
+
+  const target = kind === 'learning' ? current.learning : current.reviews;
+  if (!target.includes(label)) target.push(label);
+  return next.sort((a, b) => b.date.localeCompare(a.date));
+}
