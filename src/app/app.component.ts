@@ -15,7 +15,7 @@ import { completeStudyItem as markStudyItemComplete, normalizeStudyLink, renameS
 import { addStudyActivity, buildCalendarDays, countStudyDaysInMonth, StudyDay, studyStreak } from './study-history';
 import { onboardingStepFor } from './onboarding';
 import { createBackup, parseBackup } from './backup';
-import { Card, createCard, upsertCard } from './flashcard';
+import { Card, cardTopics, cardsForSubject, countDueCards, countSubjectCards, createCard, upsertCard } from './flashcard';
 import { mergeCardProgress, restoreCompletedReviews } from './progress';
 import { ManagedSubject, SubjectManagerComponent, subjectConfigs, loadSubjectConfig } from './subject-manager.component';
 type Rating = 'again'|'hard'|'good'|'easy';
@@ -219,12 +219,12 @@ export class AppComponent implements OnInit {
  subjectLabel(){const key=this.subject();return this.subjectConfigs().find(s=>(s.deck_key||s.name)===key)?.name||(key==='AWS'?'AWS IA':key)||''}
  reviewLabel(){const subject=this.subject();const topic=this.topic();const name=this.subjectLabel();return topic==='Todos'?name:`${name} — ${topic}`;}
  formatDate(date:string){const [y,m,d]=date.split('-');return `${d}/${m}/${y}`;}
- subjectCards=computed(()=>this.subject()?this.cards().filter(c=>c.subject===this.subject()):[]);
- topics=computed(()=>['Todos',...Array.from(new Set(this.subjectCards().map(c=>c.topic)))]);
+ subjectCards=computed(()=>cardsForSubject(this.cards(),this.subject()));
+ topics=computed(()=>cardTopics(this.subjectCards()));
  dueCards=computed(()=>dueReviewCards(this.cards(),this.subject(),this.topic(),today()));
  totalDue=computed(()=>this.cards().filter(c=>c.due<=today()&&this.activeSubjects().some(s=>(s.deck_key||s.name)===c.subject)).length);
- subjectDue=(subject:string)=>this.cards().filter(c=>c.subject===subject&&c.due<=today()).length;
- subjectTotal=(subject:string)=>this.cards().filter(c=>c.subject===subject).length;
+ subjectDue=(subject:string)=>countDueCards(this.cards(),subject,today());
+ subjectTotal=(subject:string)=>countSubjectCards(this.cards(),subject);
  subjectIcon(subject:string){return ({AWS:'☁',JavaScript:'JS','Padrões de Projeto':'▱',Angular:'A',React:'⚛',Arquitetura:'⌂',Java:'☕'} as Record<string,string>)[subject]||'•';}
  monthLabel=computed(()=>this.historyMonth().toLocaleDateString('pt-BR',{month:'long',year:'numeric'}).replace(/^./,v=>v.toUpperCase()));
  calendarDays=computed(()=>buildCalendarDays(this.historyMonth(),this.history(),today()));
