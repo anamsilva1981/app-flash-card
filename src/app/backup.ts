@@ -42,3 +42,25 @@ function validateBackup(data: any): void {
   if (data.history.some((day: any) => !date.test(day.date) || !Array.isArray(day.learning) || !Array.isArray(day.reviews) || [...day.learning, ...day.reviews].some((x: any) => typeof x !== 'string'))) throw new Error('Invalid history');
   if (data.cards !== undefined && (!Array.isArray(data.cards) || data.cards.some((card: any) => !Number.isSafeInteger(card.id) || card.id < 1 || ['subject', 'topic', 'question', 'answer', 'explanation', 'example'].some(key => typeof card[key] !== 'string') || !card.question.trim() || !card.answer.trim() || !date.test(card.due) || !Number.isInteger(card.interval) || card.interval < 0 || card.interval > 365))) throw new Error('Invalid cards');
 }
+export function mergeBackupCards(current: any[], incoming: any[]): { cards: any[]; added: any[] } {
+  const added = incoming.filter(card => !current.some(existing => existing.id === card.id));
+  return { cards: [...current, ...added], added };
+}
+
+export function mergeBackupSubjects(current: ManagedSubject[], incoming: any[]): { subjects: ManagedSubject[]; added: ManagedSubject[] } {
+  const added = incoming
+    .filter(raw => !current.some(subject => subject.id === raw.id || subject.name.toLowerCase() === raw.name.toLowerCase()))
+    .map(raw => ({ id: raw.id, name: raw.name.trim(), days: raw.days, archived: raw.archived, deck_key: typeof raw.deck_key === 'string' ? raw.deck_key : raw.name }));
+  return { subjects: [...current, ...added], added };
+}
+
+export function mergeBackupHistory(current: StudyDay[], incoming: StudyDay[]): StudyDay[] {
+  const merged = current.map(day => ({ ...day, learning: [...day.learning], reviews: [...day.reviews] }));
+  for (const day of incoming) {
+    let target = merged.find(existing => existing.date === day.date);
+    if (!target) { target = { date: day.date, learning: [], reviews: [] }; merged.push(target); }
+    for (const label of day.learning) if (!target.learning.includes(label)) target.learning.push(label);
+    for (const label of day.reviews) if (!target.reviews.includes(label)) target.reviews.push(label);
+  }
+  return merged.sort((a, b) => b.date.localeCompare(a.date));
+}
