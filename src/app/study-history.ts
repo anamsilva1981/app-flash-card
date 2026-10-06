@@ -74,3 +74,20 @@ export function addStudyActivity(history: StudyDay[], date: string, label: strin
   if (!target.includes(label)) target.push(label);
   return next.sort((a, b) => b.date.localeCompare(a.date));
 }
+
+interface RemoteActivity {
+  activity_date: string;
+  kind: 'learning' | 'review';
+  label: string;
+}
+
+export function historyFromRemote(rows: RemoteActivity[]): StudyDay[] {
+  const days = new Map<string, StudyDay>();
+  for (const row of rows) {
+    if (!days.has(row.activity_date)) days.set(row.activity_date, { date: row.activity_date, learning: [], reviews: [] });
+    const day = days.get(row.activity_date)!;
+    const target = row.kind === 'learning' ? day.learning : day.reviews;
+    if (!target.includes(row.label)) target.push(row.label);
+  }
+  return [...days.values()].sort((a, b) => b.date.localeCompare(a.date));
+}
