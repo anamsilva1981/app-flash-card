@@ -10,7 +10,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { api as syncedApi, cache, cached, write, flush, hasPending, syncStatus, writeRevision } from './sync';
 import { AccountPanelComponent } from './account-panel.component';
 import { accountSession, accountScope } from './account';
-import { intervalFor } from './review-schedule';
+import { buildReviewSession, dueReviewCards, intervalFor } from './review-schedule';
 import { completeStudyItem as markStudyItemComplete, normalizeStudyLink, renameStudyItemsSubject, sortStudyItems, StudyItem, upsertStudyItem } from './study-plan';
 import { ManagedSubject, SubjectManagerComponent, subjectConfigs, loadSubjectConfig } from './subject-manager.component';
 type Rating = 'again'|'hard'|'good'|'easy';
@@ -218,7 +218,7 @@ export class AppComponent implements OnInit {
  formatDate(date:string){const [y,m,d]=date.split('-');return `${d}/${m}/${y}`;}
  subjectCards=computed(()=>this.subject()?this.cards().filter(c=>c.subject===this.subject()):[]);
  topics=computed(()=>['Todos',...Array.from(new Set(this.subjectCards().map(c=>c.topic)))]);
- dueCards=computed(()=>this.subjectCards().filter(c=>c.due<=today()&&(this.topic()==='Todos'||c.topic===this.topic())).sort((a,b)=>a.due.localeCompare(b.due)||a.id-b.id));
+ dueCards=computed(()=>dueReviewCards(this.cards(),this.subject(),this.topic(),today()));
  totalDue=computed(()=>this.cards().filter(c=>c.due<=today()&&this.activeSubjects().some(s=>(s.deck_key||s.name)===c.subject)).length);
  subjectDue=(subject:string)=>this.cards().filter(c=>c.subject===subject&&c.due<=today()).length;
  subjectTotal=(subject:string)=>this.cards().filter(c=>c.subject===subject).length;
@@ -241,7 +241,7 @@ export class AppComponent implements OnInit {
  pendingTopics(name:string){return this.todoStudyItems().filter(i=>i.subject===name).length}
  goToSubject(name:string){this.activeTab.set('studyPlan');setTimeout(()=>{const s=this.manager?.subjects().find(i=>i.name===name);if(s){this.manager?.openSubject(s);this.manager?.detailTab.set('topics')}},0)}
  setSessionLimit(value:number){this.sessionLimit.set(value);cache('review-session-limit',value);if(this.subject())this.startSession()}
- startSession(){const available=this.practice()?this.subjectCards().filter(c=>this.topic()==='Todos'||c.topic===this.topic()):this.dueCards();this.sessionIds.set(available.slice(0,this.sessionLimit()||available.length).map(c=>c.id));this.sessionPosition.set(0);this.flipped.set(false);this.explanationOpen.set(false)}
+ startSession(){const available=this.practice()?this.subjectCards().filter(c=>this.topic()==='Todos'||c.topic===this.topic()):this.dueCards();this.sessionIds.set(buildReviewSession(available,this.sessionLimit()));this.sessionPosition.set(0);this.flipped.set(false);this.explanationOpen.set(false)}
  card=computed(()=>this.cards().find(c=>c.id===this.sessionIds()[this.sessionPosition()]));
  progress=computed(()=>Math.min(this.sessionPosition()+1,this.sessionIds().length)+' / '+this.sessionIds().length);
  nextInterval(r:Rating){return intervalFor(this.card()?.interval||0,r)}
