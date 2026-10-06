@@ -12,10 +12,10 @@ import { AccountPanelComponent } from './account-panel.component';
 import { accountSession, accountScope } from './account';
 import { buildReviewSession, dueReviewCards, intervalFor } from './review-schedule';
 import { completeStudyItem as markStudyItemComplete, normalizeStudyLink, renameStudyItemsSubject, sortStudyItems, StudyItem, upsertStudyItem } from './study-plan';
+import { buildCalendarDays, countStudyDaysInMonth, StudyDay, studyStreak } from './study-history';
 import { ManagedSubject, SubjectManagerComponent, subjectConfigs, loadSubjectConfig } from './subject-manager.component';
 type Rating = 'again'|'hard'|'good'|'easy';
 interface Card { id:number; subject:string; topic:string; question:string; answer:string; explanation:string; example:string; due:string; interval:number; }
-interface StudyDay { date:string; learning:string[]; reviews:string[]; }
 const today=()=>new Date().toLocaleDateString('en-CA',{timeZone:'America/Sao_Paulo'});
 const addDays=(n:number)=>{const date=new Date(today()+'T12:00:00Z');date.setUTCDate(date.getUTCDate()+n);return date.toISOString().slice(0,10)};
 @Component({selector:'app-root',standalone:true,imports:[AccountPanelComponent,A11yModule,AppIconComponent,SubjectBadgeComponent,FormsModule,SubjectManagerComponent,MatButtonModule,MatCardModule,MatChipsModule,MatExpansionModule],templateUrl:'./app.component.html',styleUrl:'./app.component.css'})
@@ -224,15 +224,15 @@ export class AppComponent implements OnInit {
  subjectTotal=(subject:string)=>this.cards().filter(c=>c.subject===subject).length;
  subjectIcon(subject:string){return ({AWS:'☁',JavaScript:'JS','Padrões de Projeto':'▱',Angular:'A',React:'⚛',Arquitetura:'⌂',Java:'☕'} as Record<string,string>)[subject]||'•';}
  monthLabel=computed(()=>this.historyMonth().toLocaleDateString('pt-BR',{month:'long',year:'numeric'}).replace(/^./,v=>v.toUpperCase()));
- calendarDays=computed(()=>{const base=this.historyMonth();const y=base.getFullYear(),m=base.getMonth();const first=new Date(y,m,1);const last=new Date(y,m+1,0);const cells:Array<{date:string|null;day:number|null;learning:boolean;review:boolean;today:boolean}> = [];for(let i=0;i<first.getDay();i++)cells.push({date:null,day:null,learning:false,review:false,today:false});for(let d=1;d<=last.getDate();d++){const key=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;const activity=this.history().find(x=>x.date===key);cells.push({date:key,day:d,learning:!!activity?.learning.length,review:!!activity?.reviews.length,today:key===today()});}return cells;});
+ calendarDays=computed(()=>buildCalendarDays(this.historyMonth(),this.history(),today()));
  selectedHistoryDay=computed(()=>this.history().find(d=>d.date===this.selectedHistoryDate())||null);
- studyDaysInMonth=computed(()=>{const y=this.historyMonth().getFullYear(),m=this.historyMonth().getMonth();return this.history().filter(d=>{const dt=new Date(d.date+'T12:00:00');return dt.getFullYear()===y&&dt.getMonth()===m&&(d.learning.length||d.reviews.length)}).length;});
+ studyDaysInMonth=computed(()=>countStudyDaysInMonth(this.historyMonth(),this.history()));
  changeHistoryMonth(offset:number){const d=this.historyMonth();this.historyMonth.set(new Date(d.getFullYear(),d.getMonth()+offset,1));this.selectedHistoryDate.set(null)}
  selectHistoryDate(date:string|null){if(date)this.selectedHistoryDate.set(date)}
  setTab(tab:'home'|'studyPlan'|'progress'|'history'|'settings'){this.activeTab.set(tab);if(tab==='home')this.deckPicker.set(false);if(tab==='history'&&!this.selectedHistoryDate()){const latest=this.history().find(d=>d.learning.length||d.reviews.length);if(latest){const dt=new Date(latest.date+'T12:00:00');this.historyMonth.set(new Date(dt.getFullYear(),dt.getMonth(),1));}}}
  sessionLimit=signal<number>(cached('review-session-limit',10));sessionIds=signal<number[]>([]);sessionPosition=signal(0);practice=signal(false);deckPicker=signal(false);syncStatus=syncStatus;
  subjectConfigs=subjectConfigs;
- streak=computed(()=>{const active=new Set(this.history().filter(d=>d.learning.length||d.reviews.length).map(d=>d.date));let date=new Date(today()+'T12:00:00Z');if(!active.has(today()))date.setUTCDate(date.getUTCDate()-1);let count=0;while(active.has(date.toISOString().slice(0,10))){count++;date.setUTCDate(date.getUTCDate()-1)}return count});
+ streak=computed(()=>studyStreak(this.history(),today()));
  openDeck(name:string){if(this.subjectDue(name as any))this.openSubject(name as any);else this.openPractice(name)}
  todaysSubjects=computed(()=>this.subjectConfigs().filter(s=>!s.archived&&s.days.includes(new Date(today()+'T12:00:00').getDay())));
  activeSubjects=computed(()=>this.subjectConfigs().filter(s=>!s.archived));
