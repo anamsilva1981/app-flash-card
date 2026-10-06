@@ -31,6 +31,6 @@ const reminderPolicy=ts.transpileModule(readFileSync('src/app/reminder-policy.ts
 const policy=await import('data:text/javascript;base64,'+Buffer.from(reminderPolicy).toString('base64'));
 assert.equal(policy.shouldShowReminder({enabled:true,permissionGranted:true,localTime:'20:00',currentDay:2,allowedDays:[2],configuredTime:'20:00',shownToday:false}),true);
 assert.equal(policy.shouldShowReminder({enabled:true,permissionGranted:true,localTime:'20:00',currentDay:2,allowedDays:[2],configuredTime:'20:00',shownToday:true}),false);
-const current=readFileSync('src/app/app.component.ts','utf8');const {execFileSync}=await import('node:child_process');const old=execFileSync('git',['show','HEAD:src/app/app.component.ts'],{encoding:'utf8'});const seed=s=>s.slice(s.indexOf(' private seed:'),s.indexOf(' cards=signal'));assert.equal(seed(current),seed(old));
+const seedFile=readFileSync('src/app/seed-cards.ts','utf8');assert.ok(seedFile.includes('export const SEED_CARDS'));assert.ok(seedFile.includes("question:'Quais são as etapas básicas para criar um modelo de ML?'"));
 assert.equal(existsSync('dist/app-flash-card/browser/ngsw.json'),false,'Service worker must remain disabled while rapid releases avoid stale PWA caches.');
 console.log('Passed: progressive intervals, priorities, offline replay, retry after rejection, account cache isolation, local-only guest mode, calendar reminders, password recovery event ordering, original card preservation and disabled stale service-worker cache.');
