@@ -1,3 +1,4 @@
+import { validateBackup } from "./validation";
 import { I18nService } from "../i18n.service";
 import { Injectable, inject } from "@angular/core";
 import { accountScope, accountSession } from "../account";
@@ -11,7 +12,11 @@ import {
   writeRevision,
 } from "../sync";
 import { StudyStore } from "./study-store";
-import { normalizeRelations, renameSubjectRelations } from "./relations";
+import {
+  normalizeRelations,
+  renameSubjectRelations,
+  resolveSubject,
+} from "./relations";
 import { Card, ManagedSubject, OperationInput, StudyItem } from "../models";
 import { historyFromRemote, addStudyActivity } from "../study-history";
 import { mergeCardProgress } from "../progress";
@@ -106,7 +111,11 @@ export class StudyRepository {
     await this.mutate((current) => {
       const state = normalizeRelations({
         ...current,
-        cards: upsertCard(current.cards, card),
+        cards: upsertCard(current.cards, {
+          ...card,
+          subject_id: resolveSubject(current.subjects, card.subject)?.id,
+          topic_id: undefined,
+        }),
       });
       return {
         state,
@@ -209,7 +218,11 @@ export class StudyRepository {
     await this.mutate((current) => {
       const state = {
         ...current,
-        cards: upsertCard(current.cards, card),
+        cards: upsertCard(current.cards, {
+          ...card,
+          subject_id: resolveSubject(current.subjects, card.subject)?.id,
+          topic_id: undefined,
+        }),
         history: addStudyActivity(
           current.history,
           studyDate(),
@@ -239,6 +252,7 @@ export class StudyRepository {
     });
   }
   async importBackup(data: BackupData) {
+    data = validateBackup(data);
     await this.mutate((current) => {
       const prepared = prepareBackup(current, data);
       const operations = prepared.operations.map((op) => ({

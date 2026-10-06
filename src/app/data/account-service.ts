@@ -21,18 +21,29 @@ export class AccountService {
     ]);
   }
   async logout() {
+    const scope = accountScope();
     await flush();
-    if (hasPending()) throw new Error("Pending sync");
+    if (scope !== accountScope()) throw new Error("Account changed");
+    if (hasPending(scope)) throw new Error("Pending sync");
     const { error } = await this.auth.signOut({ scope: "local" });
     if (error) throw error;
     window.dispatchEvent(new Event("study-account-exit"));
   }
   async support(message: string) {
     const scope = accountScope();
-    const { error } = await supabase
-      .from("support_requests")
-      .insert({ user_id: scope, message });
-    if (error) throw error;
+    const session = accountSession();
+    if (session?.user.id !== scope) throw new Error("Authentication required");
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/support_requests`, {
+      method: "POST",
+      headers: {
+        apikey: PUBLIC_KEY,
+        Authorization: `Bearer ${session.access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ user_id: scope, message }),
+      signal: AbortSignal.timeout(12000),
+    });
+    if (!response.ok) throw new Error("Support request failed");
     if (scope !== accountScope()) throw new Error("Account changed");
   }
   async deleteAccount(password: string) {

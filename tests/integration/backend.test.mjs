@@ -214,7 +214,13 @@ test("Supabase isolated persistence, authorization and deletion", async (t) => {
           "delete-account",
           { body: { confirmation: "EXCLUIR" } },
         );
-        assert.ifError(error);
+        if (error)
+          assert.fail(
+            JSON.stringify({
+              status: error.context?.status,
+              body: await error.context?.json(),
+            }),
+          );
         assert.equal(data.deleted, true);
         assert.deepEqual(
           (await admin.from("account_studies").select("*").eq("user_id", a.id))

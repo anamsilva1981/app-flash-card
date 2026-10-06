@@ -48,7 +48,9 @@
         (ngModelChange)="vm.choose($event)"
       >
         @for (t of vm.topics(); track t) {
-          <option [value]="t">{{ t }}</option>
+          <option [value]="t">
+            {{ t === "Todos" ? ("ui.todos" | t) : t }}
+          </option>
         }
       </select>
     </div>

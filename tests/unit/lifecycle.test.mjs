@@ -81,6 +81,13 @@ test("recovery event wins over initial session and destroyed listeners cannot re
   listener("SIGNED_IN", { user: { id: "late" } });
   await new Promise((resolve) => setImmediate(resolve));
   assert.equal(page.ready(), false);
+  const empty = new SessionComponent();
+  listener("INITIAL_SESSION", null);
+  assert.equal(empty.loading(), false);
+  assert.equal(empty.ready(), false);
+  finish({ data: { session: null }, error: null });
+  await new Promise((resolve) => setImmediate(resolve));
+  destroy();
   delete globalThis.__fixtureAuth;
   delete globalThis.__fixtureDestroy;
 });

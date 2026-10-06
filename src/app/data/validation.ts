@@ -139,7 +139,7 @@ export function parseSnapshot(v: unknown): StudySnapshot {
 }
 export function validateBackup(v: unknown): BackupData {
   const r = record(v);
-  if (![1, 2].includes(Number(r["version"])))
+  if (r["version"] !== 1 && r["version"] !== 2)
     throw new Error("Invalid version");
   if (r["version"] === 1 && !Array.isArray(r["cards"]))
     throw new Error(
@@ -152,7 +152,7 @@ export function validateBackup(v: unknown): BackupData {
       validDate(r["due"]) &&
       interval(r["interval"]),
   );
-  return {
+  const result: BackupData = {
     version: r["version"] as 1 | 2,
     subjects: parseSubjects(r["subjects"]),
     topics: parseTopics(r["topics"]),
@@ -160,4 +160,14 @@ export function validateBackup(v: unknown): BackupData {
     history: parseHistory(r["history"]),
     progress: p,
   };
+  for (const collection of [
+    result.subjects,
+    result.topics,
+    result.cards,
+    result.progress,
+  ]) {
+    if (new Set(collection.map((item) => item.id)).size !== collection.length)
+      throw new Error("Duplicate backup identity");
+  }
+  return result;
 }

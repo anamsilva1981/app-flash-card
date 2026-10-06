@@ -86,7 +86,7 @@ jobs:
           npx --yes supabase@2.119.0 functions serve --workdir tests/integration/backend --no-verify-jwt --env-file /tmp/flashcard-edge.env > /tmp/flashcard-edge.log 2>&1 &
           for i in {1..30}; do
             code=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:54321/functions/v1/delete-account)
-            if [ "$code" = '401' ]; then exit 0; fi
+            if [ "$code" = '401' ] && rg -q 'Serving functions' /tmp/flashcard-edge.log; then exit 0; fi
             sleep 2
           done
           cat /tmp/flashcard-edge.log
@@ -110,6 +110,9 @@ jobs:
           exit 1
       - name: Real browser persistence
         run: CYPRESS_REAL_BACKEND=1 npm run e2e -- --spec cypress/integration/persistence.cy.js
+      - name: Edge diagnostics on failure
+        if: failure()
+        run: cat /tmp/flashcard-edge.log
       - name: Stop disposable backend
         if: always()
         run: npx --yes supabase@2.119.0 stop --workdir tests/integration/backend --no-backup

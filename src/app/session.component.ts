@@ -75,6 +75,7 @@ export class SessionComponent {
     } = this.account.auth.onAuthStateChange((event, session) => {
       this.authEpoch++;
       accountSession.set(session);
+      this.loading.set(false);
       if (event === "PASSWORD_RECOVERY") {
         this.mode.set("password");
         this.ready.set(false);

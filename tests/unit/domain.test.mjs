@@ -212,3 +212,22 @@ test("explicit translations interpolate user content without translating it", ()
   );
   assert.equal(app.translate("missing", "en"), "missing");
 });
+
+test("rejects duplicate backup identities, string versions and unsafe progress", () => {
+  const { backup, card } = fixture();
+  assert.throws(
+    () => app.validateBackup({ ...backup, cards: [card, card] }),
+    /Duplicate/,
+  );
+  assert.throws(
+    () => app.validateBackup({ ...backup, version: "2" }),
+    /version/,
+  );
+  assert.throws(
+    () =>
+      app.parseSnapshot({
+        progress: [{ card_id: 1, due: "2026-02-30", interval: 1 }],
+      }),
+    /Invalid/,
+  );
+});

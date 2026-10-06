@@ -75,5 +75,33 @@ describe("Dados pertencentes ao usuário", () => {
     cy.contains("Qual é a função da folha?").should("be.visible");
     cy.contains("button", "Virar card").click();
     cy.contains("Realizar fotossíntese.").should("be.visible");
+    cy.get('button[aria-label="Switch language to English"]').click();
+    cy.contains("button", "Got it").should("be.visible");
+    cy.contains("Realizar fotossíntese.").should("be.visible");
+    cy.contains("Qual é a função da folha?").should("exist");
+  });
+  it("rejects invalid cards and backups without changing stored content", () => {
+    signIn();
+    cy.contains("nav button", "Estudar").click();
+    cy.contains("button", "Angular").click();
+    cy.contains("button", "Criar card").click();
+    cy.get('[data-cy="card-save"]').click();
+    cy.contains(
+      "Preencha o baralho, o tópico, a pergunta e a resposta.",
+    ).should("be.visible");
+    cy.get('button[aria-label="Fechar editor de flashcard"]').click();
+    cy.contains("nav button", "Perfil").click();
+    cy.get('input[type="file"]').selectFile(
+      {
+        contents: Cypress.Buffer.from('{"version":2,"cards":"invalid"}'),
+        fileName: "invalid.json",
+        mimeType: "application/json",
+      },
+      { force: true },
+    );
+    cy.contains("Nenhum dado foi importado.").should("be.visible");
+    cy.contains("nav button", "Estudar").click();
+    cy.contains("button", "Angular").should("be.visible");
+    cy.contains("button", "JavaScript").should("be.visible");
   });
 });

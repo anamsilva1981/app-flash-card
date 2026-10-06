@@ -33,12 +33,12 @@ export function normalizeRelations<
     const topic = queue.find(
       (t) =>
         (s ? belongsToSubject(t, s) : t.subject === card.subject) &&
-        t.title === card.topic,
+        (card.topic_id ? t.id === card.topic_id : t.title === card.topic),
     );
     return {
       ...card,
       ...(s ? { subject_id: s.id, subject: s.deck_key || s.name } : {}),
-      ...(topic ? { topic_id: topic.id } : {}),
+      ...(topic ? { topic_id: topic.id, topic: topic.title } : {}),
     };
   });
   return { ...state, queue, cards };

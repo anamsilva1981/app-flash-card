@@ -90,3 +90,62 @@ test("imports one replayable batch and restores cache across store instances", a
   assert.equal(new app.StudyStore().cards()[0].question, "Pergunta");
   injector.destroy();
 });
+
+test("moving a card changes its ID relation and topic renames preserve its identity", async () => {
+  const { repository, store, injector } = services();
+  const { subject, topic, card } = fixture();
+  await repository.saveSubject(subject);
+  await repository.saveTopic(topic);
+  await repository.saveCard(card);
+  await repository.saveTopic({ ...store.queue()[0], title: "Renamed topic" });
+  assert.equal(store.cards()[0].topic_id, topic.id);
+  assert.equal(store.cards()[0].topic, "Renamed topic");
+  const other = {
+    ...subject,
+    id: "second",
+    name: "Second",
+    deck_key: "second",
+  };
+  await repository.saveSubject(other);
+  await repository.saveCard({
+    ...store.cards()[0],
+    subject: "second",
+    topic: "Other topic",
+  });
+  assert.equal(store.cards()[0].subject_id, other.id);
+  assert.equal(store.cards()[0].topic_id, undefined);
+  injector.destroy();
+});
+
+test("remote initialization validates the complete snapshot and preserves local state on failure", async () => {
+  const { repository, store, injector } = services();
+  await repository.saveSubject(fixture().subject);
+  app.accountSession.set({
+    user: { id: "remote", user_metadata: {} },
+    access_token: "fake",
+  });
+  app.setScope("remote");
+  await app.commitBatch({ "study-subject-config": [fixture().subject] }, []);
+  store.restoreCache();
+  globalThis.fetch = async () =>
+    Response.json([{ data: { cards: "invalid" } }]);
+  await repository.initialize();
+  assert.equal(store.subjects()[0].id, fixture().subject.id);
+  assert.match(store.error(), /preservados/);
+  globalThis.fetch = async () =>
+    Response.json([
+      {
+        data: {
+          ...fixture().state,
+          activity: [],
+          progress: [],
+          preferences: { display_name: "Remote" },
+        },
+      },
+    ]);
+  await repository.initialize();
+  assert.equal(store.displayName(), "Remote");
+  assert.equal(store.cards()[0].subject_id, fixture().subject.id);
+  assert.equal(store.error(), "");
+  injector.destroy();
+});
