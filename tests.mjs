@@ -60,3 +60,14 @@ const progressBuild=await build({entryPoints:['src/app/progress.ts'],bundle:true
 const {restoreCompletedReviews}=await import('data:text/javascript;base64,'+Buffer.from(progressBuild.outputFiles[0].text).toString('base64'));
 assert.equal(restoreCompletedReviews([{...storedCard,subject:'deck-key'}],['Matéria renomeada — Meu tópico'],'2026-10-06','2026-10-07',{'deck-key':'Matéria renomeada'})[0].due,'2026-10-07');
 console.log('Passed: public config validation, timezone boundaries, calendar timezone, complete backup import, progress-only backup rejection and generic subject aliases.');
+// The deletion endpoint's CORS policy follows its deployment, without wildcard access.
+let deletionHandler;
+globalThis.Deno={env:{get:name=>name==='APP_ALLOWED_ORIGINS'?'https://app-test.invalid, https://preview-test.invalid':undefined},serve:handler=>{deletionHandler=handler}};
+const deletionBuild=await build({entryPoints:['supabase/functions/delete-account/index.ts'],bundle:true,write:false,format:'esm',platform:'node',plugins:[{name:'supabase-edge-test',setup(b){b.onResolve({filter:/^npm:/},()=>({path:'client',namespace:'edge-fixture'}));b.onLoad({filter:/.*/,namespace:'edge-fixture'},()=>({contents:'export const createClient=()=>{throw new Error("No backend call expected in CORS tests")};'}));}}]});
+await import('data:text/javascript;base64,'+Buffer.from(deletionBuild.outputFiles[0].text).toString('base64'));
+const allowed=await deletionHandler(new Request('https://function-test.invalid',{method:'OPTIONS',headers:{Origin:'https://preview-test.invalid'}}));
+assert.equal(allowed.status,204);assert.equal(allowed.headers.get('Access-Control-Allow-Origin'),'https://preview-test.invalid');
+const denied=await deletionHandler(new Request('https://function-test.invalid',{method:'OPTIONS',headers:{Origin:'https://unknown-test.invalid'}}));
+assert.equal(denied.status,403);assert.notEqual(denied.headers.get('Access-Control-Allow-Origin'),'https://unknown-test.invalid');
+assert.equal((await deletionHandler(new Request('https://function-test.invalid',{method:'POST',headers:{Origin:'https://app-test.invalid'}}))).status,401);
+console.log('Passed: configured deletion CORS origins, rejected unknown origins and required authentication.');
