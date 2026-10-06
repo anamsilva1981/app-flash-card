@@ -1,4 +1,3 @@
-const projectRef='elzkhndhkkkfxvtbhilt';
 
 function jwt(){
   const enc=value=>btoa(JSON.stringify(value)).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');

@@ -1,8 +1,11 @@
 import { createClient } from "npm:@supabase/supabase-js@2.117.2";
-const allowedOrigin="https://anamsilva1981.github.io";
+const allowedOrigins=(Deno.env.get("APP_ALLOWED_ORIGINS")||"").split(",").map(value=>value.trim()).filter(Boolean);
 Deno.serve(async (req: Request) => {
+ const origin=req.headers.get("Origin");
+ const allowedOrigin=origin && allowedOrigins.includes(origin) ? origin : "";
  const headers={"Access-Control-Allow-Origin":allowedOrigin,"Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type","Access-Control-Allow-Methods":"POST, OPTIONS","Content-Type":"application/json","Vary":"Origin"};
  const reply=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers});
+ if(origin && !allowedOrigin)return reply({error:"Origin not allowed"},403);
  if(req.method==="OPTIONS")return new Response(null,{status:204,headers});
  if(req.method!=="POST")return reply({error:"Method not allowed"},405);
  const token=req.headers.get("Authorization")?.replace(/^Bearer\s+/i,"");

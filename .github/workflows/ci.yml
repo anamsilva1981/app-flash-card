@@ -14,6 +14,12 @@ concurrency:
 jobs:
   quality:
     runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: https://flashcard-test.invalid
+      SUPABASE_PUBLISHABLE_KEY: sb_publishable_e2e_fixture
+      APP_OWNER_NAME: Test fixture
+      APP_SUPPORT_URL: https://support-test.invalid
+      APP_PRIVACY_UPDATED_AT: 2026-01-01
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,7 +34,7 @@ jobs:
         run: npm ci
 
       - name: Build Angular
-        run: npm run build -- --base-href /app-flash-card/
+        run: npm run build -- --base-href /${{ github.event.repository.name }}/
 
       - name: Test study rules
         run: npm test

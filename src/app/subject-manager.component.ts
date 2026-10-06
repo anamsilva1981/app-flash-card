@@ -1,3 +1,4 @@
+import { studyDate, studyTimeZone, displayLocale } from './study-clock';
 import { A11yModule } from '@angular/cdk/a11y';
 import { AppIconComponent, SubjectBadgeComponent } from './app-icon.component';
 import { Component, computed, signal, Input, Output, EventEmitter } from '@angular/core';
@@ -23,9 +24,9 @@ export class SubjectManagerComponent {
  visibleSubjects(){return this.subjects().filter(s=>s.archived===this.showArchived())}
  openSubject(item:ManagedSubject){if(item.archived)return;this.selectedSubject.set(item);this.detailTab.set('flashcards');this.selectedTopic.set(null);this.topicView.set('todo')}
  closeSubject(){this.selectedSubject.set(null);this.selectedTopic.set(null)}
- subjectAliases(name:string){const item=this.subjects().find(s=>s.name===name);return Array.from(new Set([name,item?.deck_key||name,name==='AWS IA'?'AWS':name]))}
+ subjectAliases(name:string){const item=this.subjects().find(s=>s.name===name);return Array.from(new Set([name,item?.deck_key||name]))}
  subjectCards(){const s=this.selectedSubject();return s?this.flashcards.filter(c=>this.subjectAliases(s.name).includes(c.subject)):[]}
- dueCards(){const d=new Date().toLocaleDateString('en-CA',{timeZone:'America/Sao_Paulo'});return this.subjectCards().filter(c=>c.due<=d)}
+ dueCards(){const d=studyDate();return this.subjectCards().filter(c=>c.due<=d)}
  subjectTopics(){const s=this.selectedSubject();return s?sortTopics(this.studyItems.filter(i=>this.subjectAliases(s.name).includes(i.subject)&&i.status===this.topicView()),this.topicView()==='done'):[]}
  reviewAgain(){const s=this.selectedSubject();if(s)this.practiceRequested.emit(s.deck_key||s.name)}
  reviewDue(){const s=this.selectedSubject();if(s)this.reviewRequested.emit(s.deck_key||s.name)}
@@ -44,10 +45,9 @@ export class SubjectManagerComponent {
  error=signal('');
  ngOnInit(){this.persist();this.subjectsChanged.emit(this.subjects().filter(s=>!s.archived).map(s=>s.name))}
  async syncRemote(){await loadSubjectConfig();this.persist()}
- formatCompleted(value:string|null){return value?new Date(value).toLocaleDateString('pt-BR',{timeZone:'America/Sao_Paulo'}):'data não informada'}
+ formatCompleted(value:string|null){return value?new Date(value).toLocaleDateString(displayLocale(),{timeZone:studyTimeZone()}):'data não informada'}
  dayLabel(days:number[]){if(days.length===7)return 'Todos os dias';if(!days.length)return 'Sem dias definidos';return this.week.filter(d=>days.includes(d.value)).map(d=>d.short).join(', ')}
 }
-function defaults():ManagedSubject[]{return [{id:'aws',name:'AWS IA',days:[1,2,3,4,5,6,0],archived:false,deck_key:'AWS'},{id:'javascript',name:'JavaScript',days:[1,2,3,4,5,6,0],archived:false},{id:'patterns',name:'Padrões de Projeto',days:[],archived:false},{id:'angular',name:'Angular',days:[],archived:false},{id:'react',name:'React',days:[],archived:false},{id:'architecture',name:'Arquitetura',days:[],archived:false},{id:'java',name:'Java',days:[],archived:false}]}
 
 export const subjectConfigs=signal<ManagedSubject[]>(cached('study-subject-config',[]));
 export async function loadSubjectConfig(){if(!accountSession()){subjectConfigs.set(cached('study-subject-config',[]));return}try{await flush();if(hasPending()){return}const res=await api('study_subjects?select=id,name,days,archived,deck_key,routine_initialized&order=created_at.asc');if(!res.ok)throw new Error();const remote:ManagedSubject[]=await res.json();const migrated=cached('subject-routine-migrated',false);const legacy=cached<ManagedSubject[]>('study-subject-config',[]);if(!migrated){for(const local of legacy){const existing=remote.find(r=>r.name===local.name);if(existing&&!existing.routine_initialized){existing.days=local.days;existing.archived=local.archived;write('rpc/rename_study_subject',{subject_id:existing.id,new_name:existing.name,routine:existing.days,is_archived:existing.archived})}else if(!existing){const added={...local,id:crypto.randomUUID(),deck_key:local.name};remote.push(added);write('study_subjects?on_conflict=id',added)}}cache('subject-routine-migrated',true)}subjectConfigs.set(remote);cache('study-subject-config',remote)}catch{syncStatus.set('Usando matérias salvas neste dispositivo')}}

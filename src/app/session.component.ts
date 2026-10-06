@@ -1,3 +1,4 @@
+import { appConfig } from './app-config.generated';
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
@@ -5,6 +6,7 @@ import { AppIconComponent } from './app-icon.component';
 import { accountSession, setScope, supabase } from './account';
 @Component({selector:'app-session',standalone:true,imports:[FormsModule,AppComponent,AppIconComponent],templateUrl:'./session.component.html'})
 export class SessionComponent {
+ config=appConfig;
  loading=signal(true);ready=signal(false);mode=signal<'login'|'signup'|'signup-success'|'reset'|'password'>('login');email='';password='';name='';accepted=false;busy=signal(false);message=signal('');notice=signal<{type:'success'|'error'|'info',title:string,text:string}|null>(null);
  page=signal(new URLSearchParams(location.search).get('page')||'');
  constructor(){

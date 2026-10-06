@@ -1,3 +1,4 @@
+import { appConfig } from './app-config.generated';
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { accountSession, accountScope, clearAccountCache, supabase } from './account';
@@ -5,6 +6,7 @@ import { cache, cached, flush, hasPending, write } from './sync';
 import { calendarReminder } from './reminders';
 @Component({selector:'app-account-panel',standalone:true,imports:[FormsModule],templateUrl:'./account-panel.component.html'})
 export class AccountPanelComponent {
+ config=appConfig;
  session=accountSession; name=cached('display-name',accountSession()?.user.user_metadata?.['display_name']||'');time=cached('reminder-time','20:00');days=signal<number[]>(cached('reminder-days',[0,1,2,3,4,5,6]));week=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];message=signal('');busy=signal(false);support='';deleteOpen=signal(false);confirmation='';password='';notifications=signal(cached('browser-reminders',false));
  saveName(){cache('display-name',this.name.trim());write('account_preferences',{display_name:this.name.trim()});this.message.set('Nome salvo.');window.dispatchEvent(new Event('study-profile-changed'))}
  toggleDay(day:number){this.days.update(v=>v.includes(day)?v.filter(x=>x!==day):[...v,day]);this.saveReminder()}

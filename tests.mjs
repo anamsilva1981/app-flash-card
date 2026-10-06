@@ -17,9 +17,9 @@ offline=false;await sync.flush();assert.equal(sync.hasPending(),false);assert.eq
 // Rejecting a request must preserve it for retry; no silent data loss.
 globalThis.fetch=async()=>new Response('temporary failure',{status:503});sync.write('seed_card_progress?on_conflict=card_id',{card_id:7,interval:9});await new Promise(r=>setTimeout(r,0));assert.equal(sync.hasPending(),true);globalThis.fetch=async()=>new Response(null,{status:204});await sync.flush();assert.equal(sync.hasPending(),false);
 sync.cache('study-history',[{date:'2026-10-05'}]);globalThis.__testScope='user-b';assert.deepEqual(sync.cached('study-history',[]),[]);assert.equal(sync.hasPending(),false);sync.cache('study-history',[{date:'2026-10-06'}]);globalThis.__testScope='user-a';assert.equal(sync.cached('study-history',[])[0].date,'2026-10-05');globalThis.__testUser=false;sync.write('study_queue',{id:'local'});assert.equal(sync.hasPending(),false);assert.equal(sync.syncStatus(),'Salvo neste dispositivo');
-const reminder=ts.transpileModule(readFileSync('src/app/reminders.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.ES2022,target:ts.ScriptTarget.ES2022}}).outputText;const {calendarReminder}=await import('data:text/javascript;base64,'+Buffer.from(reminder).toString('base64'));const ics=calendarReminder('20:00',[1,3,5],new Date('2026-10-05T12:00:00Z'));assert.ok(ics.includes('RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR'));assert.ok(ics.includes('DTSTART;TZID=America/Sao_Paulo:20261005T200000'));assert.throws(()=>calendarReminder('25:00',[1]));assert.throws(()=>calendarReminder('20:00',[]));
+const reminderBuild=await build({entryPoints:['src/app/reminders.ts'],bundle:true,write:false,format:'esm',platform:'node'});const reminder=reminderBuild.outputFiles[0].text;const {calendarReminder}=await import('data:text/javascript;base64,'+Buffer.from(reminder).toString('base64'));const ics=calendarReminder('20:00',[1,3,5],new Date('2026-10-05T12:00:00Z'),'America/Sao_Paulo');assert.ok(ics.includes('RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR'));assert.ok(ics.includes('DTSTART;TZID=America/Sao_Paulo:20261005T200000'));assert.throws(()=>calendarReminder('25:00',[1]));assert.throws(()=>calendarReminder('20:00',[]));
 // A recovery event must keep the password form open even if initial session loading finishes later.
-globalThis.location={search:'',pathname:'/app-flash-card/',origin:'https://anamsilva1981.github.io'};globalThis.localStorage.removeItem=k=>memory.delete(k);globalThis.__authListener=null;
+globalThis.location={search:'',pathname:'/app-flash-card/',origin:'https://deployment-test.invalid'};globalThis.localStorage.removeItem=k=>memory.delete(k);globalThis.__authListener=null;
 const sessionBuild=await build({entryPoints:['src/app/session.component.ts'],bundle:true,write:false,format:'esm',platform:'node',plugins:[{name:'session-fixtures',setup(b){b.onResolve({filter:/^(@angular\/core|@angular\/forms|\.\/app\.component|\.\/app-icon\.component|\.\/account)$/},args=>({path:args.path,namespace:'fixture'}));b.onLoad({filter:/.*/,namespace:'fixture'},args=>({contents:args.path==='@angular/core'?'export const Component=()=>c=>c;export const signal=x=>{const s=()=>x;s.set=v=>x=v;return s}':args.path==='@angular/forms'?'export const FormsModule={}':args.path==='./app.component'?'export const AppComponent={}':args.path==='./app-icon.component'?'export const AppIconComponent={}':`let session=null;export const accountSession=()=>session;accountSession.set=v=>session=v;export const setScope=()=>{};export const supabase={auth:{onAuthStateChange:cb=>globalThis.__authListener=cb,getSession:()=>Promise.resolve({data:{session:{user:{id:'recovery-user'}}}})}};`}));}}]});
 const {SessionComponent}=await import('data:text/javascript;base64,'+Buffer.from(sessionBuild.outputFiles[0].text).toString('base64'));const sessionPage=new SessionComponent();globalThis.__authListener('PASSWORD_RECOVERY',{user:{id:'recovery-user'}});assert.equal(sessionPage.mode(),'password');assert.equal(sessionPage.ready(),false);await new Promise(r=>setTimeout(r,0));assert.equal(sessionPage.mode(),'password');
 const studyPlan=ts.transpileModule(readFileSync('src/app/study-plan.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.ES2022,target:ts.ScriptTarget.ES2022}}).outputText;
@@ -31,6 +31,32 @@ const reminderPolicy=ts.transpileModule(readFileSync('src/app/reminder-policy.ts
 const policy=await import('data:text/javascript;base64,'+Buffer.from(reminderPolicy).toString('base64'));
 assert.equal(policy.shouldShowReminder({enabled:true,permissionGranted:true,localTime:'20:00',currentDay:2,allowedDays:[2],configuredTime:'20:00',shownToday:false}),true);
 assert.equal(policy.shouldShowReminder({enabled:true,permissionGranted:true,localTime:'20:00',currentDay:2,allowedDays:[2],configuredTime:'20:00',shownToday:true}),false);
-const seedFile=readFileSync('src/app/seed-cards.ts','utf8');assert.ok(seedFile.includes('export const SEED_CARDS'));assert.ok(seedFile.includes("question:'Quais são as etapas básicas para criar um modelo de ML?'"));
+
 assert.equal(existsSync('dist/app-flash-card/browser/ngsw.json'),false,'Service worker must remain disabled while rapid releases avoid stale PWA caches.');
-console.log('Passed: progressive intervals, priorities, offline replay, retry after rejection, account cache isolation, local-only guest mode, calendar reminders, password recovery event ordering, original card preservation and disabled stale service-worker cache.');
+console.log('Passed: progressive intervals, priorities, offline replay, retry after rejection, account cache isolation, local-only guest mode, calendar reminders, password recovery event ordering, disabled stale service-worker cache.');
+
+// Installation configuration must be complete and must never accept privileged keys.
+const {readPublicConfig}=await import('./scripts/configure.mjs');
+const fixtureEnv={SUPABASE_URL:'https://backend-test.invalid',SUPABASE_PUBLISHABLE_KEY:'sb_publishable_test',APP_OWNER_NAME:'Fixture',APP_SUPPORT_URL:'https://support-test.invalid',APP_PRIVACY_UPDATED_AT:'2026-01-01'};
+assert.equal(readPublicConfig(fixtureEnv).ownerName,'Fixture');
+assert.throws(()=>readPublicConfig({...fixtureEnv,SUPABASE_URL:''}));
+assert.throws(()=>readPublicConfig({...fixtureEnv,SUPABASE_PUBLISHABLE_KEY:'sb_secret_test'}));
+assert.throws(()=>readPublicConfig({...fixtureEnv,APP_SUPPORT_URL:'javascript:alert(1)'}));
+assert.throws(()=>readPublicConfig({...fixtureEnv,APP_PRIVACY_UPDATED_AT:'2026-02-30'}));
+const clockBuild=await build({entryPoints:['src/app/study-clock.ts'],bundle:true,write:false,format:'esm',platform:'node'});
+const {studyDate}=await import('data:text/javascript;base64,'+Buffer.from(clockBuild.outputFiles[0].text).toString('base64'));
+const midnight=new Date('2026-10-06T01:00:00Z');
+assert.equal(studyDate(midnight,'America/Sao_Paulo'),'2026-10-05');
+assert.equal(studyDate(midnight,'Asia/Tokyo'),'2026-10-06');
+assert.ok(calendarReminder('20:00',[1],midnight,'Asia/Tokyo').includes('DTSTART;TZID=Asia/Tokyo:20261006T200000'));
+const backupBuild=await build({entryPoints:['src/app/backup.ts'],bundle:true,write:false,format:'esm',platform:'node'});
+const {parseBackup,mergeBackupCards}=await import('data:text/javascript;base64,'+Buffer.from(backupBuild.outputFiles[0].text).toString('base64'));
+const emptyBackup={version:2,subjects:[],topics:[],cards:[],progress:[],history:[]};
+assert.deepEqual(parseBackup(JSON.stringify(emptyBackup)),emptyBackup);
+assert.throws(()=>parseBackup(JSON.stringify({...emptyBackup,version:1,cards:undefined})),/backup antigo/);
+const storedCard={id:7,subject:'Minha matéria',topic:'Meu tópico',question:'Minha pergunta',answer:'Minha resposta',explanation:'',example:'',due:'2026-10-06',interval:9};
+assert.deepEqual(mergeBackupCards([storedCard],[{...storedCard,answer:'Outra resposta'}]).cards,[storedCard]);
+const progressBuild=await build({entryPoints:['src/app/progress.ts'],bundle:true,write:false,format:'esm',platform:'node'});
+const {restoreCompletedReviews}=await import('data:text/javascript;base64,'+Buffer.from(progressBuild.outputFiles[0].text).toString('base64'));
+assert.equal(restoreCompletedReviews([{...storedCard,subject:'deck-key'}],['Matéria renomeada — Meu tópico'],'2026-10-06','2026-10-07',{'deck-key':'Matéria renomeada'})[0].due,'2026-10-07');
+console.log('Passed: public config validation, timezone boundaries, calendar timezone, complete backup import, progress-only backup rejection and generic subject aliases.');

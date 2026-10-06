@@ -1,7 +1,8 @@
+import { appConfig } from './app-config.generated';
 import { signal } from '@angular/core';
 import { createClient, Session } from '@supabase/supabase-js';
-export const SUPABASE_URL='https://elzkhndhkkkfxvtbhilt.supabase.co';
-export const PUBLIC_KEY='sb_publishable_YFZqSuAst3q1ERiC3HA71A_u4fmIP9j';
+export const SUPABASE_URL=appConfig.supabaseUrl;
+export const PUBLIC_KEY=appConfig.supabasePublishableKey;
 export const supabase=createClient(SUPABASE_URL,PUBLIC_KEY);
 export const accountSession=signal<Session|null>(null);
 let scope='guest';

@@ -5,3 +5,8 @@
 .DS_Store
 
 /supabase/.temp
+
+.env
+.env.*
+!.env.example
+/src/app/app-config.generated.ts

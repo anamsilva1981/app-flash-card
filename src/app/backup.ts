@@ -28,6 +28,9 @@ export function createBackup(
 export function parseBackup(content: string): any {
   const data = JSON.parse(content);
   validateBackup(data);
+  if (data.version === 1 && !Array.isArray(data.cards)) {
+    throw new Error("Este backup antigo contém apenas progresso. Exporte um backup completo com os flashcards no aplicativo anterior.");
+  }
   return data;
 }
 

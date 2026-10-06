@@ -14,9 +14,9 @@ export function mergeCardProgress(cards: Card[], rows: RemoteProgress[]): Card[]
   });
 }
 
-export function restoreCompletedReviews(cards: Card[], reviewed: string[], today: string, tomorrow: string): Card[] {
+export function restoreCompletedReviews(cards: Card[], reviewed: string[], today: string, tomorrow: string, subjectNames: Record<string, string> = {}): Card[] {
   return cards.map(card => {
-    const subject = card.subject === 'AWS' ? 'AWS IA' : card.subject;
+    const subject = subjectNames[card.subject] || card.subject;
     const label = `${subject} — ${card.topic}`;
     const completed = reviewed.includes(subject) || reviewed.includes(label);
     return completed && card.due <= today ? { ...card, due: tomorrow, interval: 1 } : card;

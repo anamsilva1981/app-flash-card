@@ -7,7 +7,10 @@
     "build": "ng build",
     "test": "node tests.mjs",
     "e2e": "npx --yes cypress@15.5.0 run",
-    "e2e:open": "npx --yes cypress@15.5.0 open"
+    "e2e:open": "npx --yes cypress@15.5.0 open",
+    "configure": "node scripts/configure.mjs",
+    "prestart": "npm run configure",
+    "prebuild": "npm run configure"
   },
   "dependencies": {
     "@angular/animations": "20.3.33",

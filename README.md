@@ -204,3 +204,11 @@ npm run e2e
 ## Deployment
 
 The `main` branch is the production branch. Deployment is automated through GitHub Actions and GitHub Pages.
+
+## Configuração da instalação
+
+Use Node.js 22 ou superior. Copie `.env.example` para `.env` e preencha as variáveis antes de executar `npm start` ou `npm run build`. Os scripts geram `src/app/app-config.generated.ts`, que não deve ser versionado. Use somente a chave pública publishable (ou anon legada) do Supabase; nunca uma chave secreta ou service role no frontend.
+
+No GitHub Actions, defina `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `APP_OWNER_NAME`, `APP_SUPPORT_URL` e `APP_PRIVACY_UPDATED_AT` nas variáveis do repositório. O Quality Gate usa configurações fictícias e API interceptada para os testes. Na Edge Function `delete-account`, configure `APP_ALLOWED_ORIGINS` com as origens HTTP(S) permitidas separadas por vírgula, sem caminho ou barra final.
+
+As matérias e os flashcards são cadastrados pelo usuário; o aplicativo não instala uma biblioteca pessoal de estudos. Veja [a análise e as próximas ações de refatoração](docs/REFACTORING.md).
