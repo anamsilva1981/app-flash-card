@@ -27,6 +27,8 @@ export const personalKeys = [
 ];
 export function clearAccountCache(targetScope = scope) {
   const prefix = `study:${targetScope}:`;
-  for (const key of Object.keys(localStorage))
-    if (key.startsWith(prefix)) localStorage.removeItem(key);
+  for (let index = localStorage.length - 1; index >= 0; index--) {
+    const key = localStorage.key(index);
+    if (key?.startsWith(prefix)) localStorage.removeItem(key);
+  }
 }

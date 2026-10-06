@@ -2,6 +2,12 @@ import "@angular/compiler";
 export class MemoryStorage {
   values = new Map();
   fail = false;
+  get length() {
+    return this.values.size;
+  }
+  key(index) {
+    return [...this.values.keys()][index] ?? null;
+  }
   getItem(k) {
     return this.values.get(k) || null;
   }

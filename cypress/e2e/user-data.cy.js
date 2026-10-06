@@ -78,7 +78,8 @@ describe("Dados pertencentes ao usuário", () => {
     cy.get('button[aria-label="Switch language to English"]').click();
     cy.contains("button", "Got it").should("be.visible");
     cy.contains("Realizar fotossíntese.").should("be.visible");
-    cy.contains("Qual é a função da folha?").should("exist");
+    cy.get("button.flashcard").click();
+    cy.contains("Qual é a função da folha?").should("be.visible");
   });
   it("rejects invalid cards and backups without changing stored content", () => {
     signIn();

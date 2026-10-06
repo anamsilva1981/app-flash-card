@@ -71,7 +71,7 @@ A configuração isolada usa apenas a migração que cria o modelo privado atual
 
 ### Verificação local desta etapa
 
-- Build Angular aprovado; bundle inicial aproximadamente 669 kB, com telas em chunks lazy.
-- Testes cobrem regras, relacionamentos, importação, quota, isolamento, replay, snapshot atrasado, concorrência e recuperação/CORS.
-- Cobertura medida nos módulos importados pela suíte (exclui catálogo/configuração gerada): 84,56% linhas/statements, 78,77% branches e 79,68% funções na medição inicial. Não representa cobertura da aplicação inteira ou do HTML.
+- Build Angular aprovado; bundle inicial aproximadamente 671 kB, com telas em chunks lazy.
+- 23 testes unitários aprovados localmente. Testes cobrem regras, relacionamentos, importação, quota, isolamento, replay, snapshot atrasado, concorrência e recuperação/CORS.
+- Cobertura medida nos módulos importados pela suíte (exclui catálogo/configuração gerada): 88,92% linhas/statements, 79,24% branches e 84,21% funções. Não representa cobertura da aplicação inteira ou do HTML.
 - Lint/formatação e resultados de integração/Cypress devem ser conferidos no Quality Gate do PR. Produção não foi alterada nesta etapa.

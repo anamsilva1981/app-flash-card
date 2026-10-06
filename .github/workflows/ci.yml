@@ -86,7 +86,7 @@ jobs:
           npx --yes supabase@2.119.0 functions serve --workdir tests/integration/backend --no-verify-jwt --env-file /tmp/flashcard-edge.env > /tmp/flashcard-edge.log 2>&1 &
           for i in {1..30}; do
             code=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:54321/functions/v1/delete-account)
-            if [ "$code" = '401' ] && rg -q 'Serving functions' /tmp/flashcard-edge.log; then exit 0; fi
+            if [ "$code" = '401' ] && grep -q 'Serving functions' /tmp/flashcard-edge.log; then exit 0; fi
             sleep 2
           done
           cat /tmp/flashcard-edge.log
