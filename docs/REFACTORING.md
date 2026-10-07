@@ -64,7 +64,7 @@ Análise de 06/10/2026, baseada na branch `refactor/study-plan-domain` (PR #4). 
 
 1. Configurar GitHub Actions com os valores da instalação e Supabase Edge Functions com a origem permitida.
 2. Executar a CI desta etapa, incluindo o backend local descartável.
-3. Aplicar `20261006095921_atomic_account_batch.sql` no backend antes de publicar o frontend. Migração aditiva; nenhuma migração histórica deve ser reaplicada ou reescrita.
+3. Confirmar `20261007130849_atomic_account_batch.sql` no histórico do backend antes de publicar o frontend (aplicada em produção em 07/10/2026). Migração aditiva; nenhuma migração histórica deve ser reaplicada ou reescrita.
 4. Publicar a Edge Function configurada e o frontend; verificar login, gravação, backup e exclusão com uma conta de teste.
 
 A configuração isolada usa apenas a migração que cria o modelo privado atual e a nova migração de lote. Migrações históricas dependem de tabelas antigas e não constituem um bootstrap limpo.
@@ -85,3 +85,5 @@ A configuração isolada usa apenas a migração que cria o modelo privado atual
 - Acrescentadas as três suítes Cypress da main e suporte a fixtures por cenário, mantendo os mocks do backend refatorado.
 - A migração `atomic_account_batch` foi aplicada no projeto app-flash-card em 07/10/2026. Conferidos security invoker, search_path e permissões: anon sem EXECUTE, authenticated com EXECUTE. Nenhum registro de estudo foi alterado.
 - A configuração das cinco variáveis do GitHub e de `APP_ALLOWED_ORIGINS` continua necessária. A função publicada ainda é a versão anterior; não publicar a versão refatorada sem configurar a origem.
+
+O arquivo da nova migração e o bootstrap de testes usam a versão `20261007130849` registrada pelo Supabase na aplicação, evitando que uma implantação futura tente reaplicar a mesma migração com outro timestamp.

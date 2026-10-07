@@ -4,7 +4,7 @@ mkdirSync(folder + "/migrations", { recursive: true });
 mkdirSync(folder + "/functions/delete-account", { recursive: true });
 for (const file of [
   "20261005154046_private_account_studies.sql",
-  "20261006095921_atomic_account_batch.sql",
+  "20261007130849_atomic_account_batch.sql",
 ])
   copyFileSync("supabase/migrations/" + file, folder + "/migrations/" + file);
 copyFileSync(
