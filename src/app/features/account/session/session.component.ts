@@ -1,14 +1,14 @@
-import { AccountService } from "../../../data/account-service";
-import { I18nService } from "../../../i18n.service";
-import { Card } from "../../../models";
-import { LanguageSwitcherComponent } from "../../../language-switcher.component";
-import { I18nPipe } from "../../../i18n.pipe";
-import { appConfig } from "../../../app-config.generated";
+import { AccountService } from "../../../core/data/account-service";
+import { I18nService } from "../../../core/i18n.service";
+import { Card } from "../../../core/models";
+import { LanguageSwitcherComponent } from "../../../core/language-switcher.component";
+import { I18nPipe } from "../../../core/i18n.pipe";
+import { appConfig } from "../../../core/app-config.generated";
 import { Component, signal, inject, DestroyRef } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { AppComponent } from "../../../app.component";
 import { AppIconComponent } from "../../../app-icon.component";
-import { accountSession, accountScope, setScope } from "../../../account";
+import { accountSession, accountScope, setScope } from "../../../core/account";
 @Component({
   selector: "app-session",
   standalone: true,

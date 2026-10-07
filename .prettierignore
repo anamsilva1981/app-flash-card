@@ -2,5 +2,5 @@ node_modules
 dist
 .test-build
 coverage
-src/app/app-config.generated.ts
+src/app/core/app-config.generated.ts
 tests/integration/backend

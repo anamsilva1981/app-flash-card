@@ -8,15 +8,15 @@ import {
   inject,
 } from "@angular/core";
 import { AppIconComponent, SubjectBadgeComponent } from "../../../app-icon.component";
-import { StudyStore } from "../../../data/study-store";
-import { StudyRepository } from "../../../data/study-repository";
-import { ManagedSubject, StudyItem, Card } from "../../../models";
-import { belongsToSubject } from "../../../data/relations";
-import { sortStudyItems } from "../../../study-plan";
-import { studyDate, studyTimeZone } from "../../../study-clock";
-import { I18nService } from "../../../i18n.service";
-import { I18nPipe } from "../../../i18n.pipe";
-export type { ManagedSubject } from "../../../models";
+import { StudyStore } from "../../../core/data/study-store";
+import { StudyRepository } from "../../../core/data/study-repository";
+import { ManagedSubject, StudyItem, Card } from "../../../core/models";
+import { belongsToSubject } from "../../../core/data/relations";
+import { sortStudyItems } from "../../../core/study-plan";
+import { studyDate, studyTimeZone } from "../../../core/study-clock";
+import { I18nService } from "../../../core/i18n.service";
+import { I18nPipe } from "../../../core/i18n.pipe";
+export type { ManagedSubject } from "../../../core/models";
 @Component({
   selector: "app-subject-manager",
   standalone: true,

@@ -1,13 +1,13 @@
 import { Component, signal, inject, DestroyRef } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { appConfig } from "../../../app-config.generated";
-import { accountSession } from "../../../account";
-import { AccountService } from "../../../data/account-service";
-import { I18nService } from "../../../i18n.service";
-import { I18nPipe } from "../../../i18n.pipe";
-import { cached, cache } from "../../../sync";
-import { calendarReminder } from "../../../reminders";
-import { studyTimeZone } from "../../../study-clock";
+import { appConfig } from "../../../core/app-config.generated";
+import { accountSession } from "../../../core/account";
+import { AccountService } from "../../../core/data/account-service";
+import { I18nService } from "../../../core/i18n.service";
+import { I18nPipe } from "../../../core/i18n.pipe";
+import { cached, cache } from "../../../core/sync";
+import { calendarReminder } from "../../../core/reminders";
+import { studyTimeZone } from "../../../core/study-clock";
 @Component({
   selector: "app-account-panel",
   standalone: true,
