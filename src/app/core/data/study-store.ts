@@ -1,11 +1,12 @@
 import { Injectable, signal, computed } from "@angular/core";
-import { Card, ManagedSubject, StudyDay, StudyItem } from "../../shared/models";
+import { Card, ManagedSubject, StudyDay, StudyItem } from "@shared/models";
 import { cached } from "../sync";
 import {
   activeSubjects,
   subjectsForToday,
-} from "../../shared/domain/subject-selectors";
-import { studyDate } from "../study-clock";
+} from "../domain/subjects/subject-selectors";
+import { studyDate } from "../domain/time/study-clock";
+
 @Injectable()
 export class StudyStore {
   readonly cards = signal<Card[]>(cached("flashcards", []));
