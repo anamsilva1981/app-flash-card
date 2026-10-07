@@ -28,10 +28,7 @@ const componentSpecs = walk("src/app")
   .filter((file) => file.endsWith(".component.spec.ts"))
   .sort();
 const componentEntry = componentSpecs
-  .map(
-    (file) =>
-      `import '../${relative(".", file).replaceAll("\\\\", "/")}';`,
-  )
+  .map((file) => `import '../${relative(".", file).replaceAll("\\\\", "/")}';`)
   .join("\n");
 writeFileSync(".test-build/component-specs-entry.ts", componentEntry);
 
