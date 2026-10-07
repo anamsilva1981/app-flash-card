@@ -46,7 +46,9 @@ export class ReviewFacade {
   topicLabel(id: string) {
     return id === "__all__"
       ? this.i18n.t("ui.todos")
-      : this.studyItems().find((topic) => topic.id === id)?.title || id;
+      : this.studyItems().find((topic) => topic.id === id)?.title ||
+          this.subjectCards().find((card) => card.topic_id === id)?.topic ||
+          id;
   }
   reviewLabel() {
     return this.topic() === "__all__"

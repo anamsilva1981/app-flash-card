@@ -182,6 +182,129 @@ test("Supabase isolated persistence, authorization and deletion", async (t) => {
       assert.equal(data.cards.filter((c) => c.id === 9999).length, 1);
       assert.equal(data.activity.length, 1);
     });
+    await t.test(
+      "persists topic completion, preferences and subject archive transitions",
+      async () => {
+        const topic = {
+          id: crypto.randomUUID(),
+          subject_id: subject.id,
+          subject: subject.name,
+          title: "Integration topic",
+          notes: "Notes",
+          link: "https://example.test/",
+          priority: "alta",
+          status: "todo",
+          completed_at: null,
+        };
+        assert.ifError((await operation(a.client, "study_queue", topic)).error);
+        assert.ifError(
+          (
+            await operation(a.client, "rpc/complete_study_topic", {
+              topic_id: topic.id,
+              finished_at: "2026-10-07T12:00:00Z",
+            })
+          ).error,
+        );
+        assert.ifError(
+          (
+            await operation(a.client, "account_preferences", {
+              display_name: "Integration name",
+              reminder_time: "21:30",
+              reminder_days: [2, 4],
+            })
+          ).error,
+        );
+        assert.ifError(
+          (
+            await operation(a.client, "rpc/rename_study_subject", {
+              subject_id: subject.id,
+              new_name: "Renamed integration",
+              routine: [2],
+              is_archived: true,
+            })
+          ).error,
+        );
+        let snapshot = (
+          await a.client.from("account_studies").select("data").single()
+        ).data.data;
+        assert.equal(snapshot.subjects[0].archived, true);
+        assert.equal(snapshot.queue[0].status, "done");
+        assert.equal(snapshot.queue[0].subject_id, subject.id);
+        assert.equal(snapshot.cards[0].subject_id, subject.id);
+        assert.equal(snapshot.preferences.reminder_time, "21:30");
+        assert.deepEqual(snapshot.preferences.reminder_days, [2, 4]);
+        assert.ifError(
+          (
+            await operation(a.client, "rpc/rename_study_subject", {
+              subject_id: subject.id,
+              new_name: subject.name,
+              routine: [1],
+              is_archived: false,
+            })
+          ).error,
+        );
+        snapshot = (
+          await a.client.from("account_studies").select("data").single()
+        ).data.data;
+        assert.equal(snapshot.subjects[0].archived, false);
+      },
+    );
+    await t.test(
+      "review progress and activity roll back together and replay exactly once",
+      async () => {
+        const read = async () =>
+          (await a.client.from("account_studies").select("data").single()).data
+            .data;
+        const before = await read();
+        const operations = [
+          {
+            id: crypto.randomUUID(),
+            path: "seed_card_progress",
+            body: { card_id: card.id, due: "2026-12-15", interval: 14 },
+          },
+          {
+            id: crypto.randomUUID(),
+            path: "study_activity",
+            body: {
+              activity_date: "2026-10-07",
+              kind: "review",
+              label: "Atomic review",
+            },
+          },
+        ];
+        assert.ok(
+          (
+            await a.client.rpc("apply_account_batch", {
+              batch_id: crypto.randomUUID(),
+              operations: [
+                ...operations,
+                { id: crypto.randomUUID(), path: "unsupported", body: {} },
+              ],
+            })
+          ).error,
+        );
+        assert.deepEqual(await read(), before);
+        const batch_id = crypto.randomUUID();
+        assert.ifError(
+          (await a.client.rpc("apply_account_batch", { batch_id, operations }))
+            .error,
+        );
+        assert.ifError(
+          (await a.client.rpc("apply_account_batch", { batch_id, operations }))
+            .error,
+        );
+        const snapshot = await read();
+        assert.equal(
+          snapshot.progress.find((p) => p.card_id === card.id).interval,
+          14,
+        );
+        assert.equal(
+          snapshot.activity.filter((item) => item.label === "Atomic review")
+            .length,
+          1,
+        );
+      },
+    );
     await t.test("keeps support requests private", async () => {
       assert.ifError(
         (

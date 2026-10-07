@@ -246,6 +246,7 @@ export class AppFacade {
     return this.reviews.openPractice(...args);
   }
   back(...args: Parameters<ReviewFacade["back"]>) {
+    this.deckPicker.set(false);
     return this.reviews.back(...args);
   }
   choose(...args: Parameters<ReviewFacade["choose"]>) {
