@@ -1,7 +1,10 @@
 import { Component, Input } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { A11yModule } from "@angular/cdk/a11y";
-import { AppIconComponent, SubjectBadgeComponent } from "../../../app-icon.component";
+import {
+  AppIconComponent,
+  SubjectBadgeComponent,
+} from "../../../app-icon.component";
 import { AppFacade } from "../../../core/app-facade";
 import { I18nPipe } from "../../../core/i18n.pipe";
 @Component({

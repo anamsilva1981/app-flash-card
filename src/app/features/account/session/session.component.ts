@@ -48,7 +48,8 @@ export class SessionComponent {
   page = signal(new URLSearchParams(location.search).get("page") || "");
   constructor() {
     const required = (event: Event) => {
-      const detail = (event as CustomEvent<{ type: string; card: Card }>).detail;
+      const detail = (event as CustomEvent<{ type: string; card: Card }>)
+        .detail;
       try {
         sessionStorage.setItem(
           "study-pending-action",

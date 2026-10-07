@@ -7,7 +7,10 @@ import {
   EventEmitter,
   inject,
 } from "@angular/core";
-import { AppIconComponent, SubjectBadgeComponent } from "../../../app-icon.component";
+import {
+  AppIconComponent,
+  SubjectBadgeComponent,
+} from "../../../app-icon.component";
 import { StudyStore } from "../../../core/data/study-store";
 import { StudyRepository } from "../../../core/data/study-repository";
 import { ManagedSubject, StudyItem, Card } from "../../../core/models";
