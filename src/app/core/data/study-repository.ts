@@ -30,10 +30,7 @@ import {
   addStudyActivity,
 } from "../domain/history/study-history";
 import { mergeCardProgress } from "../domain/progress/progress";
-import {
-  upsertCard,
-  createCard,
-} from "../domain/cards/flashcard";
+import { upsertCard, createCard } from "../domain/cards/flashcard";
 import { studyDate } from "../domain/time/study-clock";
 import {
   normalizeStudyLink,
