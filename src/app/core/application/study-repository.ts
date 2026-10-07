@@ -139,7 +139,9 @@ export class StudyRepository {
         operations: [
           {
             path: "account_cards",
-            body: state.cards.find((currentCard) => currentCard.id === card.id)!,
+            body: state.cards.find(
+              (currentCard) => currentCard.id === card.id,
+            )!,
           },
         ],
       };
