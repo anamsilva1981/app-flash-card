@@ -69,7 +69,9 @@ test("recovery event wins over initial session and destroyed listeners cannot re
               return { contents: `export const I18nService='i18n';` };
             }
             if (path.includes("app-config.generated")) {
-              return { contents: `export const appConfig={supportUrl:'https://fixture.invalid'};` };
+              return {
+                contents: `export const appConfig={supportUrl:'https://fixture.invalid'};`,
+              };
             }
             const exportName = path.includes("@angular/forms")
               ? "FormsModule"
