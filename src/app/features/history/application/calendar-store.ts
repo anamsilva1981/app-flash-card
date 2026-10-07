@@ -27,7 +27,8 @@ export class CalendarStore {
   );
   readonly selectedDay = computed(
     () =>
-      this.store.history().find((day) => day.date === this.selectedDate()) || null,
+      this.store.history().find((day) => day.date === this.selectedDate()) ||
+      null,
   );
   readonly count = computed(() =>
     countStudyDaysInMonth(this.month(), this.store.history()),
