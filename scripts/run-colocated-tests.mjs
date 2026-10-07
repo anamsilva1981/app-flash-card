@@ -38,6 +38,7 @@ for (const spec of specs) {
     format: "esm",
     platform: "node",
     packages: "external",
+    banner: { js: 'import "@angular/compiler";' },
     sourcemap: true,
     tsconfigRaw: { compilerOptions: { experimentalDecorators: true } },
   });
