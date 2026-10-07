@@ -1,4 +1,5 @@
 <section class="subject-manager">
+<div [attr.inert]="selectedTopic()?'':null">
 @if(error()){<p role="alert">{{error()}}</p>}
 @if(selectedSubject(); as current){
   <div class="detail-head"><button class="back" (click)="closeSubject()" aria-label="Voltar aos baralhos"><app-icon name="back"/></button><div><span>BARALHO</span><h2>{{current.name}}</h2><p>{{dayLabel(current.days)}}</p></div></div>
@@ -12,18 +13,32 @@
   } @else {
     <div class="topic-view-tabs"><button [class.active]="topicView()==='todo'" (click)="topicView.set('todo');closeTopic()">A estudar</button><button [class.active]="topicView()==='done'" (click)="topicView.set('done');closeTopic()">Estudados</button></div>
     <div class="section-actions"><div><b>{{topicView()==='todo'?'Tópicos a estudar':'Tópicos estudados'}}</b><span>{{subjectTopics().length}} tópico(s)</span></div><button (click)="addTopic()"><app-icon name="plus"/>Adicionar</button></div>
-    <div class="topic-list">@for(item of subjectTopics();track item.id){<article class="topic-row">
-      @if(item.status==='todo'){<button class="topic-check" (click)="completeTopic(item)" [attr.aria-label]="'Marcar como estudado: '+item.title"><app-icon name="check"/></button>}@else{<span class="topic-done"><app-icon name="check"/></span>}
-      <button class="topic-main" (click)="openTopic(item)"><b>{{item.title}}</b>@if(item.status==='done'){<span>Estudado em {{formatCompleted(item.completed_at)}}</span>}@else{<span class="priority" [attr.data-priority]="item.priority">{{item.priority==='alta'?'Alta prioridade':item.priority==='media'?'Média prioridade':'Baixa prioridade'}}</span>}</button>
-      <button class="topic-edit" (click)="editTopic(item)" [attr.aria-label]="'Editar tópico: '+item.title"><app-icon name="edit"/></button>
+    <div class="topic-list">@for(item of subjectTopics();track item.id){<article class="topic-row clickable" (click)="openTopic(item)">
+      @if(item.status==='todo'){<button class="topic-check" (click)="$event.stopPropagation();completeTopic(item)" [attr.aria-label]="'Marcar como estudado: '+item.title"><app-icon name="check"/></button>}@else{<span class="topic-done"><app-icon name="check"/></span>}
+      <button class="topic-main" (click)="$event.stopPropagation();openTopic(item)" [attr.aria-label]="'Abrir tópico: '+item.title" aria-haspopup="dialog"><b>{{item.title}}</b>@if(item.status==='done'){<span>Estudado em {{formatCompleted(item.completed_at)}}</span>}@else{<span class="priority" [attr.data-priority]="item.priority">{{item.priority==='alta'?'Alta prioridade':item.priority==='media'?'Média prioridade':'Baixa prioridade'}}</span>}</button>
     </article>} @empty {<div class="empty"><app-icon name="book"/>{{topicView()==='todo'?'Nenhum tópico pendente neste baralho.':'Os tópicos concluídos aparecerão aqui para você consultar e revisar.'}}</div>}</div>
 
-    @if(selectedTopic(); as item){<div class="topic-detail"><div class="form-title"><b>{{item.title}}</b><button (click)="closeTopic()" aria-label="Fechar tópico"><app-icon name="close"/></button></div>@if(item.notes){<div class="topic-field"><span>Observação</span><p>{{item.notes}}</p></div>}@if(item.link){<div class="topic-field"><span>Material</span><a [href]="item.link" target="_blank" rel="noopener noreferrer"><app-icon name="link"/>Abrir material</a></div>}<div class="topic-field"><span>Prioridade</span><p>{{item.priority}}</p></div><button class="save" (click)="editTopic(item)">Editar tópico</button></div>}
+
   }
 } @else {
   <div class="manager-head"><div><span>ROTINA DE ESTUDOS</span><h2>Baralhos</h2><p>Toque em um baralho para abrir seus flashcards e tópicos.</p></div><button class="add" (click)="openNew()"><app-icon name="plus"/>Nova</button></div>
   <div class="tabs"><button [class.active]="!showArchived()" (click)="showArchived.set(false)">Ativas</button><button [class.active]="showArchived()" (click)="showArchived.set(true)">Arquivadas</button></div>
   @if(formOpen()){<div class="modal-layer" (keydown.escape)="close()"><div class="modal-backdrop" (click)="close()" aria-hidden="true"></div><div class="subject-form modal-sheet" role="dialog" aria-modal="true" aria-labelledby="subject-form-title" cdkTrapFocus [cdkTrapFocusAutoCapture]="true"><div class="form-title"><b id="subject-form-title">{{editingId()?'Editar baralho':'Novo baralho'}}</b><button (click)="close()" aria-label="Fechar formulário"><app-icon name="close"/></button></div><label>Nome do baralho<input cdkFocusInitial #nameInput [value]="name()" (input)="name.set(nameInput.value)" placeholder="Ex.: Matemática"></label><div class="days-label">Dias de estudo</div><div class="days">@for(day of week;track day.value){<button [class.active]="selectedDays().includes(day.value)" (click)="toggleDay(day.value)">{{day.short}}</button>}</div>@if(error()){<p role="alert">{{error()}}</p>}<button class="save" (click)="save()">Salvar baralho</button></div></div>}
   <div class="subject-list">@for(item of visibleSubjects();track item.id){<article class="subject-row" [class.clickable]="!item.archived"><button class="subject-main" (click)="openSubject(item)" [disabled]="item.archived"><app-subject-badge [subject]="item.deck_key||item.name"/><span><b>{{item.name}}</b><small>{{dayLabel(item.days)}}</small></span></button><div class="actions">@if(!item.archived){<button (click)="edit(item)" [attr.aria-label]="'Editar baralho: '+item.name"><app-icon name="edit"/></button><button (click)="archive(item)" [attr.aria-label]="'Arquivar baralho: '+item.name"><app-icon name="archive"/></button>}@else{<button class="restore" (click)="restore(item)">Restaurar</button>}</div></article>} @empty {<div class="empty"><app-icon name="book"/>Nenhum baralho {{showArchived()?'arquivada':'ativa'}}.</div>}</div>
+}
+</div>
+@if(selectedTopic(); as item){
+  <div class="modal-layer" (keydown.escape)="closeTopic()">
+    <div class="modal-backdrop" (click)="closeTopic()" aria-hidden="true"></div>
+    <section class="topic-detail modal-sheet" role="dialog" aria-modal="true" aria-labelledby="topic-detail-title" cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
+      <div class="form-title"><h2 id="topic-detail-title">{{item.title}}</h2><button cdkFocusInitial (click)="closeTopic()" aria-label="Fechar tópico"><app-icon name="close"/></button></div>
+      <div class="topic-field"><span>Baralho</span><p>{{item.subject||'Caixa de entrada'}}</p></div>
+      @if(item.notes){<div class="topic-field"><span>Observação</span><p>{{item.notes}}</p></div>}
+      @if(item.link){<div class="topic-field"><span>Material</span><a [href]="item.link" target="_blank" rel="noopener noreferrer"><app-icon name="link"/><span>Abrir material<span class="material-url">{{item.link}}</span></span></a></div>}
+      <div class="topic-field"><span>Prioridade</span><p>{{item.priority==='alta'?'Alta':item.priority==='media'?'Média':'Baixa'}}</p></div>
+      @if(item.status==='done'){<div class="topic-field"><span>Estudado em</span><p>{{formatCompleted(item.completed_at)}}</p></div>}
+      <button class="save" (click)="editTopic(item)"><app-icon name="edit"/>Editar tópico</button>
+    </section>
+  </div>
 }
 </section>
