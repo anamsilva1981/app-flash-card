@@ -57,7 +57,9 @@ export class SubjectManagerComponent {
   @Output() completeTopicRequested = new EventEmitter<StudyItem>();
   @Output() reviewRequested = new EventEmitter<string>();
   visibleSubjects() {
-    return this.subjects().filter((subject) => subject.archived === this.showArchived());
+    return this.subjects().filter(
+      (subject) => subject.archived === this.showArchived(),
+    );
   }
   openSubject(item: ManagedSubject) {
     if (item.archived) return;
@@ -72,7 +74,9 @@ export class SubjectManagerComponent {
   }
   subjectCards() {
     const subject = this.selectedSubject();
-    return subject ? this.flashcards.filter((card) => belongsToSubject(card, subject)) : [];
+    return subject
+      ? this.flashcards.filter((card) => belongsToSubject(card, subject))
+      : [];
   }
   dueCards() {
     return this.subjectCards().filter((card) => card.due <= studyDate());
@@ -82,7 +86,9 @@ export class SubjectManagerComponent {
     return subject
       ? sortStudyItems(
           this.studyItems.filter(
-            (item) => belongsToSubject(item, subject) && item.status === this.topicView(),
+            (item) =>
+              belongsToSubject(item, subject) &&
+              item.status === this.topicView(),
           ),
           this.topicView() === "done",
         )
@@ -133,7 +139,9 @@ export class SubjectManagerComponent {
   }
   toggleDay(day: number) {
     this.selectedDays.update((value) =>
-      value.includes(day) ? value.filter((item) => item !== day) : [...value, day],
+      value.includes(day)
+        ? value.filter((item) => item !== day)
+        : [...value, day],
     );
   }
   async save() {
@@ -141,7 +149,9 @@ export class SubjectManagerComponent {
     if (!name || this.busy()) return;
     this.busy.set(true);
     try {
-      const old = this.subjects().find((subject) => subject.id === this.editingId());
+      const old = this.subjects().find(
+        (subject) => subject.id === this.editingId(),
+      );
       const next: ManagedSubject = {
         id: old?.id || crypto.randomUUID(),
         name,
