@@ -8,6 +8,7 @@
     "test": "node --test tests/unit/*.test.mjs",
     "test:components": "npm run configure && node scripts/run-colocated-tests.mjs",
     "check:architecture": "node scripts/check-architecture.mjs",
+    "check:test-structure": "node scripts/check-test-structure.mjs",
     "e2e": "npx --yes cypress@15.5.0 run",
     "e2e:open": "npx --yes cypress@15.5.0 open",
     "configure": "node scripts/configure.mjs",
@@ -19,7 +20,7 @@
     "lint": "eslint src scripts tests cypress",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check": "npm run format:check && npm run lint && npm run check:architecture && npm test && npm run test:components && npm run build",
+    "check": "npm run format:check && npm run lint && npm run check:architecture && npm run check:test-structure && npm test && npm run test:components && npm run build",
     "pree2e": "npx --yes cypress@15.5.0 install"
   },
   "dependencies": {
