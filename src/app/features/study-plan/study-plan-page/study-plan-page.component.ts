@@ -1,9 +1,11 @@
-import { Component, Input, ViewChild, inject, DestroyRef } from "@angular/core";
-import { TopicEditorPageComponent } from "../../subjects/topic-editor/topic-editor-page.component";
+import { Component, DestroyRef, Input, ViewChild, inject } from "@angular/core";
 import { AppIconComponent } from "../../../shared/components/app-icon/app-icon.component";
 import { AppFacade } from "../../../core/app-facade";
 import { I18nPipe } from "../../../core/i18n.pipe";
-import { SubjectManagerComponent } from "../../subjects/subject-manager/subject-manager.component";
+import {
+  SubjectManagerComponent,
+  TopicEditorPageComponent,
+} from "../../subjects/public-api";
 import { SubjectNavigation } from "../../../core/data/subject-navigation";
 @Component({
   selector: "app-study-plan-page",
