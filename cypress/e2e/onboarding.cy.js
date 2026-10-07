@@ -35,3 +35,49 @@ describe('Aviso para criar o primeiro tópico',()=>{
     cy.contains('.onboarding h2','Adicione o primeiro tópico').should('not.exist');
   });
 });
+
+
+describe('Aviso para criar o primeiro flashcard',()=>{
+  it('desaparece no primeiro clique e não volta mesmo ao fechar sem salvar',()=>{
+    cy.loginApp();
+    cy.contains('.onboarding h2','Crie seu primeiro flashcard').should('be.visible');
+    cy.contains('.onboarding button','Criar primeiro flashcard').click();
+    cy.get('.card-editor').should('be.visible');
+    cy.get('button[aria-label="Fechar editor de flashcard"]').click();
+    cy.contains('nav button','Início').click();
+    cy.get('.onboarding').should('not.exist');
+    cy.reload();
+    cy.contains('Olá, Teste E2E!').should('be.visible');
+    cy.get('.onboarding').should('not.exist');
+  });
+
+  it('encerra os primeiros passos ao cadastrar um card por outro baralho',()=>{
+    cy.loginApp();
+    cy.contains('.onboarding h2','Crie seu primeiro flashcard').should('be.visible');
+    cy.contains('nav button','Estudar').click();
+    cy.contains('button','JavaScript').click();
+    cy.contains('button','Criar card').click();
+    cy.get('.card-editor input[placeholder="Ex.: Fundamentos"]').type('Promises');
+    cy.get('.card-editor textarea').eq(0).type('O que é uma Promise?');
+    cy.get('.card-editor textarea').eq(1).type('Representa um resultado assíncrono.');
+    cy.contains('button','Salvar flashcard').click();
+    cy.contains('O que é uma Promise?').should('exist');
+    cy.contains('nav button','Início').click();
+    cy.get('.onboarding').should('not.exist');
+    cy.reload();
+    cy.contains('Olá, Teste E2E!').should('be.visible');
+    cy.get('.onboarding').should('not.exist');
+  });
+
+  it('reconhece um card já cadastrado em outro baralho sem depender do aviso salvo',()=>{
+    cy.loginApp({queue:[],cards:[{id:501,subject:'JavaScript',topic:'Promises',question:'O que é uma Promise?',answer:'Um resultado assíncrono.',explanation:'',example:'',due:'2099-01-01',interval:0}]});
+    cy.contains('nav button','Estudar').click();
+    cy.contains('button','JavaScript').click();
+    cy.contains('O que é uma Promise?').should('exist');
+    cy.contains('nav button','Início').click();
+    cy.get('.onboarding').should('not.exist');
+    cy.reload();
+    cy.contains('Olá, Teste E2E!').should('be.visible');
+    cy.get('.onboarding').should('not.exist');
+  });
+});

@@ -21,7 +21,7 @@ Cypress.Commands.add('mockBackend',(options={})=>{
     ],
     activity:[{id:'a1',activity_date:'2026-10-05',kind:'learning',subject:'Angular',topic:'Signals'}],
     progress:[],
-    cards:[],
+    cards:options.cards??[],
     preferences:{display_name:'Teste E2E',reminder_time:'20:00',reminder_days:[1,3,5]}
   }}});
   cy.intercept('POST','**/rest/v1/rpc/apply_account_operation',{statusCode:200,body:{}});
