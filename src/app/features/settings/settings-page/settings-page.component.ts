@@ -4,7 +4,7 @@ import { A11yModule } from "@angular/cdk/a11y";
 import { AppIconComponent } from "../../../shared/components/app-icon/app-icon.component";
 import { AppFacade } from "../../../core/app-facade";
 import { I18nPipe } from "../../../core/i18n.pipe";
-import { AccountPanelComponent } from "../../account/account-panel/account-panel.component";
+import { AccountPanelComponent } from "../../account/public-api";
 @Component({
   selector: "app-settings-page",
   standalone: true,
