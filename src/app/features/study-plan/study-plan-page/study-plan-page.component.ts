@@ -1,10 +1,10 @@
 import { Component, Input, ViewChild, inject, DestroyRef } from "@angular/core";
-import { TopicEditorPageComponent } from "./topic-editor-page.component";
-import { AppIconComponent } from "../app-icon.component";
-import { AppFacade } from "../app-facade";
-import { I18nPipe } from "../i18n.pipe";
-import { SubjectManagerComponent } from "../subject-manager.component";
-import { SubjectNavigation } from "../data/subject-navigation";
+import { TopicEditorPageComponent } from "../../subjects/topic-editor/topic-editor-page.component";
+import { AppIconComponent } from "../../../app-icon.component";
+import { AppFacade } from "../../../app-facade";
+import { I18nPipe } from "../../../i18n.pipe";
+import { SubjectManagerComponent } from "../../../subject-manager.component";
+import { SubjectNavigation } from "../../../data/subject-navigation";
 @Component({
   selector: "app-study-plan-page",
   standalone: true,
