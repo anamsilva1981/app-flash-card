@@ -5,10 +5,15 @@ import {
   dueReviewCards,
   intervalFor,
   totalDueCards,
-} from "../review-schedule";
-import { cardsForSubject, cardTopics } from "../flashcard";
-import { studyDate } from "../study-clock";
+} from "../domain/review/review-schedule";
+import {
+  cardsForSubject,
+  cardTopics,
+} from "../domain/cards/flashcard";
+import { studyDate } from "../domain/time/study-clock";
 import { cached } from "../sync";
+import { Rating } from "@shared/models";
+
 @Injectable()
 export class ReviewStore {
   private store = inject(StudyStore);
@@ -60,7 +65,7 @@ export class ReviewStore {
     this.flipped.set(false);
     this.explanationOpen.set(false);
   }
-  nextInterval(r: import("../models").Rating) {
+  nextInterval(r: Rating) {
     return intervalFor(this.card()?.interval || 0, r);
   }
 }
