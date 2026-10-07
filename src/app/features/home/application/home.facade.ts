@@ -13,12 +13,11 @@ import {
   pendingStudyItems,
 } from "../../../shared/domain/study-plan";
 import { onboardingStepFor } from "../domain/onboarding";
-import { ReviewStore } from "../../review/application/review-store";
-import { ReviewFacade } from "../../review/application/review.facade";
-import { CalendarStore } from "../../history/application/calendar-store";
-import { StudyPlanFacade } from "../../study-plan/application/study-plan.facade";
-import { CardsFacade } from "../../cards/application/cards.facade";
-import { SubjectNavigation } from "../../subjects/application/subject-navigation";
+import { ReviewFacade, ReviewStore } from "../../review/public-api";
+import { CalendarStore } from "../../history/public-api";
+import { StudyPlanFacade } from "../../study-plan/public-api";
+import { CardsFacade } from "../../cards/public-api";
+import { SubjectNavigation } from "../../subjects/public-api";
 
 @Injectable()
 export class HomeFacade {
