@@ -16,7 +16,7 @@ describe('Aviso para criar o primeiro tópico',()=>{
     cy.loginApp({queue:[]});
     cy.contains('.onboarding button','Adicionar tópico').click();
     cy.get('input[placeholder="Ex.: Template Literals"]').type('Primeiro tópico');
-    cy.get('[role="dialog"]').contains('button','Adicionar').last().click();
+    cy.get('[role="dialog"] button.primary-action').click();
     cy.contains('Primeiro tópico').should('exist');
     cy.contains('nav button','Início').click();
     cy.get('.onboarding').should('not.exist');

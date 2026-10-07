@@ -14,15 +14,15 @@ describe('Telas e fluxos principais do produto',()=>{
   it('cobre Estudar, baralhos, tópicos e criação de tópico',()=>{
     cy.contains('nav button','Estudar').click();
     cy.contains('h1','Estudar').should('be.visible');
-    cy.contains('ROTINA DE ESTUDOS').should('be.visible');
+    cy.contains('.manager-head','ROTINA DE ESTUDOS').should('be.visible');
     cy.contains('button','Angular').click();
     cy.contains('button','Tópicos').click();
-    cy.contains('Signals').filter(':visible').should('have.length.at.least',1);
+    cy.contains('.topic-list','Signals').should('be.visible');
     cy.contains('button','Adicionar').click();
     cy.contains('Adicionar tópico').should('be.visible');
     cy.get('input[placeholder="Ex.: Template Literals"]').type('Standalone Components');
     cy.contains('button','Alta').click();
-    cy.contains('button','Adicionar').last().click();
+    cy.get('[role="dialog"] button.primary-action').click();
     cy.contains('Standalone Components').should('exist');
   });
 
