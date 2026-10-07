@@ -47,9 +47,9 @@ for (const entry of readdirSync(join(root, "features"), {
 for (const file of walk(root).filter((item) => item.endsWith(".ts"))) {
   const rel = relative(root, file).replaceAll("\\", "/");
   const content = readFileSync(file, "utf8");
-  const imports = [
-    ...content.matchAll(/from\s+["']([^"']+)["']/g),
-  ].map((match) => match[1]);
+  const imports = [...content.matchAll(/from\s+["']([^"']+)["']/g)].map(
+    (match) => match[1],
+  );
 
   if (rel.startsWith("shared/")) {
     for (const specifier of imports) {
