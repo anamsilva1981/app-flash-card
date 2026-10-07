@@ -4,8 +4,8 @@ import { I18nPipe } from "../../../core/i18n/i18n.pipe";
 import {
   SubjectManagerComponent,
   TopicEditorPageComponent,
+  SubjectNavigation,
 } from "../../subjects/public-api";
-import { SubjectNavigation } from "../../subjects/application/subject-navigation";
 import { StudyPlanFacade } from "../application/study-plan.facade";
 @Component({
   selector: "app-study-plan-page",
