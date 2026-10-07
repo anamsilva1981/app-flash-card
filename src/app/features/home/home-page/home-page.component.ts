@@ -5,8 +5,8 @@ import {
   AppIconComponent,
   SubjectBadgeComponent,
 } from "../../../shared/components/app-icon/app-icon.component";
-import { AppFacade } from "../../../core/app-facade";
-import { I18nPipe } from "../../../core/i18n.pipe";
+import { I18nPipe } from "../../../core/i18n/i18n.pipe";
+import { HomeFacade } from "../application/home.facade";
 @Component({
   selector: "app-home-page",
   standalone: true,
@@ -21,5 +21,5 @@ import { I18nPipe } from "../../../core/i18n.pipe";
   styles: [":host{display:contents}"],
 })
 export class HomePageComponent {
-  @Input({ required: true }) vm!: AppFacade;
+  @Input({ required: true }) vm!: HomeFacade;
 }
