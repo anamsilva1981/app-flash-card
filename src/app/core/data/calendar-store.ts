@@ -5,8 +5,9 @@ import {
   buildCalendarDays,
   countStudyDaysInMonth,
   studyStreak,
-} from "../study-history";
-import { studyDate } from "../study-clock";
+} from "../domain/history/study-history";
+import { studyDate } from "../domain/time/study-clock";
+
 @Injectable()
 export class CalendarStore {
   private store = inject(StudyStore);
