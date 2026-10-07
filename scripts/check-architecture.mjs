@@ -53,10 +53,7 @@ for (const file of walk(root).filter((item) => item.endsWith(".ts"))) {
 
   if (rel.startsWith("shared/")) {
     for (const specifier of imports) {
-      if (
-        specifier.includes("/core/") ||
-        specifier.includes("/features/")
-      ) {
+      if (specifier.includes("/core/") || specifier.includes("/features/")) {
         errors.push(
           `shared não pode depender de core/features: ${rel} -> ${specifier}`,
         );
