@@ -48,16 +48,33 @@ export function dueReviewCards<T extends ReviewCard>(
         card.due <= today &&
         (topic === "Todos" || card.topic === topic),
     )
-    .sort((a, b) => a.due.localeCompare(b.due));
+    .sort((a, b) => a.due.localeCompare(b.due) || a.id - b.id);
 }
 
-export function reviewSessionIds<T extends ReviewCard>(
+export function buildReviewSession<T extends ReviewCard>(
   cards: T[],
-  subject: string | null,
-  topic: string,
-  today: string,
   limit: number,
 ): number[] {
-  const due = dueReviewCards(cards, subject, topic, today);
-  return (limit > 0 ? due.slice(0, limit) : due).map((card) => card.id);
+  return cards.slice(0, limit || cards.length).map((card) => card.id);
+}
+
+export function rateReviewCard<T extends ReviewCard>(
+  card: T,
+  rating: Rating,
+  due: string,
+): T {
+  const days = intervalFor(card.interval, rating);
+  return { ...card, due, interval: days };
+}
+
+export function totalDueCards<T extends ReviewCard>(
+  cards: T[],
+  subjects: Array<{ name: string; deck_key?: string }>,
+  today: string,
+): number {
+  const active = new Set(
+    subjects.map((subject) => subject.deck_key || subject.name),
+  );
+  return cards.filter((card) => card.due <= today && active.has(card.subject))
+    .length;
 }
