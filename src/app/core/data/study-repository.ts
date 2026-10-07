@@ -16,15 +16,31 @@ import {
   normalizeRelations,
   renameSubjectRelations,
   resolveSubject,
-} from "./relations";
-import { Card, ManagedSubject, OperationInput, StudyItem } from "../models";
-import { historyFromRemote, addStudyActivity } from "../study-history";
-import { mergeCardProgress } from "../progress";
-import { upsertCard, createCard } from "../flashcard";
-import { studyDate } from "../study-clock";
-import { normalizeStudyLink, upsertStudyItem } from "../study-plan";
-import { BackupData } from "../models";
+} from "../domain/subjects/relations";
+import {
+  BackupData,
+  Card,
+  ManagedSubject,
+  OperationInput,
+  StudyDay,
+  StudyItem,
+} from "@shared/models";
+import {
+  historyFromRemote,
+  addStudyActivity,
+} from "../domain/history/study-history";
+import { mergeCardProgress } from "../domain/progress/progress";
+import {
+  upsertCard,
+  createCard,
+} from "../domain/cards/flashcard";
+import { studyDate } from "../domain/time/study-clock";
+import {
+  normalizeStudyLink,
+  upsertStudyItem,
+} from "../domain/study-plan/study-plan";
 import { prepareBackup } from "../backup";
+
 @Injectable()
 export class StudyRepository {
   readonly store = inject(StudyStore);
@@ -98,7 +114,7 @@ export class StudyRepository {
         cards: read<Card[]>("flashcards", []),
         subjects: read<ManagedSubject[]>("study-subject-config", []),
         queue: read<StudyItem[]>("study-queue", []),
-        history: read<import("../models").StudyDay[]>("study-history", []),
+        history: read<StudyDay[]>("study-history", []),
       };
       const result = build(current);
       next = result.state;
