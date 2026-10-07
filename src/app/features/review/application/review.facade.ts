@@ -5,6 +5,7 @@ import { AppNavigation } from "../../../core/state/app-navigation";
 import { I18nService } from "../../../core/i18n/i18n.service";
 import { cache } from "../../../core/persistence/sync";
 import { studyDate } from "../../../shared/utils/study-clock";
+import { countDueCards } from "../../../shared/domain/flashcard";
 import { Rating } from "../../../shared/models";
 import { ReviewStore } from "./review-store";
 
@@ -35,9 +36,11 @@ export class ReviewFacade {
   subjectLabel() {
     const key = this.subject();
     return (
-      this.store.subjects().find((subject) =>
-        (subject.deck_key || subject.name) === key
-      )?.name || key || ""
+      this.store.subjects().find(
+        (subject) => (subject.deck_key || subject.name) === key,
+      )?.name ||
+      key ||
+      ""
     );
   }
 
@@ -48,7 +51,7 @@ export class ReviewFacade {
   }
 
   openDeck(name: string) {
-    if (this.review.dueCards().some((card) => card.subject === name)) {
+    if (countDueCards(this.store.cards(), name, studyDate())) {
       this.openSubject(name);
     } else {
       this.openPractice(name);
