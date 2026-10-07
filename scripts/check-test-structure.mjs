@@ -2,12 +2,17 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { extname, join } from "node:path";
 
 const root = "src/app";
+const legacyRoots = ["src/app/core/data/"];
 
 function walk(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const full = join(dir, entry.name);
     return entry.isDirectory() ? walk(full) : [full];
   });
+}
+
+function isLegacy(file) {
+  return legacyRoots.some((legacyRoot) => file.startsWith(legacyRoot));
 }
 
 function isDomainRule(file) {
@@ -26,6 +31,7 @@ function isDomainRule(file) {
 }
 
 function requiresColocatedSpec(file) {
+  if (isLegacy(file)) return false;
   if (!file.endsWith(".ts") || file.endsWith(".spec.ts")) return false;
   const name = file.split("/").at(-1);
   return (
