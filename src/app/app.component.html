@@ -20,28 +20,28 @@
   }
   @if (vm.subject()) {
     @defer (on immediate) {
-      <app-review-page [vm]="vm" />
+      <app-review-page [vm]="vm.review" />
     }
   } @else {
     @if (vm.activeTab() === "home") {
       @defer (on immediate) {
-        <app-home-page [vm]="vm" />
+        <app-home-page [vm]="vm.home" />
       }
     } @else if (vm.activeTab() === "studyPlan") {
       @defer (on immediate) {
-        <app-study-plan-page [vm]="vm" />
+        <app-study-plan-page [vm]="vm.studyPlan" />
       }
     } @else if (vm.activeTab() === "progress") {
       @defer (on immediate) {
-        <app-progress-page [vm]="vm" />
+        <app-progress-page [vm]="vm.progress" />
       }
     } @else if (vm.activeTab() === "history") {
       @defer (on immediate) {
-        <app-history-page [vm]="vm" />
+        <app-history-page [vm]="vm.history" />
       }
     } @else if (vm.activeTab() === "settings") {
       @defer (on immediate) {
-        <app-settings-page [vm]="vm" />
+        <app-settings-page [vm]="vm.settings" />
       }
     }
     <nav class="bottom-nav" [attr.aria-label]="'ui.navegacaoPrincipal' | t">
@@ -77,7 +77,7 @@
   }
   @if (vm.cardEditor()) {
     @defer (on immediate) {
-      <app-card-editor-page [vm]="vm" />
+      <app-card-editor-page [vm]="vm.cards" />
     }
   }
 </main>
