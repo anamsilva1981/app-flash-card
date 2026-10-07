@@ -1,5 +1,5 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
-import { basename, dirname, join, relative } from "node:path";
+import { basename, dirname, join, relative, resolve } from "node:path";
 
 const root = "src/app";
 const allowedRootFiles = new Set([
@@ -22,6 +22,11 @@ const existsFile = (path) => {
   } catch {
     return false;
   }
+};
+
+const importTarget = (file, specifier) => {
+  if (!specifier.startsWith(".")) return null;
+  return relative(root, resolve(dirname(file), specifier)).replaceAll("\\", "/");
 };
 
 for (const entry of readdirSync(root, { withFileTypes: true })) {
@@ -51,35 +56,36 @@ for (const file of walk(root).filter((item) => item.endsWith(".ts"))) {
     (match) => match[1],
   );
 
-  if (rel.startsWith("shared/")) {
-    for (const specifier of imports) {
-      if (specifier.includes("/core/") || specifier.includes("/features/")) {
-        errors.push(
-          `shared não pode depender de core/features: ${rel} -> ${specifier}`,
-        );
-      }
-    }
-  }
+  for (const specifier of imports) {
+    const target = importTarget(file, specifier);
+    if (!target) continue;
 
-  if (rel.startsWith("core/")) {
-    for (const specifier of imports) {
-      if (specifier.includes("/features/")) {
-        errors.push(
-          `core não pode depender da UI de features: ${rel} -> ${specifier}`,
-        );
-      }
+    if (
+      rel.startsWith("shared/") &&
+      (target.startsWith("core/") || target.startsWith("features/"))
+    ) {
+      errors.push(
+        `shared não pode depender de core/features: ${rel} -> ${specifier}`,
+      );
     }
-  }
 
-  const featureMatch = rel.match(/^features\/([^/]+)\//);
-  if (featureMatch) {
-    for (const specifier of imports) {
-      const crossFeature = specifier.match(/features\/([^/]+)\//);
-      if (crossFeature && crossFeature[1] !== featureMatch[1]) {
-        errors.push(
-          `Feature não pode importar internals de outra feature: ${rel} -> ${specifier}`,
-        );
-      }
+    if (rel.startsWith("core/") && target.startsWith("features/")) {
+      errors.push(
+        `core não pode depender da UI de features: ${rel} -> ${specifier}`,
+      );
+    }
+
+    const sourceFeature = rel.match(/^features\/([^/]+)\//)?.[1];
+    const targetFeature = target.match(/^features\/([^/]+)\//)?.[1];
+    if (
+      sourceFeature &&
+      targetFeature &&
+      sourceFeature !== targetFeature &&
+      !target.endsWith("public-api")
+    ) {
+      errors.push(
+        `Feature deve consumir somente a API pública de outra feature: ${rel} -> ${specifier}`,
+      );
     }
   }
 
