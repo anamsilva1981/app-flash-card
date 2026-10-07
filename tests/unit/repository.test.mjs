@@ -209,3 +209,31 @@ test("day changes update routine and due cards without rebuilding stores", () =>
   assert.equal(review.dueCards().length, 1);
   injector.destroy();
 });
+
+test("a generated card identity collision cannot overwrite an existing card", async () => {
+  const { repository, store, injector } = services();
+  const { subject, card } = fixture();
+  await repository.saveSubject(subject);
+  await repository.saveCard(card);
+  const original = crypto.randomUUID;
+  let generated = 0;
+  crypto.randomUUID = () =>
+    ++generated < 3
+      ? "00000000-0000-1000-0000-000000000000"
+      : "00000000-0000-2000-0000-000000000000";
+  try {
+    await repository.saveCard({ ...card, id: 0, question: "New card" });
+    assert.equal(store.cards().length, 2);
+    assert.equal(store.cards().find((c) => c.id === 1).question, card.question);
+    assert.equal(store.cards().find((c) => c.id === 2).question, "New card");
+    crypto.randomUUID = () => "00000000-0000-1000-0000-000000000000";
+    await assert.rejects(
+      repository.saveCard({ ...card, id: 0 }),
+      /identity collision/,
+    );
+    assert.equal(store.cards().length, 2);
+  } finally {
+    crypto.randomUUID = original;
+    injector.destroy();
+  }
+});

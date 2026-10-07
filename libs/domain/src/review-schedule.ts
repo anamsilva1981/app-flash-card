@@ -13,22 +13,6 @@ export function intervalFor(previous: number, rating: Rating): number {
     ),
   );
 }
-export function sortTopics<
-  T extends {
-    priority: string;
-    created_at?: string;
-    completed_at?: string | null;
-  },
->(items: T[], done = false): T[] {
-  const rank: Record<string, number> = { alta: 0, media: 1, baixa: 2 };
-  return [...items].sort((a, b) =>
-    done
-      ? (b.completed_at || "").localeCompare(a.completed_at || "")
-      : rank[a.priority] - rank[b.priority] ||
-        (a.created_at || "").localeCompare(b.created_at || ""),
-  );
-}
-
 export interface ReviewCard {
   id: number;
   subject: string;

@@ -34,7 +34,7 @@ Cada item precisa de implementação, evidência de teste e revisão final. Usar
 | U05 | Reagir à virada de dia                              | validado                          | Revisões, calendário e rotina atualizados sem refresh; relógio controlado em testes.                                   |
 | U06 | Restaurar revisão aleatória                         | validado                          | Embaralhamento testável sem alterar ordem da coleção original.                                                         |
 | U07 | Definir offline e lembretes por plataforma          | pendente                          | Limites de app fechado documentados; adaptadores e fallbacks testados.                                                 |
-| U08 | Remover legado e duplicações sem uso                | pendente                          | Usos conferidos, compatibilidade mantida e testes completos.                                                           |
+| U08 | Remover legado e duplicações sem uso                | parcial                           | Usos conferidos, compatibilidade mantida e testes completos.                                                           |
 | Q01 | Testes unitários das mudanças                       | parcial                           | Casos negativos e limites para todos os novos comportamentos.                                                          |
 | Q02 | Testes de componentes e navegação                   | pendente                          | UI conecta ações corretas; foco, formulários e histórico de navegação.                                                 |
 | Q03 | Ampliar testes com backend real descartável         | pendente                          | Matérias/tópicos/cards, revisão, backup, preferências, suporte, exclusão, isolamento e retry.                          |
@@ -45,17 +45,19 @@ Cada item precisa de implementação, evidência de teste e revisão final. Usar
 
 ## Auditoria intermediária — 07/10/2026
 
-Esta etapa está em execução. O checklist ainda tem pendências e não autoriza afirmar que todo o aplicativo foi refatorado. Resultados locais: 29 testes unitários aprovados; lint e verificação de dependências aprovados; build Angular aprovado. A suíte integrada será executada no PR, em ambiente descartável, pois este ambiente local não dispõe de Docker nem do binário Cypress. As medições de cobertura se referem aos módulos importados pela suíte unitária, não a todo o aplicativo.
+Esta etapa está em execução. O checklist ainda tem pendências e não autoriza afirmar que todo o aplicativo foi refatorado. Resultados locais: 30 testes unitários aprovados; lint e verificação de dependências aprovados; build Angular aprovado. A suíte integrada será executada no PR, em ambiente descartável, pois este ambiente local não dispõe de Docker nem do binário Cypress. As medições de cobertura se referem aos módulos importados pela suíte unitária, não a todo o aplicativo.
 
 - A01–A03: serviços `EditorFacade`, `ReviewFacade`, `OnboardingFacade`, `BackupFacade` e `AuthFlow`; contratos `Pick` específicos por tela. O facade raiz mantém encaminhamentos de compatibilidade. Faltam validação completa da UI e substituição dos encaminhamentos quando as telas puderem consumir seus serviços diretamente.
 - A06: publicadores e assinantes tipados em `platform/events.ts`; eventos de conta e apresentação passam pelo contrato. Eventos nativos e controle de sessão ainda usam o adaptador web.
 - A07/Q04: regras e modelos em `libs/domain/src`, sem Angular, Supabase ou APIs do navegador. `npm run check:architecture` verifica imports e referências proibidas, integrado ao lint da CI. Camadas de aplicação/dados ainda precisam de regras adicionais.
 - A08/A09/U07: interfaces de armazenamento, arquivos, relógio, conectividade, notificações e links em `libs/platform/src`. Adaptador web centraliza downloads, notificações e idioma do documento. Ainda há dependência concreta do adaptador na aplicação; faltam injeção pelos contratos e a implementação futura em Capacitor. O web não agenda notificações com o app fechado; service worker continua desabilitado e offline limita-se aos dados já carregados/fila local.
 - D01: revisão filtra por `subject_id`/`topic_id`, mantendo leitura por nomes para dados legados. Outros seletores por nome ainda precisam migrar.
-- D02: geração de IDs numéricos com 52 bits de UUID; checagem de colisão antes da gravação, com limite de tentativas. IDs existentes permanecem. Testes cobrem segurança numérica e 1.000 criações.
+- D02: geração de IDs numéricos com 52 bits de UUID; checagem de colisão antes da gravação, com limite de tentativas. IDs existentes permanecem. Testes cobrem segurança numérica, 1.000 criações, colisão forçada sem sobrescrita e limite de tentativas.
 - D03: cache valida coleções/preferências e estrutura da fila; rejeita gravações inválidas e preserva envelope inválido. Leitura usa fallback seguro. Falta fluxo de recuperação explícita de cache/fila corrompida, sem descarte silencioso.
 - D04: mutações com múltiplas operações usam um lote único; teste confirma progresso+histórico no mesmo lote durável. Rollback/idempotência real precisam de nova execução da integração.
 - U05/U06: relógio reativo atualiza rotina/revisões/calendário na virada de dia; embaralhamento Fisher–Yates tem fonte aleatória controlável para teste e não modifica a coleção original.
+
+- U08: removidos `remote-state.ts` e `sortTopics`, sem consumidores e duplicando leitura/sort já centralizados. Reexportações do domínio permanecem por compatibilidade.
 
 ### Arquitetura atual e próxima organização
 
