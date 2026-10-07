@@ -557,3 +557,36 @@
     font-size: 11px;
   }
 }
+
+.topic-row.clickable {
+  cursor: pointer;
+}
+.topic-row.clickable:hover {
+  border-color: #cfc0f7;
+}
+.topic-detail .form-title h2 {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 20px;
+  min-width: 0;
+}
+.topic-detail .topic-field a {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.topic-detail .topic-field a > span {
+  min-width: 0;
+}
+.topic-detail .topic-field a app-icon {
+  flex-shrink: 0;
+}
+.material-url {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+.topic-detail .save app-icon {
+  width: 18px;
+  height: 18px;
+}

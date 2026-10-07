@@ -1,4 +1,5 @@
-import { ManagedSubject } from "./subject-manager.component";
+import { ManagedSubject } from "./models";
+import { belongsToSubject } from "./data/relations";
 import { StudyItem } from "./study-plan";
 
 export type OnboardingStep = "deck" | "topic" | "routine" | "card" | "done";
@@ -13,18 +14,17 @@ export function onboardingStepFor(
   studyItems: StudyItem[],
   cards: OnboardingCard[],
 ): OnboardingStep {
-  if (dismissed) return "done";
+  if (dismissed || cards.length) return "done";
   if (!subjects.length) return "deck";
 
   const first = subjects[0];
-  if (!studyItems.some((item) => item.subject === first.name)) return "topic";
+  if (
+    !studyItems.some((item) =>
+      subjects.some((subject) => belongsToSubject(item, subject)),
+    )
+  )
+    return "topic";
   if (!first.days?.length) return "routine";
 
-  const deck = first.deck_key || first.name;
-  if (
-    !cards.some((card) => card.subject === deck || card.subject === first.name)
-  )
-    return "card";
-
-  return "done";
+  return "card";
 }

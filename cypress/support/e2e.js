@@ -17,7 +17,7 @@ function jwt() {
   );
 }
 
-Cypress.Commands.add("mockBackend", () => {
+Cypress.Commands.add("mockBackend", (overrides = {}) => {
   const access_token = jwt();
   const user = {
     id: "e2e-user",
@@ -94,6 +94,7 @@ Cypress.Commands.add("mockBackend", () => {
         ],
         progress: [],
         cards: [],
+        ...overrides,
         preferences: {
           display_name: "Teste E2E",
           reminder_time: "20:00",
@@ -116,8 +117,8 @@ Cypress.Commands.add("mockBackend", () => {
   });
 });
 
-Cypress.Commands.add("loginApp", () => {
-  cy.mockBackend();
+Cypress.Commands.add("loginApp", (overrides = {}) => {
+  cy.mockBackend(overrides);
   cy.visit("/");
   cy.contains("Bem-vinda de volta").should("be.visible");
   cy.get('input[name="email"]').type("e2e@app.local");

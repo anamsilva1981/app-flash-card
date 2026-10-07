@@ -18,29 +18,6 @@
     (practiceRequested)="vm.openPractice($event)"
     (reviewRequested)="vm.openSubject($event)"
   />
-  @if (vm.todoStudyItems().length) {
-    <details class="inbox-list">
-      <summary>
-        {{ "study.pending" | t: { count: vm.todoStudyItems().length } }}
-      </summary>
-      @for (item of vm.todoStudyItems(); track item.id) {
-        <div class="inbox-row">
-          <button (click)="vm.editStudyItem(item)">
-            <b>{{ item.title }}</b
-            ><small
-              >{{ item.subject || ("ui.caixaDeEntrada" | t) }} ·
-              {{ "priority." + item.priority | t }}</small
-            ></button
-          ><button
-            (click)="vm.completeStudyItem(item)"
-            [attr.aria-label]="'study.complete' | t: { title: item.title }"
-          >
-            <app-icon name="check" />
-          </button>
-        </div>
-      }
-    </details>
-  }
   @if (vm.studyError()) {
     <p role="alert">{{ vm.studyError() }}</p>
   }

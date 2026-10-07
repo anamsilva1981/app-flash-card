@@ -359,6 +359,7 @@ export class AppFacade {
   startFirstTopic() {
     const first = this.activeSubjects()[0];
     if (!first) return this.startFirstSubject();
+    this.dismissOnboarding();
     this.setTab("studyPlan");
     this.navigation.run((m) => {
       m.openSubject(first);
@@ -375,6 +376,7 @@ export class AppFacade {
   startFirstCard() {
     const first = this.activeSubjects()[0];
     if (!first) return this.startFirstSubject();
+    this.dismissOnboarding();
     this.setTab("studyPlan");
     this.openCardEditor(first.deck_key || first.name);
   }
@@ -415,6 +417,7 @@ export class AppFacade {
     this.savingCard.set(true);
     try {
       await this.repository.saveCard(this.cardDraft);
+      this.dismissOnboarding();
       this.cardEditor.set(false);
     } catch {
       this.cardError.set(this.i18n.t("error.save"));

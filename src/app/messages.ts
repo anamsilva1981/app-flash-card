@@ -1,4 +1,6 @@
 export const MESSAGES: Record<string, { pt: string; en: string }> = {
+  "topic.open": { pt: "Abrir tópico: {title}", en: "Open topic: {title}" },
+  "topic.completedAt": { pt: "Estudado em", en: "Studied on" },
   "ui.umaNovaVersaoEstaPronta": {
     pt: "Uma nova versão está pronta.",
     en: "A new version is ready.",

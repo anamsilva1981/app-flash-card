@@ -231,3 +231,51 @@ test("rejects duplicate backup identities, string versions and unsafe progress",
     /Invalid/,
   );
 });
+
+test("onboarding recognizes any deck and keeps ID ownership after renaming", () => {
+  const subjects = [
+    {
+      id: "first",
+      name: "Angular",
+      deck_key: "Angular",
+      days: [1],
+      archived: false,
+    },
+    {
+      id: "second",
+      name: "JavaScript renamed",
+      deck_key: "JavaScript",
+      days: [],
+      archived: false,
+    },
+  ];
+  assert.equal(app.onboardingStepFor(false, subjects, [], []), "topic");
+  const topic = { subject: "Old name", subject_id: "second" };
+  assert.equal(app.onboardingStepFor(false, subjects, [topic], []), "card");
+  assert.equal(
+    app.onboardingStepFor(
+      false,
+      [{ ...subjects[0], days: [] }, subjects[1]],
+      [topic],
+      [],
+    ),
+    "routine",
+  );
+  assert.equal(
+    app.onboardingStepFor(false, subjects, [{ subject: "JavaScript" }], []),
+    "card",
+  );
+  assert.equal(
+    app.onboardingStepFor(
+      false,
+      subjects,
+      [{ subject: "Angular", subject_id: "unknown" }],
+      [],
+    ),
+    "topic",
+  );
+  assert.equal(
+    app.onboardingStepFor(false, subjects, [], [{ subject: "JavaScript" }]),
+    "done",
+  );
+});

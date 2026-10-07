@@ -75,3 +75,13 @@ A configuração isolada usa apenas a migração que cria o modelo privado atual
 - 24 testes unitários aprovados localmente. Testes cobrem regras, relacionamentos, importação, quota, isolamento, replay, snapshot atrasado, concorrência e recuperação/CORS.
 - Cobertura medida nos módulos importados pela suíte (exclui catálogo/configuração gerada): 88,96% linhas/statements, 79,33% branches e 84,21% funções. Não representa cobertura da aplicação inteira ou do HTML.
 - CI aprova build, lint/formatação, 24 testes unitários, 14 cenários Cypress com API interceptada e 6 cenários reais no backend descartável (incluindo exclusão). O cenário Cypress com API real verifica criação/revisão, refresh e logout/login; seu resultado final está no Quality Gate do PR. Produção não foi alterada nesta etapa.
+
+## Integração com a main — 07/10/2026
+
+- Integradas as nove alterações da main até `86b90d5`, preservando a arquitetura de stores/services e as traduções explícitas.
+- Onboarding encerra no primeiro clique de criação de tópico/card e reconhece conteúdo de qualquer baralho; relações de tópicos respeitam IDs após renomear.
+- Detalhes de tópicos usam modal com foco contido, retorno de foco, link para o material e edição pelo botão interno. Campos mobile usam fonte de pelo menos 16 px.
+- Removida a lista global de tópicos da tela de baralhos; cada baralho mantém seu conteúdo isolado.
+- Acrescentadas as três suítes Cypress da main e suporte a fixtures por cenário, mantendo os mocks do backend refatorado.
+- A migração `atomic_account_batch` foi aplicada no projeto app-flash-card em 07/10/2026. Conferidos security invoker, search_path e permissões: anon sem EXECUTE, authenticated com EXECUTE. Nenhum registro de estudo foi alterado.
+- A configuração das cinco variáveis do GitHub e de `APP_ALLOWED_ORIGINS` continua necessária. A função publicada ainda é a versão anterior; não publicar a versão refatorada sem configurar a origem.

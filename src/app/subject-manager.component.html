@@ -1,315 +1,349 @@
 <section class="subject-manager">
-  @if (error()) {
-    <p role="alert">{{ error() }}</p>
-  }
-  @if (selectedSubject(); as current) {
-    <div class="detail-head">
-      <button
-        class="back"
-        (click)="closeSubject()"
-        [attr.aria-label]="'ui.voltarAosBaralhos' | t"
-      >
-        <app-icon name="back" />
-      </button>
-      <div>
-        <span>{{ "ui.baralho_10" | t }}</span>
-        <h2>{{ current.name }}</h2>
-        <p>{{ dayLabel(current.days) }}</p>
-      </div>
-    </div>
-    <div class="detail-tabs">
-      <button
-        [class.active]="detailTab() === 'flashcards'"
-        (click)="detailTab.set('flashcards')"
-      >
-        {{ "ui.flashcards" | t }}</button
-      ><button
-        [class.active]="detailTab() === 'topics'"
-        (click)="detailTab.set('topics')"
-      >
-        {{ "ui.topicos" | t }}
-      </button>
-    </div>
-    @if (detailTab() === "flashcards") {
-      <div class="section-actions">
-        <div>
-          <b>{{ "ui.flashcards" | t }}</b
-          ><span>{{
-            "subject.registered" | t: { count: subjectCards().length }
-          }}</span>
-        </div>
+  <div [attr.inert]="selectedTopic() ? '' : null">
+    @if (error()) {
+      <p role="alert">{{ error() }}</p>
+    }
+    @if (selectedSubject(); as current) {
+      <div class="detail-head">
         <button
-          (click)="addCardRequested.emit(current.deck_key || current.name)"
+          class="back"
+          (click)="closeSubject()"
+          [attr.aria-label]="'ui.voltarAosBaralhos' | t"
         >
-          <app-icon name="plus" />{{ "ui.criarCard" | t }}
+          <app-icon name="back" />
+        </button>
+        <div>
+          <span>{{ "ui.baralho_10" | t }}</span>
+          <h2>{{ current.name }}</h2>
+          <p>{{ dayLabel(current.days) }}</p>
+        </div>
+      </div>
+      <div class="detail-tabs">
+        <button
+          [class.active]="detailTab() === 'flashcards'"
+          (click)="detailTab.set('flashcards')"
+        >
+          {{ "ui.flashcards" | t }}</button
+        ><button
+          [class.active]="detailTab() === 'topics'"
+          (click)="detailTab.set('topics')"
+        >
+          {{ "ui.topicos" | t }}
         </button>
       </div>
-      @if (!subjectCards().length) {
-        <div class="empty">
-          <app-icon name="book" />{{
-            "ui.nenhumFlashcardCadastradoNesteBaralho" | t
-          }}
-        </div>
-      } @else if (dueCards().length) {
-        <button class="primary-card" (click)="reviewDue()">
+      @if (detailTab() === "flashcards") {
+        <div class="section-actions">
           <div>
-            <b>{{ "ui.revisarAgora" | t }}</b
+            <b>{{ "ui.flashcards" | t }}</b
             ><span>{{
-              "subject.reviewDue" | t: { count: dueCards().length }
+              "subject.registered" | t: { count: subjectCards().length }
             }}</span>
           </div>
-          <app-icon name="chevron" />
-        </button>
-      } @else {
-        <div class="done-card">
-          <b><app-icon name="check" />{{ "ui.todosOsFlashcardsDeHoje" | t }}</b
-          ><span>{{ "ui.vocePodeEncerrarPorHoje" | t }}</span
-          ><button (click)="reviewAgain()">
-            {{ "ui.revisarNovamente" | t }}
+          <button
+            (click)="addCardRequested.emit(current.deck_key || current.name)"
+          >
+            <app-icon name="plus" />{{ "ui.criarCard" | t }}
           </button>
         </div>
-      }
-      <div class="topic-list">
-        @for (card of subjectCards(); track card.id) {
-          <article class="topic-row">
-            <button class="topic-main" (click)="editCardRequested.emit(card)">
-              <b>{{ card.question }}</b
-              ><span>{{ card.topic }}</span></button
-            ><button
-              class="topic-edit"
-              (click)="editCardRequested.emit(card)"
-              [attr.aria-label]="'Editar flashcard: ' + card.question"
-            >
-              <app-icon name="edit" />
+        @if (!subjectCards().length) {
+          <div class="empty">
+            <app-icon name="book" />{{
+              "ui.nenhumFlashcardCadastradoNesteBaralho" | t
+            }}
+          </div>
+        } @else if (dueCards().length) {
+          <button class="primary-card" (click)="reviewDue()">
+            <div>
+              <b>{{ "ui.revisarAgora" | t }}</b
+              ><span>{{
+                "subject.reviewDue" | t: { count: dueCards().length }
+              }}</span>
+            </div>
+            <app-icon name="chevron" />
+          </button>
+        } @else {
+          <div class="done-card">
+            <b
+              ><app-icon name="check" />{{
+                "ui.todosOsFlashcardsDeHoje" | t
+              }}</b
+            ><span>{{ "ui.vocePodeEncerrarPorHoje" | t }}</span
+            ><button (click)="reviewAgain()">
+              {{ "ui.revisarNovamente" | t }}
             </button>
-          </article>
+          </div>
         }
-      </div>
-    } @else {
-      <div class="topic-view-tabs">
-        <button
-          [class.active]="topicView() === 'todo'"
-          (click)="topicView.set('todo'); closeTopic()"
-        >
-          {{ "ui.aEstudar" | t }}</button
-        ><button
-          [class.active]="topicView() === 'done'"
-          (click)="topicView.set('done'); closeTopic()"
-        >
-          {{ "ui.estudados" | t }}
-        </button>
-      </div>
-      <div class="section-actions">
-        <div>
-          <b>{{
-            topicView() === "todo"
-              ? "Tópicos a estudar"
-              : ("ui.topicosEstudados" | t)
-          }}</b
-          ><span>{{
-            "subject.topics" | t: { count: subjectTopics().length }
-          }}</span>
-        </div>
-        <button (click)="addTopic()">
-          <app-icon name="plus" />{{ "ui.adicionar" | t }}
-        </button>
-      </div>
-      <div class="topic-list">
-        @for (item of subjectTopics(); track item.id) {
-          <article class="topic-row">
-            @if (item.status === "todo") {
-              <button
-                class="topic-check"
-                (click)="completeTopic(item)"
-                [attr.aria-label]="'Marcar como estudado: ' + item.title"
+        <div class="topic-list">
+          @for (card of subjectCards(); track card.id) {
+            <article class="topic-row">
+              <button class="topic-main" (click)="editCardRequested.emit(card)">
+                <b>{{ card.question }}</b
+                ><span>{{ card.topic }}</span></button
+              ><button
+                class="topic-edit"
+                (click)="editCardRequested.emit(card)"
+                [attr.aria-label]="'Editar flashcard: ' + card.question"
               >
-                <app-icon name="check" />
+                <app-icon name="edit" />
               </button>
-            } @else {
-              <span class="topic-done"><app-icon name="check" /></span>
-            }
-            <button class="topic-main" (click)="openTopic(item)">
-              <b>{{ item.title }}</b>
-              @if (item.status === "done") {
-                <span>{{
-                  "subject.completed"
-                    | t: { date: formatCompleted(item.completed_at) }
-                }}</span>
-              } @else {
-                <span class="priority" [attr.data-priority]="item.priority"
-                  >{{ item.subject || ("ui.caixaDeEntrada" | t) }} ·
-                  {{ "priority." + item.priority | t }}</span
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="topic-view-tabs">
+          <button
+            [class.active]="topicView() === 'todo'"
+            (click)="topicView.set('todo'); closeTopic()"
+          >
+            {{ "ui.aEstudar" | t }}</button
+          ><button
+            [class.active]="topicView() === 'done'"
+            (click)="topicView.set('done'); closeTopic()"
+          >
+            {{ "ui.estudados" | t }}
+          </button>
+        </div>
+        <div class="section-actions">
+          <div>
+            <b>{{
+              topicView() === "todo"
+                ? "Tópicos a estudar"
+                : ("ui.topicosEstudados" | t)
+            }}</b
+            ><span>{{
+              "subject.topics" | t: { count: subjectTopics().length }
+            }}</span>
+          </div>
+          <button (click)="addTopic()">
+            <app-icon name="plus" />{{ "ui.adicionar" | t }}
+          </button>
+        </div>
+        <div class="topic-list">
+          @for (item of subjectTopics(); track item.id) {
+            <article class="topic-row clickable" (click)="openTopic(item)">
+              @if (item.status === "todo") {
+                <button
+                  class="topic-check"
+                  (click)="$event.stopPropagation(); completeTopic(item)"
+                  [attr.aria-label]="'Marcar como estudado: ' + item.title"
                 >
+                  <app-icon name="check" />
+                </button>
+              } @else {
+                <span class="topic-done"><app-icon name="check" /></span>
               }
+              <button
+                class="topic-main"
+                (click)="$event.stopPropagation(); openTopic(item)"
+                [attr.aria-label]="'topic.open' | t: { title: item.title }"
+                aria-haspopup="dialog"
+              >
+                <b>{{ item.title }}</b>
+                @if (item.status === "done") {
+                  <span>{{
+                    "subject.completed"
+                      | t: { date: formatCompleted(item.completed_at) }
+                  }}</span>
+                } @else {
+                  <span class="priority" [attr.data-priority]="item.priority"
+                    >{{ item.subject || ("ui.caixaDeEntrada" | t) }} ·
+                    {{ "priority." + item.priority | t }}</span
+                  >
+                }
+              </button>
+            </article>
+          } @empty {
+            <div class="empty">
+              <app-icon name="book" />{{
+                topicView() === "todo"
+                  ? "Nenhum tópico pendente neste baralho."
+                  : "Os tópicos concluídos aparecerão aqui para você consultar e revisar."
+              }}
+            </div>
+          }
+        </div>
+      }
+    } @else {
+      <div class="manager-head">
+        <div>
+          <span>{{ "ui.rotinaDEESTUDOS" | t }}</span>
+          <h2>{{ "ui.baralhos_11" | t }}</h2>
+          <p>{{ "ui.toqueEmUmBaralhoPara" | t }}</p>
+        </div>
+        <button class="add" (click)="openNew()">
+          <app-icon name="plus" />{{ "ui.nova" | t }}
+        </button>
+      </div>
+      <div class="tabs">
+        <button
+          [class.active]="!showArchived()"
+          (click)="showArchived.set(false)"
+        >
+          {{ "ui.ativas" | t }}</button
+        ><button
+          [class.active]="showArchived()"
+          (click)="showArchived.set(true)"
+        >
+          {{ "ui.arquivadas" | t }}
+        </button>
+      </div>
+      @if (formOpen()) {
+        <div class="modal-layer" (keydown.escape)="close()">
+          <div
+            class="modal-backdrop"
+            (click)="close()"
+            aria-hidden="true"
+          ></div>
+          <div
+            class="subject-form modal-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="subject-form-title"
+            cdkTrapFocus
+            [cdkTrapFocusAutoCapture]="true"
+          >
+            <div class="form-title">
+              <b id="subject-form-title">{{
+                editingId() ? "Editar baralho" : "Novo baralho"
+              }}</b
+              ><button
+                (click)="close()"
+                [attr.aria-label]="'ui.fecharFormulario' | t"
+              >
+                <app-icon name="close" />
+              </button>
+            </div>
+            <label
+              >{{ "ui.nomeDoBaralho" | t
+              }}<input
+                cdkFocusInitial
+                #nameInput
+                [value]="name()"
+                (input)="name.set(nameInput.value)"
+                [placeholder]="'ui.exMatematica' | t"
+            /></label>
+            <div class="days-label">{{ "ui.diasDeEstudo" | t }}</div>
+            <div class="days">
+              @for (day of week; track day.value) {
+                <button
+                  [class.active]="selectedDays().includes(day.value)"
+                  (click)="toggleDay(day.value)"
+                >
+                  {{ day.short | t }}
+                </button>
+              }
+            </div>
+            @if (error()) {
+              <p role="alert">{{ error() }}</p>
+            }
+            <button class="save" (click)="save()">
+              {{ "ui.salvarBaralho" | t }}
             </button>
+          </div>
+        </div>
+      }
+      <div class="subject-list">
+        @for (item of visibleSubjects(); track item.id) {
+          <article class="subject-row" [class.clickable]="!item.archived">
             <button
-              class="topic-edit"
-              (click)="editTopic(item)"
-              [attr.aria-label]="'Editar tópico: ' + item.title"
+              class="subject-main"
+              (click)="openSubject(item)"
+              [disabled]="item.archived"
             >
-              <app-icon name="edit" />
+              <app-subject-badge [subject]="item.deck_key || item.name" /><span
+                ><b>{{ item.name }}</b
+                ><small>{{ dayLabel(item.days) }}</small></span
+              >
             </button>
+            <div class="actions">
+              @if (!item.archived) {
+                <button
+                  (click)="edit(item)"
+                  [attr.aria-label]="'Editar baralho: ' + item.name"
+                >
+                  <app-icon name="edit" /></button
+                ><button
+                  (click)="archive(item)"
+                  [attr.aria-label]="'Arquivar baralho: ' + item.name"
+                >
+                  <app-icon name="archive" />
+                </button>
+              } @else {
+                <button class="restore" (click)="restore(item)">
+                  {{ "ui.restaurar" | t }}
+                </button>
+              }
+            </div>
           </article>
         } @empty {
           <div class="empty">
-            <app-icon name="book" />{{
-              topicView() === "todo"
-                ? "Nenhum tópico pendente neste baralho."
-                : "Os tópicos concluídos aparecerão aqui para você consultar e revisar."
-            }}
+            <app-icon name="book" />Nenhum baralho
+            {{ showArchived() ? "arquivada" : "ativa" }}.
           </div>
         }
       </div>
-
-      @if (selectedTopic(); as item) {
-        <div class="topic-detail">
-          <div class="form-title">
-            <b>{{ item.title }}</b
-            ><button
-              (click)="closeTopic()"
-              [attr.aria-label]="'ui.fecharTopico' | t"
-            >
-              <app-icon name="close" />
-            </button>
-          </div>
-          @if (item.notes) {
-            <div class="topic-field">
-              <span>{{ "ui.observacao" | t }}</span>
-              <p>{{ item.notes }}</p>
-            </div>
-          }
-          @if (item.link) {
-            <div class="topic-field">
-              <span>{{ "ui.material" | t }}</span
-              ><a [href]="item.link" target="_blank" rel="noopener noreferrer"
-                ><app-icon name="link" />{{ "ui.abrirMaterial" | t }}</a
-              >
-            </div>
-          }
-          <div class="topic-field">
-            <span>{{ "ui.prioridade" | t }}</span>
-            <p>
-              {{ item.subject || ("ui.caixaDeEntrada" | t) }} ·
-              {{ "priority." + item.priority | t }}
-            </p>
-          </div>
-          <button class="save" (click)="editTopic(item)">
-            {{ "ui.editarTopico" | t }}
-          </button>
-        </div>
-      }
     }
-  } @else {
-    <div class="manager-head">
-      <div>
-        <span>{{ "ui.rotinaDEESTUDOS" | t }}</span>
-        <h2>{{ "ui.baralhos_11" | t }}</h2>
-        <p>{{ "ui.toqueEmUmBaralhoPara" | t }}</p>
-      </div>
-      <button class="add" (click)="openNew()">
-        <app-icon name="plus" />{{ "ui.nova" | t }}
-      </button>
-    </div>
-    <div class="tabs">
-      <button
-        [class.active]="!showArchived()"
-        (click)="showArchived.set(false)"
+  </div>
+  @if (selectedTopic(); as item) {
+    <div class="modal-layer" (keydown.escape)="closeTopic()">
+      <div
+        class="modal-backdrop"
+        (click)="closeTopic()"
+        aria-hidden="true"
+      ></div>
+      <section
+        class="topic-detail modal-sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="topic-detail-title"
+        cdkTrapFocus
+        [cdkTrapFocusAutoCapture]="true"
       >
-        {{ "ui.ativas" | t }}</button
-      ><button [class.active]="showArchived()" (click)="showArchived.set(true)">
-        {{ "ui.arquivadas" | t }}
-      </button>
-    </div>
-    @if (formOpen()) {
-      <div class="modal-layer" (keydown.escape)="close()">
-        <div class="modal-backdrop" (click)="close()" aria-hidden="true"></div>
-        <div
-          class="subject-form modal-sheet"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="subject-form-title"
-          cdkTrapFocus
-          [cdkTrapFocusAutoCapture]="true"
-        >
-          <div class="form-title">
-            <b id="subject-form-title">{{
-              editingId() ? "Editar baralho" : "Novo baralho"
-            }}</b
-            ><button
-              (click)="close()"
-              [attr.aria-label]="'ui.fecharFormulario' | t"
-            >
-              <app-icon name="close" />
-            </button>
-          </div>
-          <label
-            >{{ "ui.nomeDoBaralho" | t
-            }}<input
-              cdkFocusInitial
-              #nameInput
-              [value]="name()"
-              (input)="name.set(nameInput.value)"
-              [placeholder]="'ui.exMatematica' | t"
-          /></label>
-          <div class="days-label">{{ "ui.diasDeEstudo" | t }}</div>
-          <div class="days">
-            @for (day of week; track day.value) {
-              <button
-                [class.active]="selectedDays().includes(day.value)"
-                (click)="toggleDay(day.value)"
-              >
-                {{ day.short | t }}
-              </button>
-            }
-          </div>
-          @if (error()) {
-            <p role="alert">{{ error() }}</p>
-          }
-          <button class="save" (click)="save()">
-            {{ "ui.salvarBaralho" | t }}
-          </button>
-        </div>
-      </div>
-    }
-    <div class="subject-list">
-      @for (item of visibleSubjects(); track item.id) {
-        <article class="subject-row" [class.clickable]="!item.archived">
+        <div class="form-title">
+          <h2 id="topic-detail-title">{{ item.title }}</h2>
           <button
-            class="subject-main"
-            (click)="openSubject(item)"
-            [disabled]="item.archived"
+            cdkFocusInitial
+            (click)="closeTopic()"
+            [attr.aria-label]="'ui.fecharTopico' | t"
           >
-            <app-subject-badge [subject]="item.deck_key || item.name" /><span
-              ><b>{{ item.name }}</b
-              ><small>{{ dayLabel(item.days) }}</small></span
-            >
+            <app-icon name="close" />
           </button>
-          <div class="actions">
-            @if (!item.archived) {
-              <button
-                (click)="edit(item)"
-                [attr.aria-label]="'Editar baralho: ' + item.name"
-              >
-                <app-icon name="edit" /></button
-              ><button
-                (click)="archive(item)"
-                [attr.aria-label]="'Arquivar baralho: ' + item.name"
-              >
-                <app-icon name="archive" />
-              </button>
-            } @else {
-              <button class="restore" (click)="restore(item)">
-                {{ "ui.restaurar" | t }}
-              </button>
-            }
-          </div>
-        </article>
-      } @empty {
-        <div class="empty">
-          <app-icon name="book" />Nenhum baralho
-          {{ showArchived() ? "arquivada" : "ativa" }}.
         </div>
-      }
+        <div class="topic-field">
+          <span>{{ "ui.baralho_10" | t }}</span>
+          <p>{{ item.subject || ("ui.caixaDeEntrada" | t) }}</p>
+        </div>
+        @if (item.notes) {
+          <div class="topic-field">
+            <span>{{ "ui.observacao" | t }}</span>
+            <p>{{ item.notes }}</p>
+          </div>
+        }
+        @if (item.link) {
+          <div class="topic-field">
+            <span>{{ "ui.material" | t }}</span
+            ><a [href]="item.link" target="_blank" rel="noopener noreferrer"
+              ><app-icon name="link" /><span
+                >{{ "ui.abrirMaterial" | t
+                }}<span class="material-url">{{ item.link }}</span></span
+              ></a
+            >
+          </div>
+        }
+        <div class="topic-field">
+          <span>{{ "ui.prioridade" | t }}</span>
+          <p>{{ "priority." + item.priority | t }}</p>
+        </div>
+        @if (item.status === "done") {
+          <div class="topic-field">
+            <span>{{ "topic.completedAt" | t }}</span>
+            <p>{{ formatCompleted(item.completed_at) }}</p>
+          </div>
+        }
+        <button class="save" (click)="editTopic(item)">
+          <app-icon name="edit" />{{ "ui.editarTopico" | t }}
+        </button>
+      </section>
     </div>
   }
 </section>
