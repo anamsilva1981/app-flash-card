@@ -36,9 +36,9 @@ export class ReviewFacade {
   subjectLabel() {
     const key = this.subject();
     return (
-      this.store.subjects().find(
-        (subject) => (subject.deck_key || subject.name) === key,
-      )?.name ||
+      this.store
+        .subjects()
+        .find((subject) => (subject.deck_key || subject.name) === key)?.name ||
       key ||
       ""
     );
