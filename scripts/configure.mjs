@@ -53,7 +53,7 @@ export function readPublicConfig(env) {
 if (process.argv[1]?.endsWith("configure.mjs")) {
   if (existsSync(".env")) loadEnvFile(".env");
   const config = readPublicConfig(process.env);
-  const output = "src/app/core/app-config.generated.ts";
+  const output = "src/app/core/config/app-config.generated.ts";
   mkdirSync(dirname(output), { recursive: true });
   writeFileSync(
     output,
