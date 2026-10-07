@@ -1,8 +1,12 @@
 import { Injectable, DestroyRef, inject } from "@angular/core";
 import { cached, cache } from "../sync";
-import { studyDate, studyTimeZone } from "../study-clock";
+import {
+  studyDate,
+  studyTimeZone,
+} from "../domain/time/study-clock";
 import { shouldShowReminder } from "../reminder-policy";
 import { I18nService } from "../i18n.service";
+
 @Injectable()
 export class ReminderService {
   private destroyRef = inject(DestroyRef);
