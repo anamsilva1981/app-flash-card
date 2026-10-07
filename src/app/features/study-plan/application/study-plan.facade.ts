@@ -2,10 +2,10 @@ import { Injectable, computed, inject, signal } from "@angular/core";
 import { StudyStore } from "../../../core/state/study-store";
 import { StudyRepository } from "../../../core/application/study-repository";
 import { I18nService } from "../../../core/i18n/i18n.service";
-import { Priority, StudyItem } from "../../../shared/models";
+import { Card, Priority, StudyItem } from "../../../shared/models";
 import { sortStudyItems } from "../../../shared/domain/study-plan";
-import { CardsFacade } from "../../cards/application/cards.facade";
-import { ReviewFacade } from "../../review/application/review.facade";
+import { CardsFacade } from "../../cards/public-api";
+import { ReviewFacade } from "../../review/public-api";
 
 @Injectable()
 export class StudyPlanFacade {
@@ -129,7 +129,7 @@ export class StudyPlanFacade {
     }
   }
 
-  openCardEditor(subject: string, card?: import("../../../shared/models").Card) {
+  openCardEditor(subject: string, card?: Card) {
     this.cardsFacade.openCardEditor(subject, card);
   }
 
