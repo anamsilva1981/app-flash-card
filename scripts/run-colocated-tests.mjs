@@ -16,9 +16,7 @@ function walk(dir) {
   });
 }
 
-const specs = walk(sourceRoot).filter((file) =>
-  file.endsWith(".component.spec.ts"),
-);
+const specs = walk(sourceRoot).filter((file) => file.endsWith(".spec.ts"));
 
 if (!specs.length) {
   throw new Error("Nenhum spec colocalizado encontrado.");
