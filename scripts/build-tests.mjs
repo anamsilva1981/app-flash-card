@@ -15,7 +15,7 @@ await build({
   platform: "node",
   packages: "external",
   sourcemap: true,
-  tsconfigRaw: { compilerOptions: { experimentalDecorators: true } },
+  tsconfig: "tsconfig.json",
 });
 
 const walk = (dir) =>
@@ -43,5 +43,5 @@ await build({
   platform: "node",
   packages: "external",
   sourcemap: true,
-  tsconfigRaw: { compilerOptions: { experimentalDecorators: true } },
+  tsconfig: "tsconfig.json",
 });
