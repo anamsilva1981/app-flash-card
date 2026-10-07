@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, ViewEncapsulation } from "@angular/core";
 import { AppFacade } from "./core/app-facade";
-import { AppIconComponent } from "./app-icon.component";
+import { AppIconComponent } from "./shared/components/app-icon/app-icon.component";
 import { StudyStore } from "./core/data/study-store";
 import { StudyRepository } from "./core/data/study-repository";
 import { ReviewStore } from "./core/data/review-store";

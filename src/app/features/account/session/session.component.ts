@@ -7,7 +7,7 @@ import { appConfig } from "../../../core/app-config.generated";
 import { Component, signal, inject, DestroyRef } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { AppComponent } from "../../../app.component";
-import { AppIconComponent } from "../../../app-icon.component";
+import { AppIconComponent } from "../../../shared/components/app-icon/app-icon.component";
 import { accountSession, accountScope, setScope } from "../../../core/account";
 @Component({
   selector: "app-session",

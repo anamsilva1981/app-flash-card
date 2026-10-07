@@ -10,7 +10,7 @@ import {
 import {
   AppIconComponent,
   SubjectBadgeComponent,
-} from "../../../app-icon.component";
+} from "../../../shared/components/app-icon/app-icon.component";
 import { StudyStore } from "../../../core/data/study-store";
 import { StudyRepository } from "../../../core/data/study-repository";
 import { ManagedSubject, StudyItem, Card } from "../../../core/models";
