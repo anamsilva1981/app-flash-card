@@ -2,9 +2,9 @@ import { Component, Input } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { A11yModule } from "@angular/cdk/a11y";
 import { AppIconComponent } from "../../../shared/components/app-icon/app-icon.component";
-import { AppFacade } from "../../../core/app-facade";
-import { I18nPipe } from "../../../core/i18n.pipe";
+import { I18nPipe } from "../../../core/i18n/i18n.pipe";
 import { AccountPanelComponent } from "../../account/public-api";
+import { SettingsFacade } from "../application/settings.facade";
 @Component({
   selector: "app-settings-page",
   standalone: true,
@@ -19,5 +19,5 @@ import { AccountPanelComponent } from "../../account/public-api";
   styles: [":host{display:contents}"],
 })
 export class SettingsPageComponent {
-  @Input({ required: true }) vm!: AppFacade;
+  @Input({ required: true }) vm!: SettingsFacade;
 }
