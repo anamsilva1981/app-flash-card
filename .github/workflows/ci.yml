@@ -36,6 +36,12 @@ jobs:
       - name: Formatting and lint
         run: npm run format:check && npm run lint
 
+      - name: Architecture boundaries
+        run: npm run check:architecture
+
+      - name: Colocated component specs
+        run: npm run test:components
+
       - name: Build Angular
         run: npm run build -- --base-href /${{ github.event.repository.name }}/
 
