@@ -18,14 +18,12 @@ function isLegacy(file) {
 function isPureReexport(file) {
   const source = readFileSync(file, "utf8").trim();
   if (!source) return true;
-  const lines = source
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean);
-  return lines.every((line) =>
-    /^export\s+(\*|\{.*\}|type\s+\{.*\})\s+from\s+["'][^"']+["'];?$/.test(
-      line,
-    ),
+
+  const lines = source.split(/\r?\n/).map((line) => line.trim());
+  const codeLines = lines.filter(Boolean);
+
+  return codeLines.every(
+    (line) => line.startsWith("export ") && line.includes(" from "),
   );
 }
 
@@ -35,8 +33,9 @@ function isDomainRule(file) {
     file.endsWith(".spec.ts") ||
     file.endsWith("index.ts") ||
     file.endsWith("public-api.ts")
-  )
+  ) {
     return false;
+  }
   return !isPureReexport(file);
 }
 
@@ -44,7 +43,9 @@ function requiresColocatedSpec(file) {
   if (isLegacy(file)) return false;
   if (!file.endsWith(".ts") || file.endsWith(".spec.ts")) return false;
   if (isPureReexport(file)) return false;
+
   const name = file.split("/").at(-1);
+
   return (
     name.endsWith(".component.ts") ||
     name.endsWith(".facade.ts") ||
@@ -61,9 +62,10 @@ function requiresColocatedSpec(file) {
 }
 
 const candidates = walk(root).filter(requiresColocatedSpec);
-const missing = candidates.filter(
-  (file) => !existsSync(file.replace(/\.ts$/, ".spec.ts")),
-);
+const missing = candidates.filter((file) => {
+  const spec = file.replace(/\.ts$/, ".spec.ts");
+  return !existsSync(spec);
+});
 
 if (missing.length) {
   console.error("Cobertura estrutural de testes incompleta:");
@@ -71,6 +73,5 @@ if (missing.length) {
   process.exit(1);
 }
 
-console.log(
-  `Cobertura estrutural OK: ${candidates.length} unidades possuem spec colocalizado.`,
-);
+const total = candidates.length;
+console.log(`Cobertura estrutural OK: ${total} unidades possuem spec colocalizado.`);
