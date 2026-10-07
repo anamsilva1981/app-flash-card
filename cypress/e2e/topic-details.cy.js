@@ -21,7 +21,9 @@ function fitsViewport(selector){
 describe('Visualização e edição de tópicos no celular',()=>{
   it('abre os detalhes ao tocar no card e permite acessar o material',()=>{
     openTopics();
-    cy.contains('.topic-row',topic.title).click('topRight');
+    cy.contains('.topic-row',topic.title).then($row=>{
+      cy.wrap($row).click($row[0].clientWidth-8,$row[0].clientHeight/2);
+    });
     cy.get('[role="dialog"]').should('be.visible');
     cy.contains('#topic-detail-title',topic.title).should('be.visible');
     cy.contains('.topic-detail',topic.notes).should('be.visible');
@@ -33,7 +35,10 @@ describe('Visualização e edição de tópicos no celular',()=>{
     // Open in the test tab to verify the destination; the app link opens a new tab.
     cy.get('.topic-detail a').invoke('removeAttr','target').click();
     cy.wait('@material');
-    cy.url().should('eq',topic.link);
+    cy.origin('https://example.org',()=>{
+      cy.url().should('eq','https://example.org/material');
+      cy.contains('Material de estudo').should('be.visible');
+    });
   });
 
   it('edita somente pelo botão dos detalhes, sem ampliar os campos no mobile',()=>{
