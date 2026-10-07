@@ -3,6 +3,7 @@ import { basename, dirname, join, relative, resolve } from "node:path";
 
 const root = "src/app";
 const allowedRootFiles = new Set([
+  "app.facade.ts",
   "app.component.ts",
   "app.component.html",
   "app.component.css",
