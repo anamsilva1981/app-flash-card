@@ -26,7 +26,10 @@ const existsFile = (path) => {
 
 const importTarget = (file, specifier) => {
   if (!specifier.startsWith(".")) return null;
-  return relative(root, resolve(dirname(file), specifier)).replaceAll("\\", "/");
+  return relative(root, resolve(dirname(file), specifier)).replaceAll(
+    "\\",
+    "/",
+  );
 };
 
 for (const entry of readdirSync(root, { withFileTypes: true })) {
