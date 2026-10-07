@@ -1,0 +1,7 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import * as rules from "./study-history";
+
+test("study history expõe regras de domínio", () => {
+  assert.ok(Object.keys(rules).length > 0);
+});
