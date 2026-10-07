@@ -39,7 +39,10 @@ jobs:
       - name: Architecture boundaries
         run: npm run check:architecture
 
-      - name: Colocated component specs
+      - name: Structural test coverage
+        run: npm run check:test-structure
+
+      - name: Colocated specs
         run: npm run test:components
 
       - name: Build Angular
