@@ -21,7 +21,7 @@ describe('Telas e fluxos principais do produto',()=>{
     cy.contains('button','Adicionar').click();
     cy.contains('Adicionar tópico').should('be.visible');
     cy.get('input[placeholder="Ex.: Template Literals"]').type('Standalone Components');
-    cy.contains('button','Alta').click();
+    cy.get('[role="dialog"] .priority-buttons').contains('button','Alta').click();
     cy.get('[role="dialog"] button.primary-action').click();
     cy.contains('Standalone Components').should('exist');
   });
