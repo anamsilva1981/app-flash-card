@@ -3,7 +3,7 @@ import { TopicEditorPageComponent } from "../../subjects/topic-editor/topic-edit
 import { AppIconComponent } from "../../../app-icon.component";
 import { AppFacade } from "../../../app-facade";
 import { I18nPipe } from "../../../i18n.pipe";
-import { SubjectManagerComponent } from "../../../subject-manager.component";
+import { SubjectManagerComponent } from "../../subjects/subject-manager/subject-manager.component";
 import { SubjectNavigation } from "../../../data/subject-navigation";
 @Component({
   selector: "app-study-plan-page",
