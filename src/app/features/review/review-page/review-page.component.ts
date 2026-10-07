@@ -2,8 +2,8 @@ import { Component, Input } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { A11yModule } from "@angular/cdk/a11y";
 import { AppIconComponent } from "../../../shared/components/app-icon/app-icon.component";
-import { AppFacade } from "../../../core/app-facade";
-import { I18nPipe } from "../../../core/i18n.pipe";
+import { I18nPipe } from "../../../core/i18n/i18n.pipe";
+import { ReviewFacade } from "../application/review.facade";
 @Component({
   selector: "app-review-page",
   standalone: true,
@@ -12,5 +12,5 @@ import { I18nPipe } from "../../../core/i18n.pipe";
   styles: [":host{display:contents}"],
 })
 export class ReviewPageComponent {
-  @Input({ required: true }) vm!: AppFacade;
+  @Input({ required: true }) vm!: ReviewFacade;
 }
