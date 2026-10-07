@@ -13,14 +13,22 @@ import { ReviewStore } from "./data/review-store";
 import { CalendarStore } from "./data/calendar-store";
 import { SubjectNavigation } from "./data/subject-navigation";
 import { ReminderService } from "./data/reminder-service";
-import { Card, StudyItem, Priority, Rating } from "./models";
+import { Card, StudyItem, Priority, Rating } from "@shared/models";
 import { accountSession } from "./account";
 import { cached, cache, syncStatus, startSyncLifecycle } from "./sync";
-import { countDueCards, countSubjectCards, createCard } from "./flashcard";
-import { nextStudyItem, pendingStudyItems, sortStudyItems } from "./study-plan";
-import { onboardingStepFor } from "./onboarding";
+import {
+  countDueCards,
+  countSubjectCards,
+  createCard,
+} from "./domain/cards/flashcard";
+import {
+  nextStudyItem,
+  pendingStudyItems,
+  sortStudyItems,
+} from "./domain/study-plan/study-plan";
+import { onboardingStepFor } from "./domain/onboarding/onboarding";
 import { createBackup, parseBackup } from "./backup";
-import { studyDate } from "./study-clock";
+import { studyDate } from "./domain/time/study-clock";
 import { I18nService } from "./i18n.service";
 export type AppTab = "home" | "studyPlan" | "progress" | "history" | "settings";
 @Injectable()
