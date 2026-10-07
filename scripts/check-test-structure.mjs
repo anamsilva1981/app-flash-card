@@ -74,4 +74,6 @@ if (missing.length) {
 }
 
 const total = candidates.length;
-console.log(`Cobertura estrutural OK: ${total} unidades possuem spec colocalizado.`);
+console.log(
+  `Cobertura estrutural OK: ${total} unidades possuem spec colocalizado.`,
+);
