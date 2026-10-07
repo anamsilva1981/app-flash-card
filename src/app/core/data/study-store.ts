@@ -1,7 +1,10 @@
 import { Injectable, signal, computed } from "@angular/core";
-import { Card, ManagedSubject, StudyDay, StudyItem } from "../models";
+import { Card, ManagedSubject, StudyDay, StudyItem } from "../../shared/models";
 import { cached } from "../sync";
-import { activeSubjects, subjectsForToday } from "../subject-selectors";
+import {
+  activeSubjects,
+  subjectsForToday,
+} from "../../shared/domain/subject-selectors";
 import { studyDate } from "../study-clock";
 @Injectable()
 export class StudyStore {

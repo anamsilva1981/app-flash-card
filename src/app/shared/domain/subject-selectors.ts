@@ -1,4 +1,4 @@
-import { ManagedSubject } from "./subject-manager.component";
+import type { ManagedSubject } from "../models";
 
 export function activeSubjects(subjects: ManagedSubject[]): ManagedSubject[] {
   return subjects.filter((subject) => !subject.archived);
