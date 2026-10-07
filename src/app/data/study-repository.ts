@@ -1,7 +1,19 @@
-import { validateBackup } from "./validation";
-import { I18nService } from "../i18n.service";
 import { Injectable, inject } from "@angular/core";
 import { accountScope, accountSession } from "../account";
+import { prepareBackup } from "../backup";
+import { createCard, upsertCard } from "../flashcard";
+import { I18nService } from "../i18n.service";
+import {
+  BackupData,
+  Card,
+  ManagedSubject,
+  OperationInput,
+  StudyItem,
+} from "../models";
+import { mergeCardProgress } from "../progress";
+import { studyDate } from "../study-clock";
+import { addStudyActivity, historyFromRemote } from "../study-history";
+import { normalizeStudyLink, upsertStudyItem } from "../study-plan";
 import {
   cached,
   commitBatch,
@@ -11,20 +23,13 @@ import {
   readAccountSnapshot,
   writeRevision,
 } from "../sync";
-import { StudyStore } from "./study-store";
 import {
   normalizeRelations,
   renameSubjectRelations,
   resolveSubject,
 } from "./relations";
-import { Card, ManagedSubject, OperationInput, StudyItem } from "../models";
-import { historyFromRemote, addStudyActivity } from "../study-history";
-import { mergeCardProgress } from "../progress";
-import { upsertCard, createCard } from "../flashcard";
-import { studyDate } from "../study-clock";
-import { normalizeStudyLink, upsertStudyItem } from "../study-plan";
-import { BackupData } from "../models";
-import { prepareBackup } from "../backup";
+import { StudyStore } from "./study-store";
+import { validateBackup } from "./validation";
 @Injectable()
 export class StudyRepository {
   readonly store = inject(StudyStore);
@@ -102,13 +107,35 @@ export class StudyRepository {
       };
       const result = build(current);
       next = result.state;
-      return { patch: this.patch(result.state), operations: result.operations };
+      const operations =
+        result.operations.length > 1
+          ? [
+              {
+                path: "rpc/apply_account_batch",
+                body: result.operations.map((operation) => ({
+                  ...operation,
+                  id: crypto.randomUUID(),
+                })),
+              },
+            ]
+          : result.operations;
+      return { patch: this.patch(result.state), operations };
     }, scope);
     if (scope === accountScope() && next) this.store.apply(next);
   }
   async saveCard(draft: Card) {
-    const card = createCard(draft);
+    let card = createCard(draft);
     await this.mutate((current) => {
+      if (!draft.id) {
+        for (
+          let attempt = 0;
+          current.cards.some((existing) => existing.id === card.id);
+          attempt++
+        ) {
+          if (attempt >= 10) throw new Error("Card identity collision");
+          card = createCard(draft);
+        }
+      }
       const state = normalizeRelations({
         ...current,
         cards: upsertCard(current.cards, {

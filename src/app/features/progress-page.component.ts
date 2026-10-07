@@ -1,8 +1,8 @@
+import { A11yModule } from "@angular/cdk/a11y";
 import { Component, Input } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { A11yModule } from "@angular/cdk/a11y";
-import { AppIconComponent, SubjectBadgeComponent } from "../app-icon.component";
 import { AppFacade } from "../app-facade";
+import { AppIconComponent, SubjectBadgeComponent } from "../app-icon.component";
 import { I18nPipe } from "../i18n.pipe";
 @Component({
   selector: "app-progress-page",
@@ -18,5 +18,13 @@ import { I18nPipe } from "../i18n.pipe";
   styles: [":host{display:contents}"],
 })
 export class ProgressPageComponent {
-  @Input({ required: true }) vm!: AppFacade;
+  @Input({ required: true }) vm!: Pick<
+    AppFacade,
+    | "activeSubjects"
+    | "cards"
+    | "history"
+    | "subjectDue"
+    | "subjectTotal"
+    | "totalDue"
+  >;
 }

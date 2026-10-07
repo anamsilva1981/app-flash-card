@@ -1,8 +1,9 @@
-import { Injectable, DestroyRef, inject } from "@angular/core";
-import { cached, cache } from "../sync";
-import { studyDate, studyTimeZone } from "../study-clock";
-import { shouldShowReminder } from "../reminder-policy";
+import { DestroyRef, inject, Injectable } from "@angular/core";
 import { I18nService } from "../i18n.service";
+import { browserPlatform } from "../platform/browser-platform";
+import { shouldShowReminder } from "../reminder-policy";
+import { studyDate, studyTimeZone } from "../study-clock";
+import { cache, cached } from "../sync";
 @Injectable()
 export class ReminderService {
   private destroyRef = inject(DestroyRef);
@@ -11,14 +12,18 @@ export class ReminderService {
   start(onClick: () => void) {
     if (this.started) return;
     this.started = true;
-    const timer = window.setInterval(() => this.check(onClick), 30000);
-    this.destroyRef.onDestroy(() => window.clearInterval(timer));
+    const timer = browserPlatform.events.setInterval(
+      () => this.check(onClick),
+      30000,
+    );
+    this.destroyRef.onDestroy(() =>
+      browserPlatform.events.clearInterval(timer),
+    );
   }
   private check(onClick: () => void) {
-    const granted =
-      "Notification" in window && Notification.permission === "granted";
+    const granted = browserPlatform.notificationGranted();
     const date = studyDate();
-    const now = new Date();
+    const now = browserPlatform.now();
     const time = now.toLocaleTimeString("en-GB", {
       timeZone: studyTimeZone(),
       hour: "2-digit",
@@ -38,14 +43,11 @@ export class ReminderService {
     )
       return;
     cache("reminder-shown", date);
-    const n = new Notification(this.i18n.t("reminder.title"), {
-      body: this.i18n.t("reminder.body"),
-      tag: "study-reminder",
-    });
-    n.onclick = () => {
-      window.focus();
-      onClick();
-      n.close();
-    };
+    browserPlatform.notify(
+      this.i18n.t("reminder.title"),
+      this.i18n.t("reminder.body"),
+      "study-reminder",
+      onClick,
+    );
   }
 }

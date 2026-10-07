@@ -37,11 +37,11 @@ test("review scheduling, priorities and immutable mutations", () => {
   assert.throws(() => app.normalizeStudyLink("javascript:alert(1)"));
   assert.equal(app.normalizeStudyLink(""), null);
   assert.equal(
-    app.dueReviewCards([card], "deck", "Todos", "2026-10-06").length,
+    app.dueReviewCards([card], "deck", "__all__", "2026-10-06").length,
     1,
   );
   assert.equal(
-    app.dueReviewCards([card], null, "Todos", "2026-10-06").length,
+    app.dueReviewCards([card], null, "__all__", "2026-10-06").length,
     0,
   );
   assert.deepEqual(app.buildReviewSession([card], 0), [1]);
@@ -278,4 +278,55 @@ test("onboarding recognizes any deck and keeps ID ownership after renaming", () 
     app.onboardingStepFor(false, subjects, [], [{ subject: "JavaScript" }]),
     "done",
   );
+});
+
+test("review filters use identities despite duplicate names and shuffle without mutating cards", () => {
+  const { subject, card } = fixture();
+  const other = { ...subject, id: "other" };
+  const cards = [
+    { ...card, id: 1, subject_id: subject.id, topic_id: "topic-a" },
+    { ...card, id: 2, subject_id: other.id, topic_id: "topic-a" },
+    { ...card, id: 3, subject_id: subject.id, topic_id: "topic-b" },
+  ];
+  assert.deepEqual(
+    app
+      .dueReviewCards(cards, subject.id, "topic-a", "2026-10-07", [
+        subject,
+        other,
+      ])
+      .map((c) => c.id),
+    [1],
+  );
+  assert.deepEqual(
+    app.buildReviewSession(cards, 2, () => 0),
+    [2, 3],
+  );
+  assert.deepEqual(
+    cards.map((c) => c.id),
+    [1, 2, 3],
+  );
+  const ids = Array.from(
+    { length: 1000 },
+    () => app.createCard({ ...card, id: 0 }).id,
+  );
+  assert.equal(new Set(ids).size, 1000);
+  assert.equal(ids.every(Number.isSafeInteger), true);
+});
+
+test("cache rejects malformed collections and replay envelopes without overwriting them", () => {
+  const storage = new MemoryStorage();
+  const persistence = new app.AccountPersistence(storage);
+  storage.setItem("study:guest:flashcards", JSON.stringify([{ id: 1 }]));
+  assert.deepEqual(persistence.cached("guest", "flashcards", []), []);
+  assert.throws(() =>
+    persistence.commit("guest", { flashcards: [{ id: 1 }] }, [], false),
+  );
+  storage.setItem(
+    "study:guest:state-v2",
+    JSON.stringify({ version: 2, values: {}, pending: [{}], revision: 0 }),
+  );
+  const before = storage.getItem("study:guest:state-v2");
+  assert.throws(() => persistence.pending("guest"));
+  assert.throws(() => persistence.commit("guest", {}, [], true));
+  assert.equal(storage.getItem("study:guest:state-v2"), before);
 });

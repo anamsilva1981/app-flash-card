@@ -33,7 +33,7 @@ test("recovery event wins over initial session and destroyed listeners cannot re
     destroy = callback;
   };
   const result = await build({
-    entryPoints: ["src/app/session.component.ts"],
+    entryPoints: ["src/app/application/auth-flow.ts"],
     bundle: true,
     write: false,
     format: "esm",
@@ -46,19 +46,19 @@ test("recovery event wins over initial session and destroyed listeners cannot re
           b.onResolve(
             {
               filter:
-                /^(@angular\/core|@angular\/forms|\.\/app\.component|\.\/app-icon\.component|\.\/account|\.\/data\/account-service|\.\/i18n\.service|\.\/language-switcher\.component|\.\/i18n\.pipe)$/,
+                /^(@angular\/core|@angular\/forms|\.\.\/app\.component|\.\.\/app-icon\.component|\.\.\/account|\.\.\/data\/account-service|\.\.\/i18n\.service|\.\.\/language-switcher\.component|\.\.\/i18n\.pipe)$/,
             },
             (args) => ({ path: args.path, namespace: "fixture" }),
           );
           b.onLoad({ filter: /.*/, namespace: "fixture" }, ({ path }) => ({
             contents:
               path === "@angular/core"
-                ? `export const Component=()=>c=>c;export const DestroyRef='destroy';export const inject=key=>key==='destroy'?{onDestroy:globalThis.__fixtureDestroy}:key==='account'?{auth:globalThis.__fixtureAuth}:{t:key=>key};export const signal=x=>{const s=()=>x;s.set=v=>x=v;return s}`
-                : path === "./account"
+                ? `export const Component=()=>c=>c;export const Injectable=()=>c=>c;export const DestroyRef='destroy';export const inject=key=>key==='destroy'?{onDestroy:globalThis.__fixtureDestroy}:key==='account'?{auth:globalThis.__fixtureAuth}:{t:key=>key};export const signal=x=>{const s=()=>x;s.set=v=>x=v;return s}`
+                : path === "../account"
                   ? `let scope='guest',session=null;export const accountScope=()=>scope;export const setScope=id=>scope=id;export const accountSession=()=>session;accountSession.set=v=>session=v;`
-                  : path === "./data/account-service"
+                  : path === "../data/account-service"
                     ? `export const AccountService='account';`
-                    : path === "./i18n.service"
+                    : path === "../i18n.service"
                       ? `export const I18nService='i18n';`
                       : `export const ${{ "@angular/forms": "FormsModule", "./app.component": "AppComponent", "./app-icon.component": "AppIconComponent", "./language-switcher.component": "LanguageSwitcherComponent", "./i18n.pipe": "I18nPipe" }[path]}={};`,
           }));
@@ -66,7 +66,7 @@ test("recovery event wins over initial session and destroyed listeners cannot re
       },
     ],
   });
-  const { SessionComponent } = await import(
+  const { AuthFlow: SessionComponent } = await import(
     "data:text/javascript;base64," +
       Buffer.from(result.outputFiles[0].text).toString("base64")
   );

@@ -1,5 +1,6 @@
 import { Injectable, signal } from "@angular/core";
 import { MESSAGES } from "./messages";
+import { browserPlatform } from "./platform/browser-platform";
 export type Locale = "pt-BR" | "en";
 export type TranslationParams = Record<string, string | number>;
 export function translate(
@@ -19,18 +20,20 @@ export class I18nService {
   readonly language = signal<Locale>(this.initial());
   private initial(): Locale {
     try {
-      return localStorage.getItem("study-locale") === "en" ? "en" : "pt-BR";
+      return browserPlatform.storage.getItem("study-locale") === "en"
+        ? "en"
+        : "pt-BR";
     } catch {
       return "pt-BR";
     }
   }
   start() {
-    document.documentElement.lang = this.language();
+    browserPlatform.setLanguage(this.language());
   }
   setLanguage(locale: Locale) {
     this.language.set(locale);
     try {
-      localStorage.setItem("study-locale", locale);
+      browserPlatform.storage.setItem("study-locale", locale);
     } catch {
       /* Language remains usable if storage is unavailable. */
     }

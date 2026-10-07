@@ -1,12 +1,12 @@
-import { Card, RemoteProgress, Preferences, StudyItem } from "./models";
-import { historyFromRemote, StudyDay } from "./study-history";
 import {
-  parseCards,
-  parseTopics,
   parseActivity,
-  parseProgress,
+  parseCards,
   parsePreferences,
+  parseProgress,
+  parseTopics,
 } from "./data/validation";
+import { Card, Preferences, RemoteProgress, StudyItem } from "./models";
+import { historyFromRemote, StudyDay } from "./study-history";
 export type ApiReader = (
   path: string,
   options?: RequestInit,

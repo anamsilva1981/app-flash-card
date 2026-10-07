@@ -1,14 +1,15 @@
+import { publish } from "../platform/events";
 import { Injectable } from "@angular/core";
 import {
-  supabase,
   accountScope,
   accountSession,
   clearAccountCache,
-  SUPABASE_URL,
   PUBLIC_KEY,
+  supabase,
+  SUPABASE_URL,
 } from "../account";
-import { commitBatch, flush, hasPending } from "../sync";
 import { Preferences } from "../models";
+import { commitBatch, flush, hasPending } from "../sync";
 @Injectable({ providedIn: "root" })
 export class AccountService {
   readonly auth = supabase.auth;
@@ -27,7 +28,7 @@ export class AccountService {
     if (hasPending(scope)) throw new Error("Pending sync");
     const { error } = await this.auth.signOut({ scope: "local" });
     if (error) throw error;
-    window.dispatchEvent(new Event("study-account-exit"));
+    publish("study-account-exit", undefined);
   }
   async support(message: string) {
     const scope = accountScope();
@@ -83,6 +84,6 @@ export class AccountService {
     if (scope !== accountScope()) return;
     await this.auth.signOut({ scope: "local" });
     accountSession.set(null);
-    window.dispatchEvent(new Event("study-account-exit"));
+    publish("study-account-exit", undefined);
   }
 }

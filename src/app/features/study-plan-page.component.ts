@@ -1,10 +1,10 @@
-import { Component, Input, ViewChild, inject, DestroyRef } from "@angular/core";
-import { TopicEditorPageComponent } from "./topic-editor-page.component";
-import { AppIconComponent } from "../app-icon.component";
+import { Component, DestroyRef, Input, ViewChild, inject } from "@angular/core";
 import { AppFacade } from "../app-facade";
+import { AppIconComponent } from "../app-icon.component";
+import { SubjectNavigation } from "../data/subject-navigation";
 import { I18nPipe } from "../i18n.pipe";
 import { SubjectManagerComponent } from "../subject-manager.component";
-import { SubjectNavigation } from "../data/subject-navigation";
+import { TopicEditorPageComponent } from "./topic-editor-page.component";
 @Component({
   selector: "app-study-plan-page",
   standalone: true,
@@ -18,7 +18,33 @@ import { SubjectNavigation } from "../data/subject-navigation";
   styles: [":host{display:contents}"],
 })
 export class StudyPlanPageComponent {
-  @Input({ required: true }) vm!: AppFacade;
+  @Input({ required: true }) vm!: Pick<
+    AppFacade,
+    | "addStudySubject"
+    | "cardEditor"
+    | "cards"
+    | "closeStudyForm"
+    | "completeStudyItem"
+    | "editStudyItem"
+    | "editingStudyId"
+    | "newSubjectName"
+    | "openCardEditor"
+    | "openPractice"
+    | "openSubject"
+    | "openTopicForm"
+    | "saveStudyItem"
+    | "studyError"
+    | "studyFormOpen"
+    | "studyItems"
+    | "studyLink"
+    | "studyNotes"
+    | "studyPriority"
+    | "studySaving"
+    | "studySubject"
+    | "studySubjects"
+    | "studyTitle"
+    | "subjectFormOpen"
+  >;
   private navigation = inject(SubjectNavigation);
   constructor() {
     inject(DestroyRef).onDestroy(() => this.navigation.detach());

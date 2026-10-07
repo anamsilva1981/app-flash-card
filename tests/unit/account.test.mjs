@@ -1,5 +1,5 @@
 import "./setup.mjs";
-import { storage } from "./setup.mjs";
+import { storage, fixture } from "./setup.mjs";
 import { test, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 import * as app from "../../.test-build/index.mjs";
@@ -30,9 +30,9 @@ test("support binds the request to the initiating account and rejects a late com
   assert.equal(body.user_id, "a");
 });
 test("deletion clears only the deleted account and leaves a newly selected session active", async () => {
-  app.cache("flashcards", [{ id: 1 }]);
+  app.cache("flashcards", [{ ...fixture().card, id: 1 }]);
   login("b");
-  app.cache("flashcards", [{ id: 2 }]);
+  app.cache("flashcards", [{ ...fixture().card, id: 2 }]);
   login("a");
   const service = new app.AccountService();
   let signedOut = false,
@@ -63,7 +63,9 @@ test("deletion clears only the deleted account and leaves a newly selected sessi
   assert.equal(token, "Bearer reauth:a");
   assert.equal(signedOut, false);
   assert.equal(app.accountSession().user.id, "b");
-  assert.deepEqual(app.cached("flashcards", []), [{ id: 2 }]);
+  assert.deepEqual(app.cached("flashcards", []), [
+    { ...fixture().card, id: 2 },
+  ]);
   assert.deepEqual(app.cached("flashcards", [], "a"), []);
 });
 test("logout keeps unsent changes durable when the backend rejects a write", async () => {

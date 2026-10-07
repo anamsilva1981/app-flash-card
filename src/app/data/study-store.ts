@@ -1,10 +1,11 @@
-import { Injectable, signal, computed } from "@angular/core";
+import { computed, inject, Injectable, signal } from "@angular/core";
 import { Card, ManagedSubject, StudyDay, StudyItem } from "../models";
-import { cached } from "../sync";
+import { StudyClock } from "../platform/study-clock-service";
 import { activeSubjects, subjectsForToday } from "../subject-selectors";
-import { studyDate } from "../study-clock";
+import { cached } from "../sync";
 @Injectable()
 export class StudyStore {
+  private clock = inject(StudyClock);
   readonly cards = signal<Card[]>(cached("flashcards", []));
   readonly subjects = signal<ManagedSubject[]>(
     cached("study-subject-config", []),
@@ -15,7 +16,7 @@ export class StudyStore {
   readonly error = signal("");
   readonly activeSubjects = computed(() => activeSubjects(this.subjects()));
   readonly todaysSubjects = computed(() =>
-    subjectsForToday(this.subjects(), studyDate()),
+    subjectsForToday(this.subjects(), this.clock.today()),
   );
   snapshot() {
     return {

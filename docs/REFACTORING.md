@@ -1,3 +1,78 @@
+# Refatoração e arquitetura — checklist de execução
+
+Atualizado em 07/10/2026. Base: main após PR #6 (`96b4a5c`). Este checklist é o status atual; a análise histórica abaixo não constitui prova de conclusão desta etapa.
+
+## Critério de encerramento
+
+Cada item precisa de implementação, evidência de teste e revisão final. Usar estados **pendente**, **parcial**, **implementado / validação pendente**, **validado**, **bloqueado** ou **avaliado / sem mudança necessária**. Não declarar ausência de bugs nem cobertura de 100%. Preservar dados existentes, visual atual e contratos do backend. Aplicativo Ionic será construído depois da conclusão desta base; esta etapa prepara o compartilhamento.
+
+## Atividades e validação ponto a ponto
+
+| ID  | Atividade                                           | Estado                            | Critério / validação                                                                                                   |
+| --- | --------------------------------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| A01 | Dividir AppFacade em funcionalidades                | implementado / validação pendente | Formulários, revisão, onboarding e backup em serviços separados; fluxos Cypress preservados.                           |
+| A02 | Limitar o estado exposto a cada tela                | implementado / validação pendente | Contratos específicos por tela, sem acesso irrestrito ao facade. Build strictTemplates.                                |
+| A03 | Separar fluxo de autenticação da apresentação       | implementado / validação pendente | Estado e casos de uso fora do componente; login/cadastro/recuperação e troca de conta testados.                        |
+| A04 | Separar casos de uso e acesso a dados               | pendente                          | Operações por funcionalidade com repositório de persistência delimitado e sem mensagens de UI.                         |
+| A05 | Encapsular sessão e sincronização                   | pendente                          | Dependências e ciclo de vida explícitos; isolamento, cancelamento e fila testados.                                     |
+| A06 | Substituir eventos globais por comunicação tipada   | implementado / validação pendente | Contrato tipado de eventos/estado, sem strings distribuídas.                                                           |
+| A07 | Extrair biblioteca de domínio independente          | validado                          | Regras importáveis sem Angular, componentes, DOM ou armazenamento. Check obrigatório na CI.                            |
+| A08 | Criar interfaces de plataforma                      | parcial                           | Armazenamento, arquivos, notificações, conectividade, relógio e links substituíveis.                                   |
+| A09 | Isolar APIs do navegador nos adaptadores            | parcial                           | Casos de uso sem DOM direto; implementações web testadas.                                                              |
+| A10 | Introduzir navegação por rotas                      | pendente                          | Acesso direto, refresh, voltar/avançar e sessão protegida testados.                                                    |
+| A11 | Organizar workspace compartilhado                   | pendente                          | Web e bibliotecas com limites de importação, build e deploy preservados; sem app mobile ainda.                         |
+| D01 | Completar relações e filtros por ID                 | parcial                           | Renomear/mover/arquivar sem perder vínculos; compatibilidade com nomes legados.                                        |
+| D02 | Tornar IDs de cards resistentes a colisões          | validado                          | Criações simultâneas sem sobrescrita; manter IDs numéricos existentes.                                                 |
+| D03 | Validar cache e fila offline                        | parcial                           | Dados inválidos/quota tratados sem perda silenciosa; testes de recuperação.                                            |
+| D04 | Tornar revisão composta transacional                | implementado / validação pendente | Progresso e histórico num lote idempotente; rollback real.                                                             |
+| D05 | Definir conflitos entre dispositivos                | pendente                          | Política documentada e cenário concorrente; sem prometer mesclagem não implementada.                                   |
+| D06 | Separar falhas temporárias de fila inválida         | pendente                          | Retry seletivo, operação bloqueada observável e recuperação explícita.                                                 |
+| U01 | Distribuir CSS por funcionalidade                   | pendente                          | Estilos de tela encapsulados; comparação de layout desktop/mobile.                                                     |
+| U02 | Centralizar elementos visuais recorrentes           | pendente                          | Padrões reutilizáveis para mensagens/modais/campos sem redesenhar o produto.                                           |
+| U03 | Concluir tradução e remover sentinelas em português | parcial                           | PT/EN incluindo aria-labels; conteúdo do usuário preservado.                                                           |
+| U04 | Padronizar erros tipados                            | pendente                          | Códigos de erro no domínio/dados; tradução somente na apresentação.                                                    |
+| U05 | Reagir à virada de dia                              | validado                          | Revisões, calendário e rotina atualizados sem refresh; relógio controlado em testes.                                   |
+| U06 | Restaurar revisão aleatória                         | validado                          | Embaralhamento testável sem alterar ordem da coleção original.                                                         |
+| U07 | Definir offline e lembretes por plataforma          | pendente                          | Limites de app fechado documentados; adaptadores e fallbacks testados.                                                 |
+| U08 | Remover legado e duplicações sem uso                | pendente                          | Usos conferidos, compatibilidade mantida e testes completos.                                                           |
+| Q01 | Testes unitários das mudanças                       | parcial                           | Casos negativos e limites para todos os novos comportamentos.                                                          |
+| Q02 | Testes de componentes e navegação                   | pendente                          | UI conecta ações corretas; foco, formulários e histórico de navegação.                                                 |
+| Q03 | Ampliar testes com backend real descartável         | pendente                          | Matérias/tópicos/cards, revisão, backup, preferências, suporte, exclusão, isolamento e retry.                          |
+| Q04 | Documentar arquitetura e impor dependências         | parcial                           | Mapa de camadas e verificação automática de importações na esteira.                                                    |
+| Q05 | Configuração e validação da publicação              | bloqueado                         | Cinco variáveis GitHub e APP_ALLOWED_ORIGINS exigem acesso administrativo indisponível. Não usar fixtures em produção. |
+| Q06 | Avaliar crescimento do snapshot JSON                | pendente                          | Registrar custos/limites e critérios de migração; não reestruturar banco sem evidência.                                |
+| Q07 | Revisão final deste checklist                       | pendente                          | Comparar cada item com código e resultados; listar pendências reais e link da CI.                                      |
+
+## Auditoria intermediária — 07/10/2026
+
+Esta etapa está em execução. O checklist ainda tem pendências e não autoriza afirmar que todo o aplicativo foi refatorado. Resultados locais: 29 testes unitários aprovados; lint e verificação de dependências aprovados; build Angular aprovado. A suíte integrada será executada no PR, em ambiente descartável, pois este ambiente local não dispõe de Docker nem do binário Cypress. As medições de cobertura se referem aos módulos importados pela suíte unitária, não a todo o aplicativo.
+
+- A01–A03: serviços `EditorFacade`, `ReviewFacade`, `OnboardingFacade`, `BackupFacade` e `AuthFlow`; contratos `Pick` específicos por tela. O facade raiz mantém encaminhamentos de compatibilidade. Faltam validação completa da UI e substituição dos encaminhamentos quando as telas puderem consumir seus serviços diretamente.
+- A06: publicadores e assinantes tipados em `platform/events.ts`; eventos de conta e apresentação passam pelo contrato. Eventos nativos e controle de sessão ainda usam o adaptador web.
+- A07/Q04: regras e modelos em `libs/domain/src`, sem Angular, Supabase ou APIs do navegador. `npm run check:architecture` verifica imports e referências proibidas, integrado ao lint da CI. Camadas de aplicação/dados ainda precisam de regras adicionais.
+- A08/A09/U07: interfaces de armazenamento, arquivos, relógio, conectividade, notificações e links em `libs/platform/src`. Adaptador web centraliza downloads, notificações e idioma do documento. Ainda há dependência concreta do adaptador na aplicação; faltam injeção pelos contratos e a implementação futura em Capacitor. O web não agenda notificações com o app fechado; service worker continua desabilitado e offline limita-se aos dados já carregados/fila local.
+- D01: revisão filtra por `subject_id`/`topic_id`, mantendo leitura por nomes para dados legados. Outros seletores por nome ainda precisam migrar.
+- D02: geração de IDs numéricos com 52 bits de UUID; checagem de colisão antes da gravação, com limite de tentativas. IDs existentes permanecem. Testes cobrem segurança numérica e 1.000 criações.
+- D03: cache valida coleções/preferências e estrutura da fila; rejeita gravações inválidas e preserva envelope inválido. Leitura usa fallback seguro. Falta fluxo de recuperação explícita de cache/fila corrompida, sem descarte silencioso.
+- D04: mutações com múltiplas operações usam um lote único; teste confirma progresso+histórico no mesmo lote durável. Rollback/idempotência real precisam de nova execução da integração.
+- U05/U06: relógio reativo atualiza rotina/revisões/calendário na virada de dia; embaralhamento Fisher–Yates tem fonte aleatória controlável para teste e não modifica a coleção original.
+
+### Arquitetura atual e próxima organização
+
+`features` → `application` → `data` → backend/persistência. `libs/domain` fornece modelos, validação e regras puras; `libs/platform` define capacidades do ambiente. Reexportações em `src/app` preservam caminhos antigos durante a migração. Esta organização ainda não é um workspace com apps web/mobile: A11 continua pendente. Monorepo é a organização de vários apps/pacotes no mesmo repositório; monólito modular é a organização interna do backend. Adicionar Ionic ao mesmo repositório não exige transformar o backend em monólito.
+
+### Conflitos e snapshot — avaliação preliminar
+
+O backend serializa mutações e deduplica IDs de operações, mas não mescla edições concorrentes do mesmo campo. Atualmente vence a última operação aceita pelo servidor; uma edição offline antiga pode chegar depois de uma nova. D05 exige cenário concorrente e política explícita de produto antes de marcar conclusão. O snapshot JSON completo simplifica transações e backup, mas aumenta transferência, validação e contenção conforme a conta cresce. Q06 exige medição com volumes representativos; índices/normalização devem ser decididos a partir de tamanho, latência e contenção observados, não somente por preferência arquitetural.
+
+## Matriz de integração exigida
+
+Login/cadastro/recuperação; onboarding; baralhos (criar/renomear/arquivar/restaurar); tópicos (criar/editar/material/concluir); cards (criar/editar/revisar/praticar); histórico/calendário/progresso; perfil/rotina/idioma; backup/importação/legado; fila offline/retry/troca de conta; suporte/exclusão. Cypress com mocks verifica a UI; backend descartável verifica persistência, autorização e transações. Cada falha encontrada deve ser corrigida antes de marcar a validação como concluída.
+
+---
+
+# Histórico das etapas anteriores
+
 # Análise e plano de refatoração
 
 Análise de 06/10/2026, baseada na branch `refactor/study-plan-domain` (PR #4). Esta etapa remove dados fixos; não conclui toda a arquitetura proposta abaixo.

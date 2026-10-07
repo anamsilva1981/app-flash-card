@@ -49,7 +49,7 @@
       >
         @for (t of vm.topics(); track t) {
           <option [value]="t">
-            {{ t === "Todos" ? ("ui.todos" | t) : t }}
+            {{ vm.topicLabel(t) }}
           </option>
         }
       </select>

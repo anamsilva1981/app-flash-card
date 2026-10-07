@@ -7,6 +7,7 @@ import * as app from "../../.test-build/index.mjs";
 function services() {
   const injector = Injector.create({
     providers: [
+      { provide: app.StudyClock, useFactory: () => new app.StudyClock() },
       { provide: app.StudyStore, useFactory: () => new app.StudyStore() },
       { provide: app.I18nService, useFactory: () => new app.I18nService() },
     ],
@@ -87,7 +88,11 @@ test("imports one replayable batch and restores cache across store instances", a
   assert.equal(queue.length, 1);
   assert.equal(queue[0].path, "rpc/apply_account_batch");
   assert.equal(store.cards()[0].subject_id, fixture().subject.id);
-  assert.equal(new app.StudyStore().cards()[0].question, "Pergunta");
+  assert.equal(
+    runInInjectionContext(injector, () => new app.StudyStore()).cards()[0]
+      .question,
+    "Pergunta",
+  );
   injector.destroy();
 });
 
@@ -162,5 +167,45 @@ test("rejects a backup that the server cannot accept before committing local dat
   );
   assert.deepEqual(store.cards(), []);
   assert.deepEqual(app.cached("flashcards", []), []);
+  injector.destroy();
+});
+
+test("review persists progress and history as one replayable atomic batch", async () => {
+  const { repository, store, injector } = services();
+  const { subject, topic, card } = fixture();
+  await repository.saveSubject(subject);
+  await repository.saveTopic(topic);
+  await repository.saveCard(card);
+  app.accountSession.set({ user: { id: "guest" }, access_token: "fake" });
+  globalThis.fetch = async () => new Response(null, { status: 503 });
+  await repository.rateCard(
+    { ...store.cards()[0], due: "2026-11-01", interval: 4 },
+    "Matéria",
+    "good",
+  );
+  await app.flush();
+  const pending = new app.AccountPersistence(storage).pending("guest");
+  assert.equal(pending.length, 1);
+  assert.equal(pending[0].path, "rpc/apply_account_batch");
+  assert.equal(pending[0].body.length, 2);
+  assert.equal(new Set(pending[0].body.map((op) => op.id)).size, 2);
+  assert.equal(store.history().length, 1);
+  injector.destroy();
+});
+
+test("day changes update routine and due cards without rebuilding stores", () => {
+  const { store, injector } = services();
+  const clock = injector.get(app.StudyClock);
+  const { subject, card } = fixture();
+  store.subjects.set([subject]);
+  store.cards.set([{ ...card, due: "2026-10-06" }]);
+  const review = runInInjectionContext(injector, () => new app.ReviewStore());
+  review.subject.set(subject.id);
+  clock.refresh(new Date("2026-10-05T12:00:00"));
+  assert.equal(store.todaysSubjects().length, 1);
+  assert.equal(review.dueCards().length, 0);
+  clock.refresh(new Date("2026-10-06T12:00:00"));
+  assert.equal(store.todaysSubjects().length, 0);
+  assert.equal(review.dueCards().length, 1);
   injector.destroy();
 });

@@ -1,8 +1,8 @@
+import { A11yModule } from "@angular/cdk/a11y";
 import { Component, Input } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { A11yModule } from "@angular/cdk/a11y";
-import { AppIconComponent } from "../app-icon.component";
 import { AppFacade } from "../app-facade";
+import { AppIconComponent } from "../app-icon.component";
 import { I18nPipe } from "../i18n.pipe";
 @Component({
   selector: "app-topic-editor-page",
@@ -12,5 +12,22 @@ import { I18nPipe } from "../i18n.pipe";
   styles: [":host{display:contents}"],
 })
 export class TopicEditorPageComponent {
-  @Input({ required: true }) vm!: AppFacade;
+  @Input({ required: true }) vm!: Pick<
+    AppFacade,
+    | "addStudySubject"
+    | "closeStudyForm"
+    | "editingStudyId"
+    | "newSubjectName"
+    | "saveStudyItem"
+    | "studyError"
+    | "studyFormOpen"
+    | "studyLink"
+    | "studyNotes"
+    | "studyPriority"
+    | "studySaving"
+    | "studySubject"
+    | "studySubjects"
+    | "studyTitle"
+    | "subjectFormOpen"
+  >;
 }

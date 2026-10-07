@@ -1,8 +1,8 @@
-import "zone.js";
 import { bootstrapApplication } from "@angular/platform-browser";
 import { provideServiceWorker } from "@angular/service-worker";
-import { SessionComponent } from "./app/session.component";
+import "zone.js";
 import { I18nService } from "./app/i18n.service";
+import { SessionComponent } from "./app/session.component";
 
 async function clearLegacyServiceWorkerCaches() {
   if (!("serviceWorker" in navigator)) return;

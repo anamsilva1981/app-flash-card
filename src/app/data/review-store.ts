@@ -1,19 +1,20 @@
-import { Injectable, inject, signal, computed } from "@angular/core";
-import { StudyStore } from "./study-store";
+import { computed, inject, Injectable, signal } from "@angular/core";
+import { cardsForSubject, cardTopics } from "../flashcard";
+import { StudyClock } from "../platform/study-clock-service";
 import {
   buildReviewSession,
   dueReviewCards,
   intervalFor,
   totalDueCards,
 } from "../review-schedule";
-import { cardsForSubject, cardTopics } from "../flashcard";
-import { studyDate } from "../study-clock";
 import { cached } from "../sync";
+import { StudyStore } from "./study-store";
 @Injectable()
 export class ReviewStore {
+  private clock = inject(StudyClock);
   private store = inject(StudyStore);
   readonly subject = signal<string | null>(null);
-  readonly topic = signal("Todos");
+  readonly topic = signal("__all__");
   readonly flipped = signal(false);
   readonly explanationOpen = signal(false);
   readonly sessionLimit = signal(cached("review-session-limit", 10));
@@ -21,7 +22,7 @@ export class ReviewStore {
   readonly sessionPosition = signal(0);
   readonly practice = signal(false);
   readonly subjectCards = computed(() =>
-    cardsForSubject(this.store.cards(), this.subject()),
+    cardsForSubject(this.store.cards(), this.subject(), this.store.subjects()),
   );
   readonly topics = computed(() => cardTopics(this.subjectCards()));
   readonly dueCards = computed(() =>
@@ -29,11 +30,16 @@ export class ReviewStore {
       this.store.cards(),
       this.subject(),
       this.topic(),
-      studyDate(),
+      this.clock.today(),
+      this.store.subjects(),
     ),
   );
   readonly totalDue = computed(() =>
-    totalDueCards(this.store.cards(), this.store.activeSubjects(), studyDate()),
+    totalDueCards(
+      this.store.cards(),
+      this.store.activeSubjects(),
+      this.clock.today(),
+    ),
   );
   readonly card = computed(() =>
     this.store
@@ -49,7 +55,9 @@ export class ReviewStore {
   start() {
     const cards = this.practice()
       ? this.subjectCards().filter(
-          (c) => this.topic() === "Todos" || c.topic === this.topic(),
+          (c) =>
+            this.topic() === "__all__" ||
+            (c.topic_id || c.topic) === this.topic(),
         )
       : this.dueCards();
     this.sessionIds.set(buildReviewSession(cards, this.sessionLimit()));

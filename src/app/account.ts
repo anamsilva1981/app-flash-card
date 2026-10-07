@@ -1,6 +1,8 @@
-import { appConfig } from "./app-config.generated";
+import { publish } from "./platform/events";
 import { signal } from "@angular/core";
 import { createClient, Session } from "@supabase/supabase-js";
+import { appConfig } from "./app-config.generated";
+import { browserPlatform } from "./platform/browser-platform";
 export const SUPABASE_URL = appConfig.supabaseUrl;
 export const PUBLIC_KEY = appConfig.supabasePublishableKey;
 export const supabase = createClient(SUPABASE_URL, PUBLIC_KEY);
@@ -8,8 +10,8 @@ export const accountSession = signal<Session | null>(null);
 let scope = "guest";
 export function setScope(value: string) {
   scope = value;
-  window.dispatchEvent(new Event("study-scope-changed"));
-  localStorage.setItem("study-active-scope", value);
+  publish("study-scope-changed", undefined);
+  browserPlatform.storage.setItem("study-active-scope", value);
 }
 export function accountScope() {
   return scope;
@@ -27,8 +29,8 @@ export const personalKeys = [
 ];
 export function clearAccountCache(targetScope = scope) {
   const prefix = `study:${targetScope}:`;
-  for (let index = localStorage.length - 1; index >= 0; index--) {
-    const key = localStorage.key(index);
-    if (key?.startsWith(prefix)) localStorage.removeItem(key);
+  for (let index = browserPlatform.storage.length - 1; index >= 0; index--) {
+    const key = browserPlatform.storage.key(index);
+    if (key?.startsWith(prefix)) browserPlatform.storage.removeItem(key);
   }
 }

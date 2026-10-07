@@ -1,13 +1,15 @@
-import { Component, signal, inject, DestroyRef } from "@angular/core";
+import { publish } from "./platform/events";
+import { Component, inject, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { appConfig } from "./app-config.generated";
 import { accountSession } from "./account";
+import { appConfig } from "./app-config.generated";
 import { AccountService } from "./data/account-service";
-import { I18nService } from "./i18n.service";
 import { I18nPipe } from "./i18n.pipe";
-import { cached, cache } from "./sync";
+import { I18nService } from "./i18n.service";
+import { browserPlatform } from "./platform/browser-platform";
 import { calendarReminder } from "./reminders";
 import { studyTimeZone } from "./study-clock";
+import { cache, cached } from "./sync";
 @Component({
   selector: "app-account-panel",
   standalone: true,
@@ -16,7 +18,6 @@ import { studyTimeZone } from "./study-clock";
 })
 export class AccountPanelComponent {
   private account = inject(AccountService);
-  private destroyRef = inject(DestroyRef);
   readonly i18n = inject(I18nService);
   readonly config = appConfig;
   readonly timeZone = studyTimeZone();
@@ -44,7 +45,7 @@ export class AccountPanelComponent {
         { "display-name": this.name.trim() },
       );
       this.message.set(this.i18n.t("account.nameSaved"));
-      window.dispatchEvent(new Event("study-profile-changed"));
+      publish("study-profile-changed", undefined);
     } catch {
       this.message.set(this.i18n.t("error.save"));
     }
@@ -69,29 +70,22 @@ export class AccountPanelComponent {
     try {
       await this.saveReminder();
       const text = calendarReminder(this.time, this.days());
-      const url = URL.createObjectURL(
-        new Blob([text], { type: "text/calendar;charset=utf-8" }),
+      browserPlatform.saveText(
+        "minha-rotina-de-estudos.ics",
+        text,
+        "text/calendar;charset=utf-8",
       );
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "minha-rotina-de-estudos.ics";
-      a.click();
-      const timer = window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-      this.destroyRef.onDestroy(() => {
-        window.clearTimeout(timer);
-        URL.revokeObjectURL(url);
-      });
       this.message.set(this.i18n.t("account.calendarExported"));
     } catch {
       this.message.set(this.i18n.t("account.calendarInvalid"));
     }
   }
   async enableNotifications() {
-    if (!("Notification" in window)) {
+    if (!browserPlatform.notificationsAvailable()) {
       this.message.set(this.i18n.t("account.noNotifications"));
       return;
     }
-    const enabled = (await Notification.requestPermission()) === "granted";
+    const enabled = await browserPlatform.requestPermission();
     cache("browser-reminders", enabled);
     this.notifications.set(enabled);
     this.message.set(
@@ -114,7 +108,7 @@ export class AccountPanelComponent {
     }
   }
   exitGuest() {
-    window.dispatchEvent(new Event("study-account-exit"));
+    publish("study-account-exit", undefined);
   }
   async sendSupport() {
     if (this.support.trim().length < 10) {

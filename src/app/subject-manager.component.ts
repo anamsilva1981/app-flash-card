@@ -1,21 +1,21 @@
 import { A11yModule } from "@angular/cdk/a11y";
 import {
   Component,
-  signal,
-  Input,
-  Output,
   EventEmitter,
   inject,
+  Input,
+  Output,
+  signal,
 } from "@angular/core";
 import { AppIconComponent, SubjectBadgeComponent } from "./app-icon.component";
-import { StudyStore } from "./data/study-store";
-import { StudyRepository } from "./data/study-repository";
-import { ManagedSubject, StudyItem, Card } from "./models";
 import { belongsToSubject } from "./data/relations";
-import { sortStudyItems } from "./study-plan";
-import { studyDate, studyTimeZone } from "./study-clock";
-import { I18nService } from "./i18n.service";
+import { StudyRepository } from "./data/study-repository";
+import { StudyStore } from "./data/study-store";
 import { I18nPipe } from "./i18n.pipe";
+import { I18nService } from "./i18n.service";
+import { Card, ManagedSubject, StudyItem } from "./models";
+import { studyDate, studyTimeZone } from "./study-clock";
+import { sortStudyItems } from "./study-plan";
 export type { ManagedSubject } from "./models";
 @Component({
   selector: "app-subject-manager",

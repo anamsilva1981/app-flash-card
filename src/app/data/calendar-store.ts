@@ -1,17 +1,18 @@
-import { Injectable, inject, computed, signal } from "@angular/core";
-import { StudyStore } from "./study-store";
+import { Injectable, computed, inject, signal } from "@angular/core";
 import { I18nService } from "../i18n.service";
+import { StudyClock } from "../platform/study-clock-service";
 import {
   buildCalendarDays,
   countStudyDaysInMonth,
   studyStreak,
 } from "../study-history";
-import { studyDate } from "../study-clock";
+import { StudyStore } from "./study-store";
 @Injectable()
 export class CalendarStore {
+  private clock = inject(StudyClock);
   private store = inject(StudyStore);
   private i18n = inject(I18nService);
-  readonly month = signal(new Date(studyDate() + "T12:00:00"));
+  readonly month = signal(new Date(this.clock.today() + "T12:00:00"));
   readonly selectedDate = signal<string | null>(null);
   readonly monthLabel = computed(() =>
     this.month()
@@ -22,7 +23,7 @@ export class CalendarStore {
       .replace(/^./, (v) => v.toUpperCase()),
   );
   readonly days = computed(() =>
-    buildCalendarDays(this.month(), this.store.history(), studyDate()),
+    buildCalendarDays(this.month(), this.store.history(), this.clock.today()),
   );
   readonly selectedDay = computed(
     () =>
@@ -32,7 +33,7 @@ export class CalendarStore {
     countStudyDaysInMonth(this.month(), this.store.history()),
   );
   readonly streak = computed(() =>
-    studyStreak(this.store.history(), studyDate()),
+    studyStreak(this.store.history(), this.clock.today()),
   );
   change(offset: number) {
     const d = this.month();

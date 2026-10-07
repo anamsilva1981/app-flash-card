@@ -1,9 +1,10 @@
+import { subscribe } from "./platform/events";
 import { signal } from "@angular/core";
 import {
-  accountSession,
   accountScope,
-  SUPABASE_URL,
+  accountSession,
   PUBLIC_KEY,
+  SUPABASE_URL,
 } from "./account";
 import { AccountPersistence } from "./data/persistence";
 import { parseSnapshot, record } from "./data/validation";
@@ -13,8 +14,9 @@ import {
   OperationInput,
   StudySnapshot,
 } from "./models";
+import { browserPlatform } from "./platform/browser-platform";
 export const syncStatus = signal("sync.local");
-const storage = () => new AccountPersistence(localStorage);
+const storage = () => new AccountPersistence(browserPlatform.storage);
 const drains = new Map<string, Promise<void>>();
 const controllers = new Map<string, Set<AbortController>>();
 const snapshots = new Map<
@@ -150,7 +152,10 @@ export async function readAccountSnapshot(): Promise<StudySnapshot> {
     return await promise;
   } catch (error) {
     if (snapshots.get(scope)?.promise === promise) snapshots.delete(scope);
-    status(scope, navigator.onLine ? "sync.unavailable" : "sync.cached");
+    status(
+      scope,
+      browserPlatform.isOnline() ? "sync.unavailable" : "sync.cached",
+    );
     throw error;
   }
 }
@@ -214,7 +219,7 @@ async function drain(scope: string) {
     invalidate(scope);
     status(scope, "sync.complete");
   } catch {
-    status(scope, navigator.onLine ? "sync.pending" : "sync.offline");
+    status(scope, browserPlatform.isOnline() ? "sync.pending" : "sync.offline");
   }
 }
 export function flush(): Promise<void> {
@@ -254,17 +259,17 @@ export function startSyncLifecycle(onStorage?: () => void): () => void {
       void flush();
     }
   };
-  window.addEventListener("online", online);
-  window.addEventListener("study-scope-changed", changed);
-  window.addEventListener("storage", crossTab);
-  const timer = window.setInterval(() => {
+  browserPlatform.events.addEventListener("online", online);
+  const stopChanged = subscribe("study-scope-changed", changed);
+  browserPlatform.events.addEventListener("storage", crossTab);
+  const timer = browserPlatform.events.setInterval(() => {
     if (hasPending()) void flush();
   }, 30000);
   return () => {
-    window.removeEventListener("online", online);
-    window.removeEventListener("study-scope-changed", changed);
-    window.removeEventListener("storage", crossTab);
-    window.clearInterval(timer);
+    browserPlatform.events.removeEventListener("online", online);
+    stopChanged();
+    browserPlatform.events.removeEventListener("storage", crossTab);
+    browserPlatform.events.clearInterval(timer);
     for (const set of controllers.values()) for (const c of set) c.abort();
   };
 }
