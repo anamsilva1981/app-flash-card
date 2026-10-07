@@ -1,16 +1,16 @@
 # Plano de refatoração — arquitetura nível sênior
 
-Branch de execução: `refactor/senior-feature-architecture`
+Branch de execução: `refactor/senior-feature-architecture-quality`
 
 Objetivo: reorganizar o frontend Angular por domínio/feature, reduzir acoplamento, remover arquivos soltos da raiz de `src/app`, aproximar testes das unidades que validam, manter responsabilidades claras e preservar todos os fluxos funcionais existentes.
 
 ## Regras de execução
 
-- Cada item concluído deve ser marcado com `[x]` apenas depois de implementação e validação correspondente.
-- Mudanças serão feitas em etapas pequenas e verificáveis.
-- Nenhuma etapa será considerada concluída apenas por mover arquivos; imports, estilos, testes e comportamento devem permanecer válidos.
+- Cada item concluído é marcado com `[x]` somente após implementação e validação correspondente.
+- Mudanças são feitas em etapas pequenas e verificáveis.
+- Nenhuma etapa é considerada concluída apenas por mover arquivos; imports, estilos, testes e comportamento devem permanecer válidos.
 - O encerramento exige build, lint, testes unitários, Cypress E2E e testes de integração aprovados.
-- A `main` não será alterada durante a refatoração; a integração ocorrerá somente após o Quality Gate final.
+- A `main` não será alterada até o checklist arquitetural ficar realmente concluído e o Quality Gate final permanecer verde.
 
 ## Checklist de execução
 
@@ -19,111 +19,115 @@ Objetivo: reorganizar o frontend Angular por domínio/feature, reduzir acoplamen
 - [x] Criar branch exclusiva para a refatoração.
 - [x] Inventariar a estrutura atual de `src/app`, `tests` e `cypress`.
 - [x] Registrar este plano de execução no repositório.
-- [ ] Definir mapa definitivo de responsabilidades entre `core`, `shared` e `features`.
-- [ ] Identificar dependências cruzadas entre features e pontos de acoplamento indevido.
+- [x] Definir mapa de responsabilidades entre `core`, `shared` e `features`.
+- [x] Identificar dependências cruzadas entre features e pontos de acoplamento indevido por checker automatizado.
 
 ### 2. Estrutura base
 
-- [ ] Criar `src/app/core` para infraestrutura e serviços globais.
-- [ ] Criar `src/app/shared` para componentes, pipes, modelos e utilitários reutilizáveis.
-- [ ] Reorganizar `src/app/features` por domínio, com uma pasta por funcionalidade.
-- [ ] Manter na raiz de `src/app` apenas os arquivos de composição da aplicação.
+- [x] Criar `src/app/core` para infraestrutura e serviços globais.
+- [x] Criar `src/app/shared` para componentes, modelos e código reutilizável.
+- [x] Reorganizar `src/app/features` por domínio, com uma pasta por funcionalidade.
+- [x] Manter na raiz de `src/app` apenas os arquivos de composição da aplicação.
 
 ### 3. Features
 
-- [ ] Criar feature `cards` e mover editor, modelos e regras específicas de flashcards.
-- [ ] Criar feature `review` e mover tela, store e regras de agendamento de revisão.
-- [ ] Criar feature `history` e mover histórico e componentes relacionados.
-- [ ] Criar feature `progress` e mover regras/tela de progresso.
-- [ ] Criar feature `study-plan` e mover plano de estudos, calendário e regras relacionadas.
-- [ ] Criar feature `subjects` e mover gerenciamento, seleção e navegação de matérias/tópicos.
-- [ ] Criar feature `settings` e mover configuração visual/funcional da tela de configurações.
-- [ ] Criar feature `account` e mover painel e regras de conta que pertencem à experiência de usuário.
-- [ ] Criar feature `home` para composição da tela inicial.
+- [ ] Concluir feature `cards`, movendo também modelos/regras específicas hoje ainda compartilhadas com `core`.
+- [ ] Concluir feature `review`, movendo regras/store específicos que não precisam permanecer globais.
+- [ ] Concluir feature `history`, aproximando regra de histórico da feature quando não for compartilhada.
+- [ ] Concluir feature `progress`, aproximando regra de progresso da feature quando não for compartilhada.
+- [ ] Concluir feature `study-plan`, aproximando plano/calendário específicos da feature.
+- [ ] Concluir feature `subjects`, aproximando gerenciamento, seleção e navegação da feature sem criar dependência circular.
+- [x] Criar feature `settings` e isolar sua página.
+- [ ] Concluir feature `account`, separando experiência de usuário de autenticação/sessão global.
+- [x] Criar feature `home` para composição da tela inicial.
 
 ### 4. Core
 
-- [ ] Mover autenticação e sessão global para `core/auth` quando aplicável.
-- [ ] Mover persistência/sincronização para `core/persistence`.
-- [ ] Mover backup para `core/backup`.
-- [ ] Mover internacionalização para `core/i18n`.
-- [ ] Mover lembretes e integração de calendário global para `core/notifications` ou domínio apropriado.
+- [ ] Organizar autenticação e sessão global em `core/auth`.
+- [ ] Organizar persistência/sincronização em `core/persistence`.
+- [ ] Organizar backup em `core/backup`.
+- [ ] Organizar internacionalização em `core/i18n`.
+- [ ] Organizar lembretes e integração de calendário global em `core/notifications` ou fronteira equivalente.
 - [ ] Organizar configuração da aplicação em `core/config`.
 
 ### 5. Shared
 
-- [ ] Mover `AppIconComponent` para `shared/components/app-icon`.
-- [ ] Mover `LanguageSwitcherComponent` para localização adequada (`shared` ou `core/i18n/components`).
-- [ ] Separar modelos compartilhados de modelos específicos de feature.
-- [ ] Separar utilitários compartilhados de regras de domínio.
+- [x] Mover `AppIconComponent` para `shared/components/app-icon`.
+- [ ] Mover `LanguageSwitcherComponent` para `core/i18n/components` ou `shared` conforme a fronteira final.
+- [x] Separar modelos compartilhados por contexto (`card`, `study`, `subject`, `review`, `ui`, `persistence`).
+- [x] Separar código compartilhado de regras específicas de tela onde a dependência era evidente.
 
 ### 6. Facades, stores e services
 
-- [ ] Revisar `AppFacade` para evitar God Facade.
-- [ ] Distribuir comandos/queries para facades/stores específicos por feature.
-- [ ] Garantir que componentes de apresentação não conheçam detalhes de persistência.
-- [ ] Garantir que features não importem internals de outras features.
-- [ ] Manter contratos públicos explícitos para dependências entre camadas.
+- [ ] Quebrar o `AppFacade` para evitar God Facade e reduzir seu tamanho/responsabilidades.
+- [ ] Distribuir comandos/queries para facades/stores específicos por feature quando apropriado.
+- [x] Manter componentes de apresentação sem acesso direto ao backend/persistência.
+- [x] Impedir imports de internals de outra feature por checker de boundaries.
+- [x] Criar contratos públicos (`public-api.ts`) para features consumidas externamente.
 
 ### 7. Componentes e estilos
 
-- [ ] Criar pasta própria para cada page/component complexo.
-- [ ] Colocalizar `.ts`, `.html`, `.css/.scss` e teste da unidade.
-- [ ] Retirar estilos específicos de features do `app.component.css`.
-- [ ] Reduzir o `AppComponent` à composição/layout global.
-- [ ] Revisar `SubjectManagerComponent` e `SessionComponent` para divisão quando houver responsabilidades múltiplas.
+- [x] Criar pasta própria para cada page/component complexo reorganizado.
+- [x] Colocalizar `.ts`, `.html` e `.spec.ts`; manter stylesheet local quando o componente possui estilo próprio.
+- [ ] Retirar estilos específicos de features ainda concentrados em `app.component.css`.
+- [x] Manter o `AppComponent` focado em composição/layout global.
+- [ ] Revisar e dividir `SubjectManagerComponent` e `SessionComponent` caso a análise final confirme responsabilidades múltiplas.
 
 ### 8. Tipagem e domínio
 
-- [ ] Eliminar arquivo genérico `models.ts` em favor de modelos por contexto.
-- [ ] Manter DTOs de persistência separados de modelos de domínio quando necessário.
-- [ ] Revisar `any`, unions implícitas e contratos frágeis.
-- [ ] Preservar compatibilidade dos dados já persistidos.
+- [ ] Eliminar o alias genérico remanescente `core/models.ts`, mantendo somente modelos explícitos por contexto.
+- [x] Manter DTOs de persistência separados dos modelos de domínio quando necessário.
+- [ ] Fazer auditoria final de `any`, unions implícitas e contratos frágeis.
+- [x] Preservar compatibilidade dos dados persistidos, validada pela suíte de integração e persistência real.
 
 ### 9. Testes unitários e specs
 
-- [ ] Adotar padrão de testes colocalizados para components/services/stores novos ou movidos.
-- [ ] Criar/ajustar specs para `cards`.
-- [ ] Criar/ajustar specs para `review`.
-- [ ] Criar/ajustar specs para `history`.
-- [ ] Criar/ajustar specs para `progress`.
-- [ ] Criar/ajustar specs para `study-plan`.
-- [ ] Criar/ajustar specs para `subjects`.
-- [ ] Criar/ajustar specs para `account`.
-- [ ] Criar/ajustar specs para infraestrutura crítica (`sync`, persistência, backup, i18n).
-- [ ] Atualizar o runner/configuração para executar os testes colocalizados sem depender de arquivos órfãos.
+- [x] Adotar padrão de specs colocalizados para componentes novos/movidos.
+- [x] Criar/ajustar spec para `cards`.
+- [x] Criar/ajustar spec para `review`.
+- [x] Criar/ajustar spec para `history`.
+- [x] Criar/ajustar spec para `progress`.
+- [x] Criar/ajustar spec para `study-plan`.
+- [x] Criar/ajustar specs para `subjects`.
+- [x] Criar/ajustar specs para `account`.
+- [x] Preservar testes existentes de infraestrutura crítica (`sync`, persistência, backup, i18n) na suíte unitária.
+- [x] Atualizar runner para executar specs colocalizados no Quality Gate.
 
 ### 10. Imports, boundaries e qualidade estática
 
-- [ ] Atualizar todos os imports após a reorganização.
-- [ ] Remover imports relativos excessivamente profundos quando uma API pública da feature for adequada.
-- [ ] Criar regra/documentação de boundaries entre `core`, `shared` e `features`.
-- [ ] Garantir Prettier e ESLint aprovados.
-- [ ] Garantir ausência de arquivos de implementação soltos na raiz de `src/app` além da composição da aplicação.
+- [x] Atualizar imports após a reorganização já realizada.
+- [x] Criar APIs públicas para reduzir dependência direta de internals entre features.
+- [x] Criar checker automático de boundaries entre `core`, `shared` e `features`.
+- [x] Garantir Prettier e ESLint aprovados.
+- [x] Garantir ausência de arquivos de implementação soltos na raiz de `src/app` além da composição da aplicação.
 
-### 11. Testes funcionais e regressão
+### 11. Testes funcionais e regressão — execução 07/10/2026
 
-- [ ] Executar testes unitários completos.
-- [ ] Executar cobertura e confirmar que os limiares continuam atendidos ou melhoraram.
-- [ ] Executar todos os cenários Cypress E2E.
-- [ ] Executar integração com backend Supabase descartável.
-- [ ] Executar cenário de persistência real no navegador contra backend descartável.
-- [ ] Verificar fluxos de cadastro/login/recuperação quando cobertos pela suíte.
-- [ ] Verificar criação/edição de matéria, tópico e flashcard.
-- [ ] Verificar revisão e agendamento.
-- [ ] Verificar histórico/progresso.
-- [ ] Verificar refresh, logout/login e isolamento por conta.
-- [ ] Verificar backup/importação e cenários negativos existentes.
+Quality Gate do PR #9 / run `37660436503` após correção do runner Angular:
+
+- [x] Executar testes unitários completos.
+- [x] Executar cobertura e manter os limiares configurados.
+- [x] Executar todos os cenários Cypress E2E.
+- [x] Executar integração com backend Supabase descartável.
+- [x] Executar cenário de persistência real no navegador contra backend descartável.
+- [x] Verificar fluxos de cadastro/login/recuperação cobertos pela suíte existente.
+- [x] Verificar criação/edição de matéria, tópico e flashcard pelos cenários existentes.
+- [x] Verificar revisão e agendamento pelos testes existentes.
+- [x] Verificar histórico/progresso pelos testes existentes.
+- [x] Verificar refresh, logout/login e isolamento por conta.
+- [x] Verificar persistência, rollback, exclusão e cenários negativos do backend isolado.
+
+Resultado da execução: `quality = success` e `integration = success`.
 
 ### 12. Encerramento
 
-- [ ] Atualizar este documento com o resultado real de cada etapa.
-- [ ] Registrar estrutura final e decisões arquiteturais.
-- [ ] Registrar testes executados e resultados.
-- [ ] Abrir PR para `main` somente com Quality Gate verde.
-- [ ] Integrar na `main` somente após validação completa.
+- [x] Atualizar este documento com o resultado real da etapa atual.
+- [ ] Registrar estrutura final depois que os itens arquiteturais pendentes acima forem concluídos.
+- [x] Registrar testes executados e resultados atuais.
+- [x] Abrir PR draft para `main` para executar o Quality Gate (`#9`).
+- [ ] Integrar na `main` somente após concluir também as pendências arquiteturais; Quality Gate verde sozinho não encerra a refatoração.
 
-## Arquitetura-alvo inicial
+## Arquitetura-alvo
 
 ```text
 src/app/
@@ -132,11 +136,12 @@ src/app/
 │   ├── backup/
 │   ├── config/
 │   ├── i18n/
+│   ├── notifications/
 │   └── persistence/
 ├── shared/
 │   ├── components/
 │   ├── models/
-│   └── utils/
+│   └── domain/
 ├── features/
 │   ├── account/
 │   ├── cards/
@@ -152,4 +157,11 @@ src/app/
 └── app.component.css
 ```
 
-A arquitetura final pode ajustar nomes/pastas quando a análise de dependências mostrar uma fronteira melhor, mas qualquer desvio deve ser documentado aqui.
+## Pendências obrigatórias antes do merge
+
+1. Estruturar o `core` por subdomínios, removendo o agrupamento plano atual.
+2. Reduzir/quebrar o `AppFacade` e distribuir responsabilidades para stores/facades de domínio.
+3. Mover estilos específicos das features para seus componentes e reduzir `app.component.css`.
+4. Finalizar a separação das regras que ainda permanecem em `core` mas pertencem claramente a uma feature.
+5. Remover `core/models.ts` e concluir auditoria de tipagem.
+6. Reexecutar o Quality Gate completo e atualizar todos os checkboxes antes de liberar o PR para merge.
