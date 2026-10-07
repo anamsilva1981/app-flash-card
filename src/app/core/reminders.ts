@@ -1,4 +1,5 @@
-import { studyTimeZone } from "./study-clock";
+import { studyTimeZone } from "./domain/time/study-clock";
+
 export function calendarReminder(
   time: string,
   days: number[],
