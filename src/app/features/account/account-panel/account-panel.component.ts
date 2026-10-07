@@ -1,13 +1,13 @@
 import { Component, signal, inject, DestroyRef } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { appConfig } from "../../../core/app-config.generated";
-import { accountSession } from "../../../core/account";
-import { AccountService } from "../../../core/data/account-service";
-import { I18nService } from "../../../core/i18n.service";
-import { I18nPipe } from "../../../core/i18n.pipe";
-import { cached, cache } from "../../../core/sync";
-import { calendarReminder } from "../../../core/reminders";
-import { studyTimeZone } from "../../../core/study-clock";
+import { appConfig } from "../../../core/config/app-config.generated";
+import { accountSession } from "../../../core/auth/account";
+import { AccountService } from "../../../core/auth/account-service";
+import { I18nService } from "../../../core/i18n/i18n.service";
+import { I18nPipe } from "../../../core/i18n/i18n.pipe";
+import { cached, cache } from "../../../core/persistence/sync";
+import { calendarReminder } from "../../../core/notifications/reminders";
+import { studyTimeZone } from "../../../shared/utils/study-clock";
 @Component({
   selector: "app-account-panel",
   standalone: true,
@@ -29,7 +29,7 @@ export class AccountPanelComponent {
   readonly days = signal<number[]>(
     cached("reminder-days", [0, 1, 2, 3, 4, 5, 6]),
   );
-  readonly week = [0, 1, 2, 3, 4, 5, 6].map((d) => "week." + d);
+  readonly week = [0, 1, 2, 3, 4, 5, 6].map((day) => "week." + day);
   readonly message = signal("");
   readonly busy = signal(false);
   support = "";
@@ -50,8 +50,10 @@ export class AccountPanelComponent {
     }
   }
   async toggleDay(day: number) {
-    this.days.update((v) =>
-      v.includes(day) ? v.filter((x) => x !== day) : [...v, day],
+    this.days.update((value) =>
+      value.includes(day)
+        ? value.filter((current) => current !== day)
+        : [...value, day],
     );
     await this.saveReminder();
   }
@@ -72,10 +74,10 @@ export class AccountPanelComponent {
       const url = URL.createObjectURL(
         new Blob([text], { type: "text/calendar;charset=utf-8" }),
       );
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "minha-rotina-de-estudos.ics";
-      a.click();
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = "minha-rotina-de-estudos.ics";
+      anchor.click();
       const timer = window.setTimeout(() => URL.revokeObjectURL(url), 1000);
       this.destroyRef.onDestroy(() => {
         window.clearTimeout(timer);
