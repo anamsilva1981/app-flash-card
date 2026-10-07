@@ -15,6 +15,18 @@ function isLegacy(file) {
   return legacyRoots.some((legacyRoot) => file.startsWith(legacyRoot));
 }
 
+function isPureReexport(file) {
+  const source = readFileSync(file, "utf8").trim();
+  if (!source) return true;
+  const lines = source.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  return lines.every(
+    (line) =>
+      /^export\s+(\*|\{.*\}|type\s+\{.*\})\s+from\s+["'][^"']+["'];?$/.test(
+        line,
+      ),
+  );
+}
+
 function isDomainRule(file) {
   if (!file.includes("/domain/") || extname(file) !== ".ts") return false;
   if (
@@ -23,16 +35,13 @@ function isDomainRule(file) {
     file.endsWith("public-api.ts")
   )
     return false;
-  const source = readFileSync(file, "utf8").trim();
-  const lines = source.split(/\r?\n/).filter(Boolean);
-  const onlyReexport =
-    lines.length <= 2 && lines.every((line) => line.startsWith("export "));
-  return !onlyReexport;
+  return !isPureReexport(file);
 }
 
 function requiresColocatedSpec(file) {
   if (isLegacy(file)) return false;
   if (!file.endsWith(".ts") || file.endsWith(".spec.ts")) return false;
+  if (isPureReexport(file)) return false;
   const name = file.split("/").at(-1);
   return (
     name.endsWith(".component.ts") ||
