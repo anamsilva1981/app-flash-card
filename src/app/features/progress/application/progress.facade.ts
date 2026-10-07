@@ -1,6 +1,6 @@
 import { Injectable, inject } from "@angular/core";
 import { StudyStore } from "../../../core/state/study-store";
-import { ReviewStore } from "../../review/application/review-store";
+import { ReviewStore } from "../../review/public-api";
 import {
   countDueCards,
   countSubjectCards,
