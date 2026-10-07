@@ -16,7 +16,7 @@
     "test:integration": "node --test tests/integration/backend.test.mjs",
     "lint": "eslint src scripts tests cypress && node scripts/check-architecture.mjs",
     "format": "prettier --write .",
-    "format:check": "prettier --write . && git diff --exit-code",
+    "format:check": "prettier --check .",
     "check": "npm run format:check && npm run lint && npm test && npm run build",
     "pree2e": "npx --yes cypress@15.5.0 install"
   },
