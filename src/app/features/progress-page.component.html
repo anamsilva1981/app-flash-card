@@ -1,0 +1,52 @@
+<section class="panel-page">
+  <div class="page-heading">
+    <div>
+      <span>{{ "ui.seusESTUDOS" | t }}</span>
+      <h1>{{ "ui.meuProgresso" | t }}</h1>
+      <p>{{ "ui.acompanheSeuRitmoDeRevisao" | t }}</p>
+    </div>
+    <div class="page-icon"><app-icon name="chart" /></div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat purple">
+      <b>{{ vm.totalDue() }}</b
+      ><span>{{ "ui.paraRevisar" | t }}</span>
+    </div>
+    <div class="stat green">
+      <b>{{ vm.cards().length }}</b
+      ><span>{{ "ui.cardsCadastrados" | t }}</span>
+    </div>
+    <div class="stat amber">
+      <b>{{ vm.history().length }}</b
+      ><span>{{ "ui.diasNoHistorico" | t }}</span>
+    </div>
+  </div>
+  <section class="progress-list">
+    @for (s of vm.activeSubjects(); track s.id) {
+      <div class="progress-item">
+        <app-subject-badge [subject]="s.deck_key || s.name" />
+        <div class="progress-info">
+          <div class="progress-label">
+            <b>{{ s.name }}</b
+            ><span>{{
+              "progress.pending"
+                | t: { count: vm.subjectDue(s.deck_key || s.name) }
+            }}</span>
+          </div>
+          <div class="mini-track">
+            <div
+              [style.width.%]="
+                vm.subjectTotal(s.deck_key || s.name)
+                  ? ((vm.subjectTotal(s.deck_key || s.name) -
+                      vm.subjectDue(s.deck_key || s.name)) /
+                      vm.subjectTotal(s.deck_key || s.name)) *
+                    100
+                  : 0
+              "
+            ></div>
+          </div>
+        </div>
+      </div>
+    }
+  </section>
+</section>

@@ -1,0 +1,230 @@
+<section class="home-page">
+  @if (vm.deckPicker()) {
+    <section class="deck-picker">
+      <header class="deck-picker-header">
+        <button
+          (click)="vm.deckPicker.set(false)"
+          [attr.aria-label]="'ui.voltar' | t"
+        >
+          <app-icon name="back" />
+        </button>
+        <div>
+          <span>{{ "ui.revisao" | t }}</span>
+          <h1>{{ "ui.revisarFlashcards" | t }}</h1>
+          <p>{{ "ui.umaSessaoDeCadaVez" | t }}</p>
+        </div>
+      </header>
+      <div class="deck-picker-summary">
+        <b>{{ vm.totalDue() }}</b
+        ><span>{{ "ui.cardsAguardandoRevisao" | t }}</span>
+      </div>
+      <div class="deck-picker-list">
+        @for (s of vm.activeSubjects(); track s.id) {
+          @if (vm.subjectTotal(s.deck_key || s.name)) {
+            <button
+              class="deck-choice"
+              (click)="vm.openDeck(s.deck_key || s.name)"
+            >
+              <app-subject-badge [subject]="s.deck_key || s.name" /><span
+                ><b>{{ s.name }}</b
+                ><small>{{
+                  "review.pending"
+                    | t: { count: vm.subjectDue(s.deck_key || s.name) }
+                }}</small></span
+              ><app-icon name="chevron" />
+            </button>
+          }
+        }
+      </div>
+    </section>
+  } @else {
+    <header class="daily-header">
+      <div class="greeting">
+        <span class="greeting-avatar"><app-icon name="user" /></span>
+        <div>
+          <h1>
+            {{
+              (vm.displayName() ? "home.greeting" : "home.hello")
+                | t: { name: vm.displayName() }
+            }}
+          </h1>
+          <p>{{ "ui.vamosAprenderUmPoucoHoje" | t }}</p>
+        </div>
+      </div>
+      <div
+        class="streak"
+        [attr.aria-label]="'home.streak' | t: { count: vm.streak() }"
+      >
+        <app-icon name="flame" /><b>{{ vm.streak() }}</b
+        ><small>{{
+          vm.streak() === 1 ? ("ui.diaSeguido" | t) : ("ui.diasSeguidos" | t)
+        }}</small>
+      </div>
+    </header>
+    @if (vm.onboardingStep() !== "done") {
+      <section class="onboarding">
+        <span>{{ "ui.primeirosPASSOS" | t }}</span>
+        @if (vm.onboardingStep() === "deck") {
+          <h2>{{ "ui.crieSeuPrimeiroBaralho" | t }}</h2>
+          <p>
+            {{ "ui.umBaralhoReuneOsFlashcards" | t }}
+          </p>
+          <button class="primary-action" (click)="vm.startFirstSubject()">
+            {{ "ui.criarMeuPrimeiroBaralho" | t }}
+          </button>
+        } @else if (vm.onboardingStep() === "topic") {
+          <h2>{{ "ui.adicioneOPrimeiroTopico" | t }}</h2>
+          <p>
+            {{ "ui.topicosSaoOsAssuntosQue" | t }}
+          </p>
+          <button class="primary-action" (click)="vm.startFirstTopic()">
+            {{ "ui.adicionarTopico" | t }}
+          </button>
+        } @else if (vm.onboardingStep() === "routine") {
+          <h2>{{ "ui.escolhaQuandoEstudar" | t }}</h2>
+          <p>
+            {{ "ui.definaOsDiasEmQue" | t }}
+          </p>
+          <button class="primary-action" (click)="vm.startFirstRoutine()">
+            {{ "ui.escolherDiasDeEstudo" | t }}
+          </button>
+        } @else if (vm.onboardingStep() === "card") {
+          <h2>{{ "ui.crieSeuPrimeiroFlashcard" | t }}</h2>
+          <p>
+            {{ "ui.registreUmaPerguntaAResposta" | t }}
+          </p>
+          <button class="primary-action" (click)="vm.startFirstCard()">
+            {{ "ui.criarPrimeiroFlashcard" | t }}
+          </button>
+        }
+      </section>
+    }
+    <section class="review-hero">
+      <div class="hero-copy">
+        <span class="hero-eyebrow">{{ "ui.suaREVISAODIARIA" | t }}</span>
+        <h2>
+          {{
+            (vm.totalDue() ? "review.count" : "ui.tudoEmDia")
+              | t: { count: vm.totalDue() }
+          }}
+        </h2>
+        <p>
+          {{
+            vm.totalDue()
+              ? ("review.session"
+                | t: { count: vm.sessionLimit() || vm.i18n.t("review.all") })
+              : ("ui.suaRevisaoEstaEmDia" | t)
+          }}
+        </p>
+      </div>
+      <svg class="hero-art" viewBox="0 0 140 150" aria-hidden="true">
+        <rect
+          x="48"
+          y="30"
+          width="72"
+          height="92"
+          rx="12"
+          fill="none"
+          stroke="#ae91f2"
+          stroke-width="4"
+          transform="rotate(9 84 76)"
+        />
+        <rect
+          x="33"
+          y="20"
+          width="72"
+          height="92"
+          rx="12"
+          fill="#aa86f0"
+          transform="rotate(-5 69 66)"
+        />
+        <rect
+          x="18"
+          y="12"
+          width="72"
+          height="92"
+          rx="12"
+          fill="#eee5ff"
+          transform="rotate(-13 54 58)"
+        />
+        <g
+          stroke="#6a3acd"
+          stroke-width="4"
+          stroke-linecap="round"
+          transform="rotate(-13 54 58)"
+        >
+          <path d="M34 40h38M34 51h38M34 62h26" />
+        </g>
+        <circle cx="107" cy="119" r="13" fill="#ffffff18" />
+        <path
+          d="M107 113v12m-6-6h12"
+          stroke="#ddceff"
+          stroke-width="2"
+          stroke-linecap="round"
+        /></svg
+      ><button class="hero-action" (click)="vm.deckPicker.set(true)">
+        {{
+          vm.totalDue()
+            ? ("ui.comecarRevisao" | t)
+            : ("ui.explorarFlashcards" | t)
+        }}<app-icon name="play" />
+      </button>
+    </section>
+    <section class="daily-section">
+      <div class="daily-section-title">
+        <h2>{{ "ui.baralhosDoDia" | t }}</h2>
+        <span class="section-count"
+          >{{ vm.todaysSubjects().length }}
+          {{
+            vm.todaysSubjects().length === 1
+              ? ("ui.baralho" | t)
+              : ("ui.baralhos" | t)
+          }}</span
+        >
+      </div>
+      <div class="daily-subjects">
+        @for (s of vm.todaysSubjects(); track s.id) {
+          <button class="daily-subject" (click)="vm.goToSubject(s.name)">
+            <app-subject-badge [subject]="s.deck_key || s.name" /><span
+              class="subject-copy"
+              ><b>{{ s.name }}</b
+              ><small>{{
+                vm.nextTopic(s.name)?.title || ("ui.nenhumTopicoPendente" | t)
+              }}</small></span
+            ><app-icon name="chevron" /><span class="subject-footer"
+              ><i></i>{{ vm.pendingTopics(s.name) }}
+              {{
+                vm.pendingTopics(s.name) === 1
+                  ? ("ui.topicoPendente" | t)
+                  : ("ui.topicosPendentes" | t)
+              }}<span>·</span
+              >{{
+                vm.pendingTopics(s.name)
+                  ? ("ui.prontaParaEstudar" | t)
+                  : ("ui.estudosEmDia" | t)
+              }}</span
+            >
+          </button>
+        } @empty {
+          <div class="empty-state">
+            <app-icon name="calendar" />
+            <h3>{{ "ui.hojeNoSeuRitmo" | t }}</h3>
+            <p>
+              {{ "ui.escolhaOsDiasDosSeus" | t }}
+            </p>
+            <button (click)="vm.setTab('studyPlan')">
+              {{ "ui.organizarMinhaRotina" | t }}
+            </button>
+          </div>
+        }
+      </div>
+      <button
+        class="capture-action"
+        (click)="vm.setTab('studyPlan'); vm.openStudyForm()"
+        [attr.aria-label]="'ui.capturarUmTopico' | t"
+      >
+        <app-icon name="plus" />{{ "ui.adicionarUmTopico" | t }}
+      </button>
+    </section>
+  }
+</section>

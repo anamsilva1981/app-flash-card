@@ -1,0 +1,124 @@
+@if (vm.studyFormOpen()) {
+  <div class="modal-layer" (keydown.escape)="vm.closeStudyForm()">
+    <div
+      class="modal-backdrop"
+      (click)="vm.closeStudyForm()"
+      aria-hidden="true"
+    ></div>
+    <section
+      class="study-form modal-sheet"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="topic-form-title"
+      cdkTrapFocus
+      [cdkTrapFocusAutoCapture]="true"
+    >
+      <div class="form-head">
+        <h2 id="topic-form-title">
+          {{
+            vm.editingStudyId()
+              ? ("ui.editarTopico" | t)
+              : ("ui.adicionarTopico" | t)
+          }}
+        </h2>
+        <button
+          (click)="vm.closeStudyForm()"
+          [attr.aria-label]="'ui.fecharFormulario' | t"
+        >
+          <app-icon name="close" />
+        </button>
+      </div>
+      <label
+        >{{ "ui.tituloDoTopico" | t
+        }}<input
+          cdkFocusInitial
+          #titleInput
+          [value]="vm.studyTitle()"
+          (input)="vm.studyTitle.set(titleInput.value)"
+          [placeholder]="'ui.exTemplateLiterals' | t"
+      /></label>
+      <label
+        >{{ "ui.baralho_1" | t }}<small>{{ "ui.opcional" | t }}</small
+        ><select
+          [ngModel]="vm.studySubject()"
+          (ngModelChange)="vm.studySubject.set($event)"
+        >
+          <option value="">{{ "ui.caixaDeEntrada" | t }}</option>
+          @for (s of vm.studySubjects(); track s) {
+            <option [value]="s">{{ s }}</option>
+          }
+        </select></label
+      >
+      <button class="new-subject-button" (click)="vm.subjectFormOpen.set(true)">
+        <app-icon name="plus" />{{ "ui.adicionarNovoBaralho" | t }}
+      </button>
+      @if (vm.subjectFormOpen()) {
+        <div class="new-subject-form">
+          <input
+            #newSubjectInput
+            [value]="vm.newSubjectName()"
+            (input)="vm.newSubjectName.set(newSubjectInput.value)"
+            [placeholder]="'ui.nomeDoNovoBaralho' | t"
+          /><button (click)="vm.addStudySubject()">
+            {{ "ui.adicionar" | t }}</button
+          ><button class="cancel" (click)="vm.subjectFormOpen.set(false)">
+            {{ "ui.cancelar" | t }}
+          </button>
+        </div>
+      }
+      <label
+        >{{ "ui.observacao" | t }}<small>{{ "ui.opcional" | t }}</small
+        ><textarea
+          #notesInput
+          [value]="vm.studyNotes()"
+          (input)="vm.studyNotes.set(notesInput.value)"
+          [placeholder]="'ui.anotacoesSobreOQueVoce' | t"
+        ></textarea>
+      </label>
+      <label
+        >{{ "ui.link" | t }}<small>{{ "ui.opcional" | t }}</small
+        ><input
+          #linkInput
+          type="url"
+          [value]="vm.studyLink()"
+          (input)="vm.studyLink.set(linkInput.value)"
+          [placeholder]="'ui.https' | t"
+      /></label>
+      <div class="priority-label">
+        {{ "ui.prioridade" | t }}<small>{{ "ui.opcional" | t }}</small>
+      </div>
+      <div class="priority-buttons">
+        <button
+          [class.active]="vm.studyPriority() === 'baixa'"
+          (click)="vm.studyPriority.set('baixa')"
+        >
+          {{ "ui.baixa" | t }}</button
+        ><button
+          [class.active]="vm.studyPriority() === 'media'"
+          (click)="vm.studyPriority.set('media')"
+        >
+          {{ "ui.media" | t }}</button
+        ><button
+          [class.active]="vm.studyPriority() === 'alta'"
+          (click)="vm.studyPriority.set('alta')"
+        >
+          {{ "ui.alta" | t }}
+        </button>
+      </div>
+      @if (vm.studyError()) {
+        <p role="alert">{{ vm.studyError() }}</p>
+      }
+      <button
+        class="primary-action"
+        [disabled]="vm.studySaving()"
+        (click)="vm.saveStudyItem()"
+      >
+        {{
+          vm.editingStudyId()
+            ? ("ui.salvarAlteracoes" | t)
+            : ("ui.adicionar" | t)
+        }}
+      </button>
+    </section>
+  </div>
+}

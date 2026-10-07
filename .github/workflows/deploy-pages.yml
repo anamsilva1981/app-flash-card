@@ -18,6 +18,12 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+      SUPABASE_PUBLISHABLE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY }}
+      APP_OWNER_NAME: ${{ vars.APP_OWNER_NAME }}
+      APP_SUPPORT_URL: ${{ vars.APP_SUPPORT_URL }}
+      APP_PRIVACY_UPDATED_AT: ${{ vars.APP_PRIVACY_UPDATED_AT }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,11 +36,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Formatting and lint
+        run: npm run format:check && npm run lint
+
       - name: Build Angular
-        run: npm run build -- --base-href /app-flash-card/
+        run: npm run build -- --base-href /${{ github.event.repository.name }}/
 
       - name: Test study rules
-        run: npm test
+        run: npm run test:coverage
 
       - name: Start app for E2E
         run: |

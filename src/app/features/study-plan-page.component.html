@@ -1,0 +1,29 @@
+<section class="panel-page study-plan-page">
+  <div class="page-heading">
+    <div>
+      <span>{{ "ui.planoDEESTUDO" | t }}</span>
+      <h1>{{ "ui.estudar" | t }}</h1>
+    </div>
+    <div class="page-icon"><app-icon name="book" /></div>
+  </div>
+  <app-subject-manager
+    [attr.inert]="vm.studyFormOpen() || vm.cardEditor() ? '' : null"
+    [flashcards]="vm.cards()"
+    [studyItems]="vm.studyItems()"
+    (addCardRequested)="vm.openCardEditor($event)"
+    (editCardRequested)="vm.openCardEditor($event.subject, $event)"
+    (addTopicRequested)="vm.openTopicForm($event)"
+    (editTopicRequested)="vm.editStudyItem($event)"
+    (completeTopicRequested)="vm.completeStudyItem($event)"
+    (practiceRequested)="vm.openPractice($event)"
+    (reviewRequested)="vm.openSubject($event)"
+  />
+  @if (vm.studyError()) {
+    <p role="alert">{{ vm.studyError() }}</p>
+  }
+  @if (vm.studyFormOpen()) {
+    @defer (on immediate) {
+      <app-topic-editor-page [vm]="vm" />
+    }
+  }
+</section>
