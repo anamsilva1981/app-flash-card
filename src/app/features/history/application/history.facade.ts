@@ -1,8 +1,8 @@
 import { Injectable, inject } from "@angular/core";
 import { StudyStore } from "../../../core/state/study-store";
 import { I18nService } from "../../../core/i18n/i18n.service";
-import { ReviewStore } from "../../review/application/review-store";
-import { StudyPlanFacade } from "../../study-plan/application/study-plan.facade";
+import { ReviewStore } from "../../review/public-api";
+import { StudyPlanFacade } from "../../study-plan/public-api";
 import { CalendarStore } from "./calendar-store";
 
 @Injectable()
