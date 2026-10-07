@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ViewEncapsulation } from "@angular/core";
+import { Component, OnInit, ViewEncapsulation, inject } from "@angular/core";
 import { AppFacade } from "./core/app-facade";
 import { AppIconComponent } from "./shared/components/app-icon/app-icon.component";
 import { StudyStore } from "./core/data/study-store";
@@ -8,13 +8,13 @@ import { CalendarStore } from "./core/data/calendar-store";
 import { SubjectNavigation } from "./core/data/subject-navigation";
 import { ReminderService } from "./core/data/reminder-service";
 import { I18nPipe } from "./core/i18n.pipe";
-import { HomePageComponent } from "./features/home/home-page/home-page.component";
-import { StudyPlanPageComponent } from "./features/study-plan/study-plan-page/study-plan-page.component";
-import { ProgressPageComponent } from "./features/progress/progress-page/progress-page.component";
-import { HistoryPageComponent } from "./features/history/history-page/history-page.component";
-import { SettingsPageComponent } from "./features/settings/settings-page/settings-page.component";
-import { ReviewPageComponent } from "./features/review/review-page/review-page.component";
-import { CardEditorPageComponent } from "./features/cards/card-editor/card-editor-page.component";
+import { HomePageComponent } from "./features/home/public-api";
+import { StudyPlanPageComponent } from "./features/study-plan/public-api";
+import { ProgressPageComponent } from "./features/progress/public-api";
+import { HistoryPageComponent } from "./features/history/public-api";
+import { SettingsPageComponent } from "./features/settings/public-api";
+import { ReviewPageComponent } from "./features/review/public-api";
+import { CardEditorPageComponent } from "./features/cards/public-api";
 @Component({
   selector: "app-root",
   standalone: true,
