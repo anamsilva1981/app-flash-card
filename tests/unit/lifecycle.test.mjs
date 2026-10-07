@@ -2,6 +2,7 @@ import "./setup.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { build } from "esbuild";
+
 test("recovery event wins over initial session and destroyed listeners cannot reopen it", async () => {
   globalThis.location = {
     search: "",
@@ -33,7 +34,7 @@ test("recovery event wins over initial session and destroyed listeners cannot re
     destroy = callback;
   };
   const result = await build({
-    entryPoints: ["src/app/session.component.ts"],
+    entryPoints: ["src/app/features/account/session/session.component.ts"],
     bundle: true,
     write: false,
     format: "esm",
@@ -46,22 +47,43 @@ test("recovery event wins over initial session and destroyed listeners cannot re
           b.onResolve(
             {
               filter:
-                /^(@angular\/core|@angular\/forms|\.\/app\.component|\.\/app-icon\.component|\.\/account|\.\/data\/account-service|\.\/i18n\.service|\.\/language-switcher\.component|\.\/i18n\.pipe)$/,
+                /^(@angular\/core|@angular\/forms|.*app\.component|.*app-icon\.component|.*core\/account|.*account-service|.*i18n\.service|.*language-switcher\.component|.*i18n\.pipe|.*core\/models|.*app-config\.generated)$/,
             },
             (args) => ({ path: args.path, namespace: "fixture" }),
           );
-          b.onLoad({ filter: /.*/, namespace: "fixture" }, ({ path }) => ({
-            contents:
-              path === "@angular/core"
-                ? `export const Component=()=>c=>c;export const DestroyRef='destroy';export const inject=key=>key==='destroy'?{onDestroy:globalThis.__fixtureDestroy}:key==='account'?{auth:globalThis.__fixtureAuth}:{t:key=>key};export const signal=x=>{const s=()=>x;s.set=v=>x=v;return s}`
-                : path === "./account"
-                  ? `let scope='guest',session=null;export const accountScope=()=>scope;export const setScope=id=>scope=id;export const accountSession=()=>session;accountSession.set=v=>session=v;`
-                  : path === "./data/account-service"
-                    ? `export const AccountService='account';`
-                    : path === "./i18n.service"
-                      ? `export const I18nService='i18n';`
-                      : `export const ${{ "@angular/forms": "FormsModule", "./app.component": "AppComponent", "./app-icon.component": "AppIconComponent", "./language-switcher.component": "LanguageSwitcherComponent", "./i18n.pipe": "I18nPipe" }[path]}={};`,
-          }));
+          b.onLoad({ filter: /.*/, namespace: "fixture" }, ({ path }) => {
+            if (path === "@angular/core") {
+              return {
+                contents: `export const Component=()=>c=>c;export const DestroyRef='destroy';export const inject=key=>key==='destroy'?{onDestroy:globalThis.__fixtureDestroy}:key==='account'?{auth:globalThis.__fixtureAuth}:{t:key=>key};export const signal=x=>{const s=()=>x;s.set=v=>x=v;return s}`,
+              };
+            }
+            if (path.includes("core/account")) {
+              return {
+                contents: `let scope='guest',session=null;export const accountScope=()=>scope;export const setScope=id=>scope=id;export const accountSession=()=>session;accountSession.set=v=>session=v;`,
+              };
+            }
+            if (path.includes("account-service")) {
+              return { contents: `export const AccountService='account';` };
+            }
+            if (path.includes("i18n.service")) {
+              return { contents: `export const I18nService='i18n';` };
+            }
+            if (path.includes("app-config.generated")) {
+              return { contents: `export const appConfig={supportUrl:'https://fixture.invalid'};` };
+            }
+            const exportName = path.includes("@angular/forms")
+              ? "FormsModule"
+              : path.includes("app.component")
+                ? "AppComponent"
+                : path.includes("app-icon.component")
+                  ? "AppIconComponent"
+                  : path.includes("language-switcher.component")
+                    ? "LanguageSwitcherComponent"
+                    : path.includes("i18n.pipe")
+                      ? "I18nPipe"
+                      : "Card";
+            return { contents: `export const ${exportName}={};` };
+          });
         },
       },
     ],
@@ -91,6 +113,7 @@ test("recovery event wins over initial session and destroyed listeners cannot re
   delete globalThis.__fixtureAuth;
   delete globalThis.__fixtureDestroy;
 });
+
 test("deletion CORS permits configured origins and rejects unknown ones before backend access", async () => {
   let handler;
   globalThis.Deno = {
