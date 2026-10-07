@@ -6,10 +6,7 @@ import {
   intervalFor,
   totalDueCards,
 } from "../domain/review/review-schedule";
-import {
-  cardsForSubject,
-  cardTopics,
-} from "../domain/cards/flashcard";
+import { cardsForSubject, cardTopics } from "../domain/cards/flashcard";
 import { studyDate } from "../domain/time/study-clock";
 import { cached } from "../sync";
 import { Rating } from "@shared/models";
