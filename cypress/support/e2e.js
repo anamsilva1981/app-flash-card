@@ -11,7 +11,7 @@ Cypress.Commands.add('mockBackend',(options={})=>{
   cy.intercept('POST','**/auth/v1/token?grant_type=password',{statusCode:200,body:{access_token,token_type:'bearer',expires_in:3600,refresh_token:'e2e-refresh',user}}).as('login');
   cy.intercept('GET','**/auth/v1/user',{statusCode:200,body:user});
   cy.intercept('GET','**/rest/v1/account_studies*',{statusCode:200,body:{data:{
-    subjects:[
+    subjects:options.subjects??[
       {id:'angular',name:'Angular',days:[0,1,2,3,4,5,6],archived:false,deck_key:'Angular',routine_initialized:true},
       {id:'javascript',name:'JavaScript',days:[0,1,2,3,4,5,6],archived:false,deck_key:'JavaScript',routine_initialized:true}
     ],
