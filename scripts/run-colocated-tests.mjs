@@ -1,10 +1,11 @@
-import { readdirSync, mkdirSync, rmSync } from "node:fs";
-import { join, relative } from "node:path";
+import { mkdirSync, readdirSync, rmSync } from "node:fs";
 import { spawnSync } from "node:child_process";
+import { join, relative } from "node:path";
 import { build } from "esbuild";
 
 const sourceRoot = "src/app";
 const outRoot = ".test-build/colocated";
+
 rmSync(outRoot, { recursive: true, force: true });
 mkdirSync(outRoot, { recursive: true });
 
@@ -15,11 +16,20 @@ function walk(dir) {
   });
 }
 
-const specs = walk(sourceRoot).filter((file) => file.endsWith(".component.spec.ts"));
-if (!specs.length) throw new Error("Nenhum spec colocalizado encontrado.");
+const specs = walk(sourceRoot).filter((file) =>
+  file.endsWith(".component.spec.ts"),
+);
+
+if (!specs.length) {
+  throw new Error("Nenhum spec colocalizado encontrado.");
+}
+
 const outputs = [];
 for (const spec of specs) {
-  const output = join(outRoot, relative(sourceRoot, spec)).replace(/\.ts$/, ".mjs");
+  const output = join(outRoot, relative(sourceRoot, spec)).replace(
+    /\.ts$/,
+    ".mjs",
+  );
   mkdirSync(output.slice(0, output.lastIndexOf("/")), { recursive: true });
   await build({
     entryPoints: [spec],
@@ -33,5 +43,10 @@ for (const spec of specs) {
   });
   outputs.push(output);
 }
-const result = spawnSync(process.execPath, ["--test", ...outputs], { stdio: "inherit" });
-if (result.status !== 0) process.exit(result.status ?? 1);
+
+const result = spawnSync(process.execPath, ["--test", ...outputs], {
+  stdio: "inherit",
+});
+if (result.status !== 0) {
+  process.exit(result.status ?? 1);
+}
