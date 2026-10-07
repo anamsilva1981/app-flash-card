@@ -16,10 +16,7 @@ import { StudyRepository } from "@core/data/study-repository";
 import { ManagedSubject, StudyItem, Card } from "@shared/models";
 import { belongsToSubject } from "@core/domain/subjects/relations";
 import { sortStudyItems } from "@core/domain/study-plan/study-plan";
-import {
-  studyDate,
-  studyTimeZone,
-} from "@core/domain/time/study-clock";
+import { studyDate, studyTimeZone } from "@core/domain/time/study-clock";
 import { I18nService } from "@core/i18n.service";
 import { I18nPipe } from "@core/i18n.pipe";
 export type { ManagedSubject } from "@shared/models";
