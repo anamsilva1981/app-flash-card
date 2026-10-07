@@ -18,12 +18,14 @@ function isLegacy(file) {
 function isPureReexport(file) {
   const source = readFileSync(file, "utf8").trim();
   if (!source) return true;
-  const lines = source.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
-  return lines.every(
-    (line) =>
-      /^export\s+(\*|\{.*\}|type\s+\{.*\})\s+from\s+["'][^"']+["'];?$/.test(
-        line,
-      ),
+  const lines = source
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  return lines.every((line) =>
+    /^export\s+(\*|\{.*\}|type\s+\{.*\})\s+from\s+["'][^"']+["'];?$/.test(
+      line,
+    ),
   );
 }
 
