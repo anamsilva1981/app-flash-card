@@ -11,15 +11,15 @@ import {
   AppIconComponent,
   SubjectBadgeComponent,
 } from "../../../shared/components/app-icon/app-icon.component";
-import { StudyStore } from "../../../core/data/study-store";
-import { StudyRepository } from "../../../core/data/study-repository";
-import { ManagedSubject, StudyItem, Card } from "../../../core/models";
-import { belongsToSubject } from "../../../core/data/relations";
-import { sortStudyItems } from "../../../core/study-plan";
-import { studyDate, studyTimeZone } from "../../../core/study-clock";
-import { I18nService } from "../../../core/i18n.service";
-import { I18nPipe } from "../../../core/i18n.pipe";
-export type { ManagedSubject } from "../../../core/models";
+import { StudyStore } from "../../../core/state/study-store";
+import { StudyRepository } from "../../../core/application/study-repository";
+import { ManagedSubject, StudyItem, Card } from "../../../shared/models";
+import { belongsToSubject } from "../../../shared/domain/relations";
+import { sortStudyItems } from "../../../shared/domain/study-plan";
+import { studyDate, studyTimeZone } from "../../../shared/utils/study-clock";
+import { I18nService } from "../../../core/i18n/i18n.service";
+import { I18nPipe } from "../../../core/i18n/i18n.pipe";
+export type { ManagedSubject } from "../../../shared/models";
 @Component({
   selector: "app-subject-manager",
   standalone: true,
@@ -57,7 +57,7 @@ export class SubjectManagerComponent {
   @Output() completeTopicRequested = new EventEmitter<StudyItem>();
   @Output() reviewRequested = new EventEmitter<string>();
   visibleSubjects() {
-    return this.subjects().filter((s) => s.archived === this.showArchived());
+    return this.subjects().filter((subject) => subject.archived === this.showArchived());
   }
   openSubject(item: ManagedSubject) {
     if (item.archived) return;
@@ -71,34 +71,34 @@ export class SubjectManagerComponent {
     this.selectedTopic.set(null);
   }
   subjectCards() {
-    const s = this.selectedSubject();
-    return s ? this.flashcards.filter((c) => belongsToSubject(c, s)) : [];
+    const subject = this.selectedSubject();
+    return subject ? this.flashcards.filter((card) => belongsToSubject(card, subject)) : [];
   }
   dueCards() {
-    return this.subjectCards().filter((c) => c.due <= studyDate());
+    return this.subjectCards().filter((card) => card.due <= studyDate());
   }
   subjectTopics() {
-    const s = this.selectedSubject();
-    return s
+    const subject = this.selectedSubject();
+    return subject
       ? sortStudyItems(
           this.studyItems.filter(
-            (i) => belongsToSubject(i, s) && i.status === this.topicView(),
+            (item) => belongsToSubject(item, subject) && item.status === this.topicView(),
           ),
           this.topicView() === "done",
         )
       : [];
   }
   reviewAgain() {
-    const s = this.selectedSubject();
-    if (s) this.practiceRequested.emit(s.deck_key || s.name);
+    const subject = this.selectedSubject();
+    if (subject) this.practiceRequested.emit(subject.deck_key || subject.name);
   }
   reviewDue() {
-    const s = this.selectedSubject();
-    if (s) this.reviewRequested.emit(s.deck_key || s.name);
+    const subject = this.selectedSubject();
+    if (subject) this.reviewRequested.emit(subject.deck_key || subject.name);
   }
   addTopic() {
-    const s = this.selectedSubject();
-    if (s) this.addTopicRequested.emit(s.name);
+    const subject = this.selectedSubject();
+    if (subject) this.addTopicRequested.emit(subject.name);
   }
   editTopic(item: StudyItem) {
     this.closeTopic();
@@ -132,8 +132,8 @@ export class SubjectManagerComponent {
     this.error.set("");
   }
   toggleDay(day: number) {
-    this.selectedDays.update((v) =>
-      v.includes(day) ? v.filter((d) => d !== day) : [...v, day],
+    this.selectedDays.update((value) =>
+      value.includes(day) ? value.filter((item) => item !== day) : [...value, day],
     );
   }
   async save() {
@@ -141,7 +141,7 @@ export class SubjectManagerComponent {
     if (!name || this.busy()) return;
     this.busy.set(true);
     try {
-      const old = this.subjects().find((s) => s.id === this.editingId());
+      const old = this.subjects().find((subject) => subject.id === this.editingId());
       const next: ManagedSubject = {
         id: old?.id || crypto.randomUUID(),
         name,
@@ -185,8 +185,8 @@ export class SubjectManagerComponent {
     if (days.length === 7) return this.i18n.t("routine.everyDay");
     if (!days.length) return this.i18n.t("routine.noDays");
     return this.week
-      .filter((d) => days.includes(d.value))
-      .map((d) => this.i18n.t(d.short))
+      .filter((day) => days.includes(day.value))
+      .map((day) => this.i18n.t(day.short))
       .join(", ");
   }
 }
