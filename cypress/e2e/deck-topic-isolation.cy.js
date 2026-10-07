@@ -8,11 +8,12 @@ function openDeck(name){
 }
 
 describe('Isolamento dos tópicos por baralho',()=>{
-  it('mantém a lista geral somente na visão de baralhos e não mostra JavaScript dentro de React',()=>{
+  it('não mostra uma lista geral e mantém JavaScript somente no seu baralho',()=>{
     cy.loginApp({subjects,queue});
     cy.contains('nav button','Estudar').click();
-    cy.contains('.inbox-list summary','Todos os tópicos pendentes · 2').click();
-    cy.contains('.inbox-list','3.2 Números').should('be.visible');
+    cy.get('.inbox-list').should('not.exist');
+    cy.contains('Todos os tópicos pendentes').should('not.exist');
+    cy.contains('3.2 Números').should('not.exist');
     openDeck('React');
     cy.get('.inbox-list').should('not.exist');
     cy.contains('Nenhum flashcard cadastrado neste baralho.').should('be.visible');
@@ -21,7 +22,7 @@ describe('Isolamento dos tópicos por baralho',()=>{
     cy.contains('3.2 Números').should('not.exist');
     cy.contains('Signals').should('not.exist');
     cy.get('button[aria-label="Voltar aos baralhos"]').click();
-    cy.get('.inbox-list').should('exist');
+    cy.get('.inbox-list').should('not.exist');
     openDeck('JavaScript');
     cy.get('.inbox-list').should('not.exist');
     cy.contains('button','Tópicos').click();
