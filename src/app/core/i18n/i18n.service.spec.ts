@@ -28,8 +28,14 @@ function installBrowser(locale?: "pt-BR" | "en") {
 }
 
 test("translate interpola parâmetros e preserva chave desconhecida", () => {
-  assert.equal(translate("home.greeting", "pt-BR", { name: "Ana" }), "Olá, Ana!");
-  assert.equal(translate("home.greeting", "en", { name: "Ana" }), "Hello, Ana!");
+  assert.equal(
+    translate("home.greeting", "pt-BR", { name: "Ana" }),
+    "Olá, Ana!",
+  );
+  assert.equal(
+    translate("home.greeting", "en", { name: "Ana" }),
+    "Hello, Ana!",
+  );
   assert.equal(translate("chave.inexistente", "en"), "chave.inexistente");
 });
 
