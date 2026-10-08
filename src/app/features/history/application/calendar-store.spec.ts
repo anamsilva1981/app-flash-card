@@ -31,7 +31,10 @@ test("CalendarStore calcula dias, seleção e quantidade mensal", () => {
 
   assert.equal(store.selectedDay()?.date, "2026-10-05");
   assert.equal(store.count(), 1);
-  assert.equal(store.days().some((day) => day.date === "2026-10-05"), true);
+  assert.equal(
+    store.days().some((day) => day.date === "2026-10-05"),
+    true,
+  );
 });
 
 test("CalendarStore muda mês, limpa seleção e respeita idioma", () => {
