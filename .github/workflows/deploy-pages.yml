@@ -19,11 +19,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-      SUPABASE_PUBLISHABLE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY }}
-      APP_OWNER_NAME: ${{ vars.APP_OWNER_NAME }}
-      APP_SUPPORT_URL: ${{ vars.APP_SUPPORT_URL }}
-      APP_PRIVACY_UPDATED_AT: ${{ vars.APP_PRIVACY_UPDATED_AT }}
+      SUPABASE_URL: ${{ vars.SUPABASE_URL || 'https://elzkhndhkkkfxvtbhilt.supabase.co' }}
+      SUPABASE_PUBLISHABLE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_YFZqSuAst3q1ERiC3HA71A_u4fmIP9j' }}
+      APP_OWNER_NAME: ${{ vars.APP_OWNER_NAME || 'Ana Maria' }}
+      APP_SUPPORT_URL: ${{ vars.APP_SUPPORT_URL || 'https://github.com/anamsilva1981/app-flash-card/issues' }}
+      APP_PRIVACY_UPDATED_AT: ${{ vars.APP_PRIVACY_UPDATED_AT || '2026-10-08' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
