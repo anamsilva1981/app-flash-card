@@ -86,6 +86,20 @@ Arquivos de domínio que são apenas reexports não exigem spec próprio, pois n
 
 Os specs colocalizados não substituem esses testes. Eles adicionam rastreabilidade estrutural; os testes unitários centralizados continuam responsáveis pela validação detalhada do comportamento.
 
+## Parte 2 - fortalecimento dos testes unitários
+
+A auditoria mostrou que vários specs colocalizados eram apenas smoke tests de carregamento. Nesta etapa, os pontos com estado/comportamento próprio foram fortalecidos sem duplicar cenários que já possuem cobertura detalhada em `tests/unit`.
+
+- [x] `StudyStore`: snapshot/apply, subjects ativos e restauração de cache.
+- [x] `ReviewStore`: filtro por assunto, cartões vencidos, início de sessão, modo prática e reset da UI.
+- [x] `CalendarStore`: seleção de dia, contagem mensal, mudança de mês e idioma do rótulo.
+- [x] `I18nService`: tradução/interpolação, idioma inicial, toggle, persistência e atributo `lang`.
+- [x] Regras de domínio críticas permanecem cobertas pelos specs colocalizados e por `tests/unit/domain.test.mjs`.
+- [x] `AccountService`, `StudyRepository`, persistência e sincronização permanecem com specs estruturais e testes comportamentais dedicados em `tests/unit`, evitando duplicação artificial de casos.
+- [x] Facades finos mantêm teste estrutural; comportamento de negócio fica nas stores/services/domain que eles orquestram.
+
+Critério desta etapa: não criar testes apenas para aumentar quantidade. Unidades com comportamento próprio devem ter assertions de comportamento; adapters/orquestradores finos podem ser validados estruturalmente quando o comportamento delegado já possui teste dedicado.
+
 ## Critério de liberação antes do merge
 
 A refatoração só pode ser considerada segura para merge quando todos os itens abaixo estiverem verdes na mesma revisão da branch:
