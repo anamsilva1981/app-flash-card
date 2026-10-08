@@ -62,11 +62,19 @@
         }}<textarea [(ngModel)]="vm.cardDraft.example"></textarea>
       </label>
       <label
-        >{{ vm.i18n.language() === "en" ? "Think of it this way (optional)" : "Pensa assim (opcional)" }}
+        >{{
+          vm.i18n.language() === "en"
+            ? "Think of it this way (optional)"
+            : "Pensa assim (opcional)"
+        }}
         <textarea
           data-cy="card-think"
           [(ngModel)]="vm.cardDraft.think"
-          [placeholder]="vm.i18n.language() === 'en' ? 'Use an analogy or mental image that makes the idea easy to remember.' : 'Use uma analogia ou imagem mental que deixe a ideia fácil de lembrar.'"
+          [placeholder]="
+            vm.i18n.language() === 'en'
+              ? 'Use an analogy or mental image that makes the idea easy to remember.'
+              : 'Use uma analogia ou imagem mental que deixe a ideia fácil de lembrar.'
+          "
         ></textarea>
       </label>
       @if (vm.cardError()) {
