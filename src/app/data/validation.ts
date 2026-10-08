@@ -57,6 +57,7 @@ export const parseCards = (v: unknown) =>
         "explanation",
         "example",
       ].every((k) => text(r[k])) &&
+      (r["think"] === undefined || text(r["think"])) &&
       nonempty(r["subject"]) &&
       nonempty(r["topic"]) &&
       nonempty(r["question"]) &&
