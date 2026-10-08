@@ -113,7 +113,14 @@
             </div>
             @if (c.think?.trim()) {
               <div class="example-block">
-                <span>💭 {{ vm.i18n.language() === "en" ? "THINK OF IT THIS WAY" : "PENSA ASSIM" }}</span>
+                <span
+                  >💭
+                  {{
+                    vm.i18n.language() === "en"
+                      ? "THINK OF IT THIS WAY"
+                      : "PENSA ASSIM"
+                  }}</span
+                >
                 <p>{{ c.think }}</p>
               </div>
             }
