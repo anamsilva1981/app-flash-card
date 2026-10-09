@@ -8,7 +8,9 @@ describe("Parte F — estudo e revisão", () => {
     cy.get('[data-cy="card-topic"]').type("Revisão E2E");
     cy.get('[data-cy="card-question"]').type("Pergunta para revisão?");
     cy.get('[data-cy="card-answer"]').type("Resposta para revisão.");
-    cy.get('[data-cy="card-think"]').type("Associe a resposta a uma situação conhecida.");
+    cy.get('[data-cy="card-think"]').type(
+      "Associe a resposta a uma situação conhecida.",
+    );
     cy.get('[data-cy="card-save"]').click();
 
     cy.contains("button", /Revisar agora|Revisar novamente/).click();
