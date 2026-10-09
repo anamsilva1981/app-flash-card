@@ -54,8 +54,8 @@ jobs:
           cat /tmp/app-flash-card.log
           exit 1
 
-      - name: Cypress E2E
-        run: npm run e2e
+      - name: Cypress E2E blocks A-H
+        run: npm run e2e:blocks
 
       - name: Upload Cypress screenshots on failure
         if: failure()
