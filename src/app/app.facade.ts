@@ -11,13 +11,13 @@ import {
   startSyncLifecycle,
   syncStatus,
 } from "./core/persistence/sync";
-import { HomeFacade } from "./features/home/application/home.facade";
-import { StudyPlanFacade } from "./features/study-plan/application/study-plan.facade";
-import { ProgressFacade } from "./features/progress/application/progress.facade";
-import { HistoryFacade } from "./features/history/application/history.facade";
-import { SettingsFacade } from "./features/settings/application/settings.facade";
-import { ReviewFacade } from "./features/review/application/review.facade";
-import { CardsFacade } from "./features/cards/application/cards.facade";
+import { HomeFacade } from "./features/home/public-api";
+import { StudyPlanFacade } from "./features/study-plan/public-api";
+import { ProgressFacade } from "./features/progress/public-api";
+import { HistoryFacade } from "./features/history/public-api";
+import { SettingsFacade } from "./features/settings/public-api";
+import { ReviewFacade } from "./features/review/public-api";
+import { CardsFacade } from "./features/cards/public-api";
 
 @Injectable()
 export class AppFacade {

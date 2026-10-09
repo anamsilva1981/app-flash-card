@@ -11,6 +11,19 @@ const allowedRootFiles = new Set([
   "app.component.spec.ts",
 ]);
 const errors = [];
+const legacyImporters = new Map([
+  ["core/app-facade.ts", new Set([
+    "core/data/study-store",
+    "core/data/study-repository",
+    "core/data/review-store",
+    "core/data/calendar-store",
+    "core/data/subject-navigation",
+    "core/data/reminder-service",
+  ])],
+  ["core/backup.ts", new Set(["core/data/validation", "core/data/relations"])],
+  ["core/remote-state.ts", new Set(["core/data/validation"])],
+  ["core/onboarding.ts", new Set(["core/data/relations"])],
+]);
 
 const walk = (dir) =>
   readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -64,6 +77,35 @@ for (const file of walk(root).filter((item) => item.endsWith(".ts"))) {
   for (const specifier of imports) {
     const target = importTarget(file, specifier);
     if (!target) continue;
+
+    if (
+      target.startsWith("core/data/") &&
+      !rel.startsWith("core/data/") &&
+      !legacyImporters.get(rel)?.has(target)
+    ) {
+      errors.push(
+        "Novo código não pode depender de core/data: " + rel + " -> " + specifier,
+      );
+    }
+
+    if (
+      rel.startsWith("features/") &&
+      (target === "app.component" || target === "app.facade")
+    ) {
+      errors.push(
+        "Feature não pode depender do shell da aplicação: " + rel + " -> " + specifier,
+      );
+    }
+
+    if (
+      (rel === "app.component.ts" || rel === "app.facade.ts") &&
+      target.startsWith("features/") &&
+      !target.endsWith("public-api")
+    ) {
+      errors.push(
+        "O shell deve consumir features somente por public-api: " + rel + " -> " + specifier,
+      );
+    }
 
     if (
       rel.startsWith("shared/") &&

@@ -54,7 +54,7 @@ test("recovery event wins over initial session and destroyed listeners cannot re
           b.onLoad({ filter: /.*/, namespace: "fixture" }, ({ path }) => {
             if (path === "@angular/core") {
               return {
-                contents: `export const Component=()=>c=>c;export const DestroyRef='destroy';export const inject=key=>key==='destroy'?{onDestroy:globalThis.__fixtureDestroy}:key==='account'?{auth:globalThis.__fixtureAuth}:{t:key=>key};export const signal=x=>{const s=()=>x;s.set=v=>x=v;return s}`,
+                contents: `export const Component=()=>c=>c;export const DestroyRef='destroy';export class InjectionToken{constructor(key){this.key=key}};export class ViewContainerRef{};export const inject=key=>key==='destroy'?{onDestroy:globalThis.__fixtureDestroy}:key==='account'?{auth:globalThis.__fixtureAuth}:key===ViewContainerRef?{clear(){},createComponent(){}}:{t:key=>key};export const signal=x=>{const s=()=>x;s.set=v=>x=v;return s}`,
               };
             }
             if (/core[\\/]auth[\\/]account(?:\.ts)?$|core[\\/]account(?:\.ts)?$/.test(path)) {

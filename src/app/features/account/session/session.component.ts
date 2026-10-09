@@ -4,10 +4,17 @@ import { Card } from "../../../shared/models";
 import { LanguageSwitcherComponent } from "../../../core/i18n/language-switcher.component";
 import { I18nPipe } from "../../../core/i18n/i18n.pipe";
 import { appConfig } from "../../../core/config/app-config.generated";
-import { Component, signal, inject, DestroyRef } from "@angular/core";
+import {
+  Component,
+  signal,
+  inject,
+  DestroyRef,
+  Type,
+  ViewContainerRef,
+} from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { AppComponent } from "../../../app.component";
 import { AppIconComponent } from "../../../shared/components/app-icon/app-icon.component";
+import { SESSION_APPLICATION } from "./session-application.token";
 import {
   accountSession,
   accountScope,
@@ -20,12 +27,13 @@ import {
     I18nPipe,
     LanguageSwitcherComponent,
     FormsModule,
-    AppComponent,
     AppIconComponent,
   ],
   templateUrl: "./session.component.html",
 })
 export class SessionComponent {
+  readonly applicationComponent = inject(SESSION_APPLICATION);
+  private readonly applicationHost = inject(ViewContainerRef);
   private account = inject(AccountService);
   private destroyRef = inject(DestroyRef);
   readonly i18n = inject(I18nService);
@@ -65,6 +73,7 @@ export class SessionComponent {
       this.showAccount("signup");
     };
     const exited = () => {
+      this.applicationHost.clear();
       this.ready.set(false);
       this.message.set("");
       this.password = "";
@@ -143,6 +152,10 @@ export class SessionComponent {
     queueMicrotask(() => {
       if (this.destroyed || id !== accountScope()) return;
       this.ready.set(true);
+      this.applicationHost.clear();
+      this.applicationHost.createComponent(
+        this.applicationComponent as Type<unknown>,
+      );
       if (id !== "guest")
         window.dispatchEvent(new CustomEvent("study-account-ready"));
     });
