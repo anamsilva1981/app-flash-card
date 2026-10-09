@@ -1,7 +1,6 @@
 describe("Parte F — estudo e revisão", () => {
-  beforeEach(() => cy.loginApp());
-
   it("revisa um flashcard, vira o card e registra avaliação", () => {
+    cy.loginApp();
     cy.contains("nav button", "Estudar").click();
     cy.contains("button", "Angular").click();
     cy.contains("button", "Criar card").click();
@@ -18,7 +17,11 @@ describe("Parte F — estudo e revisão", () => {
     cy.contains("Pergunta para revisão?").should("be.visible");
     cy.contains("button", "Virar card").click();
     cy.contains("Resposta para revisão.").should("be.visible");
+    cy.contains("button", "Entender melhor").click();
     cy.contains("PENSA ASSIM").should("be.visible");
+    cy.contains("Associe a resposta a uma situação conhecida.").should(
+      "be.visible",
+    );
     cy.contains("button", "Sei").click();
   });
 
@@ -42,5 +45,9 @@ describe("Parte F — estudo e revisão", () => {
     cy.contains("Qual dado foi salvo?").should("be.visible");
     cy.contains("button", "Virar card").click();
     cy.contains("O conteúdo da conta.").should("be.visible");
+    cy.contains("button", "Entender melhor").click();
+    cy.contains("Pense no card voltando depois do reload.").should(
+      "be.visible",
+    );
   });
 });
