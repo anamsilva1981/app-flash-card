@@ -8,8 +8,12 @@ describe("Parte E — criação e edição de flashcards", () => {
 
     cy.get('[data-cy="card-topic"]').type("Angular moderno");
     cy.get('[data-cy="card-question"]').type("O que é um Signal?");
-    cy.get('[data-cy="card-answer"]').type("Um primitivo reativo do Angular.");
-    cy.get('[data-cy="card-think"]').type("Pense em uma variável que avisa seus consumidores quando muda.");
+    cy.get('[data-cy="card-answer"]').type(
+      "Um primitivo reativo do Angular.",
+    );
+    cy.get('[data-cy="card-think"]').type(
+      "Pense em uma variável que avisa seus consumidores quando muda.",
+    );
     cy.get('[data-cy="card-save"]').click();
     cy.contains("O que é um Signal?").should("exist");
 
@@ -32,6 +36,8 @@ describe("Parte E — criação e edição de flashcards", () => {
     cy.contains("button", "Angular").click();
     cy.contains("button", "Criar card").click();
     cy.get('[data-cy="card-save"]').click();
-    cy.contains("Preencha o baralho, o tópico, a pergunta e a resposta.").should("be.visible");
+    cy.contains(
+      "Preencha o baralho, o tópico, a pergunta e a resposta.",
+    ).should("be.visible");
   });
 });
