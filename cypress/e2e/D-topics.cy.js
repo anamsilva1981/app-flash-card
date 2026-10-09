@@ -17,7 +17,9 @@ describe("Parte D — tópicos", () => {
     cy.contains("button", "Tópicos").click();
     cy.contains("button", "Adicionar").click();
     cy.get(".study-form").within(() => {
-      cy.get('input[placeholder="Ex.: Template Literals"]').type("Standalone Components");
+      cy.get('input[placeholder="Ex.: Template Literals"]').type(
+        "Standalone Components",
+      );
       cy.contains("button", "Alta").click();
       cy.get("button.primary-action").click();
     });
@@ -36,7 +38,12 @@ describe("Parte D — tópicos", () => {
     const queue = [
       { ...topic, id: "js", title: "3.2 Números", subject: "JavaScript" },
       { ...topic, id: "ng", title: "Signals", subject: "Angular" },
-      { ...topic, id: "react", title: "Hooks do React", subject: "React" },
+      {
+        ...topic,
+        id: "react",
+        title: "Hooks do React",
+        subject: "React",
+      },
     ];
     cy.loginApp({ subjects, queue });
     cy.contains("nav button", "Estudar").click();
@@ -74,8 +81,10 @@ describe("Parte D — tópicos", () => {
     cy.contains("button", "Tópicos").click();
     cy.get('[aria-label="Abrir tópico: ' + topic.title + '"]').click();
     cy.contains(".topic-detail button", "Editar tópico").click();
-    cy.get(".study-form input, .study-form textarea, .study-form select").each(($el) => {
-      expect(parseFloat($el.css("font-size"))).to.be.at.least(16);
-    });
+    cy.get(".study-form input, .study-form textarea, .study-form select").each(
+      ($el) => {
+        expect(parseFloat($el.css("font-size"))).to.be.at.least(16);
+      },
+    );
   });
 });
