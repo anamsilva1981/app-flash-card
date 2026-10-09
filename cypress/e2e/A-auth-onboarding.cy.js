@@ -36,7 +36,9 @@ describe("Parte A — autenticação e onboarding", () => {
   describe("Onboarding", () => {
     it("oculta o aviso de primeiro tópico após a primeira ação", () => {
       cy.loginApp({ queue: [] });
-      cy.contains(".onboarding h2", "Adicione o primeiro tópico").should("be.visible");
+      cy.contains(".onboarding h2", "Adicione o primeiro tópico").should(
+        "be.visible",
+      );
       cy.contains(".onboarding button", "Adicionar tópico").click();
       cy.get('[role="dialog"]').should("be.visible");
       cy.get('button[aria-label="Fechar formulário"]').click();
@@ -49,7 +51,9 @@ describe("Parte A — autenticação e onboarding", () => {
     it("salva o primeiro tópico e mantém o onboarding concluído", () => {
       cy.loginApp({ queue: [] });
       cy.contains(".onboarding button", "Adicionar tópico").click();
-      cy.get('input[placeholder="Ex.: Template Literals"]').type("Primeiro tópico");
+      cy.get('input[placeholder="Ex.: Template Literals"]').type(
+        "Primeiro tópico",
+      );
       cy.get('[role="dialog"] button.primary-action').click();
       cy.contains("Primeiro tópico").should("exist");
       cy.contains("nav button", "Início").click();
@@ -58,7 +62,9 @@ describe("Parte A — autenticação e onboarding", () => {
 
     it("oculta o aviso de primeiro flashcard após a primeira ação", () => {
       cy.loginApp();
-      cy.contains(".onboarding h2", "Crie seu primeiro flashcard").should("be.visible");
+      cy.contains(".onboarding h2", "Crie seu primeiro flashcard").should(
+        "be.visible",
+      );
       cy.contains(".onboarding button", "Criar primeiro flashcard").click();
       cy.get(".card-editor").should("be.visible");
       cy.get('button[aria-label="Fechar editor de flashcard"]').click();
