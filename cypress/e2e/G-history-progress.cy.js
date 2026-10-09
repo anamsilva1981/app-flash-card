@@ -21,6 +21,8 @@ describe("Parte G — histórico e progresso", () => {
     cy.contains("button", /Revisar agora|Revisar novamente/).click();
     cy.contains("button", "Virar card").click();
     cy.contains("button", "Sei").click();
+    cy.contains("Revisão concluída").should("be.visible");
+    cy.contains("button", "Voltar ao início").click();
     cy.contains("nav button", "Histórico").click();
     cy.contains("h1", "Evolução").should("be.visible");
     cy.contains("Dias com atividade").should("be.visible");
