@@ -12,6 +12,7 @@ function walk(dir) {
 }
 
 function isLegacy(file) {
+  file = file.replaceAll("\\", "/");
   return legacyRoots.some((legacyRoot) => file.startsWith(legacyRoot));
 }
 

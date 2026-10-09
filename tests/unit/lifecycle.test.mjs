@@ -47,7 +47,7 @@ test("recovery event wins over initial session and destroyed listeners cannot re
           b.onResolve(
             {
               filter:
-                /^(@angular\/core|@angular\/forms|.*app\.component|.*app-icon\.component|.*core\/account|.*account-service|.*i18n\.service|.*language-switcher\.component|.*i18n\.pipe|.*core\/models|.*app-config\.generated)$/,
+                /^(@angular\/core|@angular\/forms|.*app\.component|.*app-icon\.component|.*core\/(?:auth\/)?account|.*account-service|.*i18n\.service|.*language-switcher\.component|.*i18n\.pipe|.*core\/models|.*app-config\.generated)$/,
             },
             (args) => ({ path: args.path, namespace: "fixture" }),
           );
@@ -57,7 +57,7 @@ test("recovery event wins over initial session and destroyed listeners cannot re
                 contents: `export const Component=()=>c=>c;export const DestroyRef='destroy';export const inject=key=>key==='destroy'?{onDestroy:globalThis.__fixtureDestroy}:key==='account'?{auth:globalThis.__fixtureAuth}:{t:key=>key};export const signal=x=>{const s=()=>x;s.set=v=>x=v;return s}`,
               };
             }
-            if (path.includes("core/account")) {
+            if (/core[\\/]auth[\\/]account(?:\.ts)?$|core[\\/]account(?:\.ts)?$/.test(path)) {
               return {
                 contents: `let scope='guest',session=null;export const accountScope=()=>scope;export const setScope=id=>scope=id;export const accountSession=()=>session;accountSession.set=v=>session=v;`,
               };

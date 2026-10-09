@@ -8,6 +8,7 @@ export interface Card {
   answer: string;
   explanation: string;
   example: string;
+  think?: string;
   due: string;
   interval: number;
 }
