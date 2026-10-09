@@ -18,6 +18,7 @@ export class ReviewFacade {
   private i18n = inject(I18nService);
 
   readonly subject = this.review.subject;
+  readonly language = this.i18n.language;
   readonly topic = this.review.topic;
   readonly flipped = this.review.flipped;
   readonly explanationOpen = this.review.explanationOpen;

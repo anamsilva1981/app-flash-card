@@ -14,6 +14,7 @@ export class CardsFacade {
   private i18n = inject(I18nService);
 
   readonly cardEditor = signal(false);
+  readonly language = this.i18n.language;
   readonly cardError = signal("");
   readonly savingCard = signal(false);
   cardDraft: Card = this.emptyCard();

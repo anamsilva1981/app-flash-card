@@ -63,7 +63,7 @@
       </label>
       <label
         >{{
-          vm.i18n.language() === "en"
+          vm.language() === "en"
             ? "Think of it this way (optional)"
             : "Pensa assim (opcional)"
         }}
@@ -71,7 +71,7 @@
           data-cy="card-think"
           [(ngModel)]="vm.cardDraft.think"
           [placeholder]="
-            vm.i18n.language() === 'en'
+            vm.language() === 'en'
               ? 'Use an analogy or mental image that makes the idea easy to remember.'
               : 'Use uma analogia ou imagem mental que deixe a ideia fácil de lembrar.'
           "
