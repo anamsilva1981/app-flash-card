@@ -8,6 +8,10 @@
 const folder = "tests/integration/backend/supabase";
 mkdirSync(folder + "/migrations", { recursive: true });
 mkdirSync(folder + "/functions/delete-account", { recursive: true });
+copyFileSync(
+  "tests/integration/legacy-schema.sql",
+  folder + "/migrations/20261004000000_legacy_schema.sql",
+);
 for (const file of readdirSync("supabase/migrations")
   .filter((name) => name.endsWith(".sql"))
   .sort())
