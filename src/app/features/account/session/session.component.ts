@@ -1,7 +1,6 @@
 import { AccountService } from "../../../core/auth/account-service";
 import { I18nService } from "../../../core/i18n/i18n.service";
 import { Card } from "../../../shared/models";
-import { LanguageSwitcherComponent } from "../../../core/i18n/language-switcher.component";
 import { I18nPipe } from "../../../core/i18n/i18n.pipe";
 import { appConfig } from "../../../core/config/app-config.generated";
 import {
@@ -23,7 +22,7 @@ import {
 @Component({
   selector: "app-session",
   standalone: true,
-  imports: [I18nPipe, LanguageSwitcherComponent, FormsModule, AppIconComponent],
+  imports: [I18nPipe, FormsModule, AppIconComponent],
   templateUrl: "./session.component.html",
   styleUrl: "./session.component.css",
 })

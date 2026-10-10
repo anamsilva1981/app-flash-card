@@ -1,422 +1,337 @@
-<div align="center">
+# Estuda Aqui
 
-# 📚 App Flash Card
+Uma aplicação de estudos criada para planejar o que aprender, registrar o que foi estudado e revisar no momento certo.
 
-### Estude com contexto. Revise com intenção. Aprenda de verdade.
+**Português** | [English](README.en.md)
 
-Aplicação de estudos **mobile-first** criada para organizar conteúdos, transformar aprendizado em flashcards e apoiar revisões espaçadas em um único lugar.
-
+[![CI](https://github.com/anamsilva1981/app-flash-card/actions/workflows/ci.yml/badge.svg)](https://github.com/anamsilva1981/app-flash-card/actions/workflows/ci.yml)
 [![Angular](https://img.shields.io/badge/Angular-20-DD0031?logo=angular&logoColor=white)](https://angular.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Supabase](https://img.shields.io/badge/Supabase-Auth%20%26%20Database-3FCF8E?logo=supabase&logoColor=white)](https://supabase.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-Auth%20%26%20PostgreSQL-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
 [![Cypress](https://img.shields.io/badge/Cypress-E2E-17202C?logo=cypress&logoColor=white)](https://www.cypress.io/)
-[![CI](https://github.com/anamsilva1981/app-flash-card/actions/workflows/ci.yml/badge.svg)](https://github.com/anamsilva1981/app-flash-card/actions/workflows/ci.yml)
 
-**Português** · [English version](#english-version)
+[Acessar aplicação](https://anamsilva1981.github.io/app-flash-card/) · [Ver repositório](https://github.com/anamsilva1981/app-flash-card)
 
-</div>
+<!-- Adicione aqui a captura principal quando houver imagens públicas e revisadas no repositório. -->
 
----
+## Sobre o projeto
 
-## ✨ Sobre o projeto
+O Estuda Aqui organiza o ciclo de aprendizagem do jeito que fazia sentido para mim: decidir o que estudar, priorizar conteúdos, registrar o aprendizado, transformar conceitos em flashcards ricos, revisar no momento adequado e acompanhar a constância ao longo do tempo.
 
-O **App Flash Card** nasceu de um problema real do meu próprio processo de estudo.
+Ele nasceu de uma necessidade pessoal. Meu estudo ficava distribuído entre cadernos, anotações, resumos, perguntas, exemplos, materiais e flashcards. Parte do tempo acabava sendo usada para organizar tudo isso, em vez de estudar. A aplicação reúne esse processo em um único fluxo.
 
-Eu costumava estudar escrevendo, organizando conceitos, criando perguntas, exemplos e tentando explicar o conteúdo com minhas próprias palavras. Com o tempo, esse processo ficou espalhado entre cadernos, anotações, links, conteúdos e flashcards em lugares diferentes — e organizar o estudo começou a consumir tempo demais.
+> Estudar começa antes do flashcard e continua depois dele.
 
-A pergunta que deu origem ao projeto foi simples:
+## Como funciona
 
-> **E se todo esse processo de estudo pudesse acontecer em um único lugar?**
-
-Foi assim que a aplicação começou.
-
-O que inicialmente seria apenas uma ferramenta pessoal evoluiu para uma aplicação completa e, ao mesmo tempo, para um **case de engenharia Front-end**, reunindo decisões de arquitetura, experiência do usuário, autenticação, persistência, sincronização, internacionalização, testes automatizados e CI/CD.
-
-O objetivo não é apenas memorizar respostas. A proposta é apoiar todo o ciclo:
-
-```text
-Organizar → Estudar → Compreender → Criar flashcards → Revisar → Consolidar
+```mermaid
+flowchart LR
+    A[Matérias] --> B[Tópicos]
+    B --> C[A estudar]
+    C --> D[Conteúdo concluído]
+    D --> E[Flashcards ricos]
+    E --> F[Revisão espaçada ou livre]
+    F --> G[Histórico e constância]
 ```
 
----
+O produto separa dois momentos que costumam se misturar: organizar e aprender conteúdo novo; depois recuperar esse conhecimento por meio de revisões. O histórico conecta as duas etapas e mostra o que aconteceu em cada dia.
 
-## 🎯 O problema que a aplicação resolve
+## Diferenciais do produto
 
-Ferramentas de flashcards normalmente começam no momento da revisão. O App Flash Card foi pensado para começar antes: **na organização do que ainda precisa ser aprendido**.
+### O estudo não começa no card
 
-A aplicação separa dois momentos importantes:
+Cada matéria pode ter dias próprios de estudo e uma fila de tópicos. Um tópico aceita prioridade, observação e link para o material, pode ficar na caixa de entrada ou dentro de uma matéria e passa de **A estudar** para **Estudados** com a data de conclusão registrada.
 
-- **Estudar** — organizar matérias, tópicos, prioridades, anotações, referências e conteúdos pendentes.
-- **Revisar** — transformar conhecimento em flashcards e utilizar repetição espaçada para reforçar o aprendizado.
+Na página inicial, os baralhos previstos para o dia mostram o próximo tópico e a quantidade de pendências. Assim, a aplicação também ajuda a decidir o que estudar — não apenas a revisar o que já foi transformado em card.
 
-Fluxo principal:
+### Mais do que pergunta e resposta
 
-```text
-Matéria → A estudar → Conteúdo concluído → Histórico → Flashcards → Revisões
-```
+Cada flashcard pode reunir:
 
----
+- pergunta e resposta;
+- explicação adicional;
+- exemplo prático;
+- **Pensa assim**, com uma analogia ou imagem mental.
 
-## 🖥️ Experiência do produto
+A intenção é oferecer diferentes caminhos para compreender o mesmo conceito. Os cards são criados manualmente; o projeto não usa geração automática por IA.
 
-A aplicação foi construída com foco em uma experiência simples, responsiva e orientada ao estudo.
+### Revisão com contexto e liberdade
 
-### Principais funcionalidades
+A revisão diária reúne os cards pendentes, permite escolher o baralho, filtrar por tópico e limitar a sessão a 10, 20, 30 ou todos os cards. Durante a sessão, o usuário vira o card, consulta os conteúdos complementares, acompanha o progresso e avalia a lembrança como **Não sei**, **Difícil**, **Sei** ou **Fácil**.
 
-- 🔐 Cadastro, login, confirmação de e-mail e recuperação de senha
-- 👤 Isolamento dos dados por conta de usuário
-- 📚 Organização por matérias e tópicos
-- 📝 Fila **A estudar** com prioridade, anotações e links
-- ✅ Registro dos conteúdos concluídos
-- 🧠 Criação manual de flashcards
-- 💡 Flashcards com pergunta, resposta, explicação e exemplo prático
-- 🔁 Revisão com níveis de dificuldade
-- 📅 Agendamento das próximas revisões
-- 🔎 Filtros por matéria e tópico
-- 📈 Progresso e histórico de estudos
-- 🗓️ Rotina de estudos e exportação para calendário
-- 💾 Backup/exportação dos estudos
-- 📶 Experiência offline com sincronização posterior
-- 📱 Interface responsiva para mobile e desktop
-- 🌎 Interface em Português e Inglês
-- ♿ Cuidados com acessibilidade e semântica
-- 🗑️ Fluxo de exclusão de conta e política de privacidade
+Essa avaliação calcula a próxima revisão e aumenta progressivamente o intervalo. Cards vencidos há mais tempo aparecem primeiro. Quando não existem cards pendentes, ainda é possível iniciar uma **revisão livre**: ela permite praticar sem alterar o agendamento normal.
+
+## Funcionalidades
+
+### Planejar
+
+- criar, editar, arquivar e restaurar matérias/baralhos;
+- definir dias de estudo por matéria;
+- organizar tópicos por matéria ou mantê-los em uma caixa de entrada;
+- registrar prioridade, observação e link para o material;
+- consultar o próximo tópico recomendado e separar conteúdos pendentes dos concluídos.
+
+### Aprender e registrar
+
+- marcar tópicos como estudados e preservar sua data de conclusão;
+- registrar automaticamente atividades de aprendizado;
+- consultar o conteúdo estudado por dia;
+- seguir um onboarding para configurar baralho, tópico, rotina e primeiro card.
+
+### Criar conhecimento recuperável
+
+- criar e editar flashcards por matéria e tópico;
+- combinar pergunta, resposta, explicação, exemplo e analogia;
+- consultar todos os cards de uma matéria;
+- validar os campos essenciais antes de salvar.
+
+### Revisar
+
+- acompanhar a fila diária de cards pendentes;
+- revisar por baralho e filtrar por tópico;
+- configurar o tamanho da sessão;
+- avaliar a lembrança em quatro níveis;
+- agendar automaticamente as próximas revisões;
+- praticar em revisão livre sem modificar o cronograma.
+
+### Acompanhar
+
+- navegar por um calendário mensal de atividades;
+- diferenciar dias de aprendizado e de revisão;
+- abrir um dia para ver exatamente o que foi estudado ou revisado;
+- acompanhar dias com atividade, tópicos concluídos e cards pendentes;
+- visualizar a sequência atual de dias estudando.
+
+### Continuar estudando
+
+- usar o aplicativo sem conta com dados locais;
+- sincronizar os estudos de uma conta com o backend;
+- continuar a partir do cache local e manter alterações pendentes quando a conexão falha;
+- exportar e importar backup validado de matérias, rotina, tópicos, cards, progresso e histórico;
+- recuperar dados compatíveis de versões anteriores salvos no dispositivo;
+- escolher horário e dias para lembretes, ativar avisos do navegador e exportar a rotina para o calendário.
+
+### Experiência
+
+- interface mobile-first com suporte a desktop;
+- português e inglês, com preferência persistida e atributo `lang` atualizado;
+- navegação adaptada, labels acessíveis e estados anunciados por tecnologias assistivas;
+- modais com controle de foco e fechamento pela tecla `Esc`.
+
+## Screenshots
+
+Ainda não há capturas de produto versionadas no repositório. A estrutura abaixo fica preparada sem criar referências quebradas:
 
 <!--
-GALERIA DE SCREENSHOTS
-Adicionar antes da divulgação no LinkedIn:
-
-## 📸 Screenshots
-
-| Início | Matérias |
+| Home e rotina diária | Matérias e tópicos |
 |---|---|
-| ![Home](docs/screenshots/home.png) | ![Subjects](docs/screenshots/subjects.png) |
+| ![Home](docs/images/home.png) | ![Matérias](docs/images/subjects.png) |
 
-| Conteúdo | Flashcards |
+| Flashcard rico | Revisão |
 |---|---|
-| ![Study](docs/screenshots/study.png) | ![Flashcards](docs/screenshots/flashcards.png) |
+| ![Flashcard](docs/images/flashcard.png) | ![Revisão](docs/images/review.png) |
+
+| Histórico e calendário | Mobile |
+|---|---|
+| ![Histórico](docs/images/history.png) | ![Mobile](docs/images/mobile.png) |
 -->
 
----
+## Arquitetura
 
-## 🧩 Stack
-
-| Camada | Tecnologia |
-|---|---|
-| Front-end | Angular 20 |
-| Linguagem | TypeScript 5.9 |
-| UI | Angular Material / CDK |
-| Reatividade | RxJS |
-| Backend as a Service | Supabase |
-| Autenticação | Supabase Auth |
-| Testes unitários | Node Test Runner + c8 |
-| Testes E2E | Cypress 15 |
-| PWA / Offline | Angular Service Worker |
-| Qualidade | ESLint + Prettier |
-| CI/CD | GitHub Actions |
-| Deploy | GitHub Pages |
-
----
-
-## 🏗️ Engenharia e decisões técnicas
-
-Este projeto também foi desenvolvido como exercício prático de engenharia de software aplicada a um produto real.
-
-### Arquitetura Front-end
-
-A aplicação utiliza Angular com APIs standalone e separação de responsabilidades entre autenticação, regras de estudo, sincronização, gerenciamento das matérias e experiência principal.
-
-O foco da arquitetura é manter:
-
-- responsabilidades bem definidas;
-- baixo acoplamento;
-- código testável;
-- regras de negócio separadas da interface;
-- evolução segura do produto.
-
-### Persistência e segurança de dados
-
-O Supabase é utilizado para autenticação e persistência na nuvem. Os dados de estudo são associados à conta autenticada e o projeto possui validações automatizadas para cenários de persistência e isolamento entre usuários.
-
-Nenhuma chave privada ou `service_role` deve ser utilizada no frontend. A aplicação trabalha apenas com configuração pública apropriada para clientes web.
-
-### Offline e sincronização
-
-O navegador mantém o estado necessário para permitir continuidade de uso quando a conexão não está disponível, sincronizando alterações posteriormente quando possível.
-
-### Internacionalização
-
-A interface possui alternância entre **PT-BR / EN**, preferência persistida no navegador e atualização do atributo HTML `lang`, preservando acessibilidade e semântica entre sessões.
-
----
-
-## 🧪 Estratégia de qualidade
-
-O projeto possui uma esteira de qualidade automatizada que executa verificações antes das principais mudanças.
+A aplicação adota organização por domínio, com limites verificados automaticamente:
 
 ```text
-Format → Lint → Build → Unit Tests → Coverage → E2E → Integration
+src/app
+├── core
+│   ├── application
+│   ├── auth
+│   ├── notifications
+│   ├── persistence
+│   └── state
+├── features
+│   ├── account
+│   ├── cards
+│   ├── history
+│   ├── home
+│   ├── progress
+│   ├── review
+│   ├── settings
+│   ├── study-plan
+│   └── subjects
+└── shared
 ```
 
-A suíte inclui:
+- **`features`** concentra apresentação, aplicação e regras do domínio de cada fluxo. Uma feature consome outra somente por seu `public-api.ts`.
+- **`core`** reúne autenticação, persistência, sincronização, estado e notificações. Ele não depende da interface das features.
+- **`shared`** contém modelos, regras puras e componentes reutilizáveis, sem conhecer `core` ou `features`.
+- **Facades** expõem às telas operações e estado próprios de cada caso de uso, reduzindo o acoplamento dos componentes.
+- **Stores** mantêm estado reativo com Signals; adapters de capacidade conectam as features ao repositório de persistência.
+- **O shell** compõe as features exclusivamente pelas APIs públicas.
 
-- testes unitários das regras de estudo;
-- cobertura mínima automatizada;
-- testes E2E com Cypress;
-- testes de persistência com backend descartável;
-- testes de isolamento de dados entre usuários;
-- validação do fluxo de exclusão de conta;
-- build de produção no CI.
+O script `check:architecture` protege essas fronteiras e impede novas dependências na direção errada. A documentação detalhada está em [`docs/architecture.md`](docs/architecture.md).
 
-### Comandos principais
+## Decisões de engenharia
+
+### Arquitetura orientada a features
+
+Concentrar as regras no componente principal dificultaria a evolução independente. A divisão por features mantém cada domínio próximo de suas telas, facades, stores e regras, enquanto APIs públicas tornam as dependências explícitas.
+
+### Autorização na camada de dados
+
+A interface não é tratada como fronteira de segurança. Os estudos de contas autenticadas ficam associados ao `user_id`; Row Level Security e políticas baseadas em `auth.uid()` restringem leitura e escrita ao próprio usuário.
+
+### Operações idempotentes e importação atômica
+
+Alterações sincronizadas recebem identificadores de operação para tolerar reenvios. A importação de backup usa uma operação em lote dentro de uma transação: um erro impede a substituição parcial dos dados.
+
+### Continuidade com cache e sincronização
+
+Interrupções de rede não devem apagar o contexto de estudo. O estado local permite reabrir dados disponíveis e a fila de operações preserva alterações até que a sincronização possa continuar, com estados visíveis na interface.
+
+### Revisão livre separada do agendamento
+
+Praticar fora da fila não deveria antecipar nem adiar a próxima revisão. Por isso, a revisão livre percorre os cards sem persistir uma nova data; apenas a revisão programada atualiza o intervalo.
+
+### Testes em camadas
+
+Regras puras, componentes, integração com o backend e jornadas completas falham de formas diferentes. A suíte combina testes unitários, specs colocalizados, Supabase descartável e Cypress para proteger cada nível sem depender apenas de E2E.
+
+### Internacionalização como estado da aplicação
+
+Português e inglês compartilham um catálogo tipado de mensagens. A escolha fica persistida e também atualiza o atributo `lang`, mantendo interface e documento alinhados.
+
+## Segurança e privacidade
+
+- autenticação e sessão por Supabase Auth;
+- RLS nos dados atuais por conta, com políticas baseadas em `auth.uid()`;
+- acesso anônimo revogado das estruturas privadas atuais;
+- chave publicável no frontend, sem `service_role` no cliente;
+- Edge Function autenticada para revogar sessões e excluir a conta;
+- confirmação explícita antes da exclusão de conta e dados;
+- política de privacidade e exportação de backup acessíveis pela aplicação.
+
+Essas medidas reduzem exposição e reforçam o isolamento entre contas, sem substituir auditorias especializadas de segurança.
+
+## Qualidade e testes
+
+A estratégia cobre responsabilidades diferentes:
+
+- **unitários:** regras de domínio, persistência, sincronização, ciclo de vida e conta;
+- **specs colocalizados:** componentes, facades, stores, serviços, repositórios e navegação;
+- **integração:** persistência, isolamento entre usuários, rollback, idempotência e exclusão contra um Supabase local descartável;
+- **E2E com Cypress:** autenticação, onboarding, navegação, matérias, tópicos, flashcards, revisão, histórico, configurações e conta;
+- **checks estruturais:** validam fronteiras arquiteturais e exigem specs para as unidades selecionadas.
+
+O comando de cobertura exige no mínimo 80% de linhas, 80% de statements, 70% de branches e 70% de funções.
 
 ```bash
-npm run format:check
+npm test
+npm run test:components
+npm run test:coverage
+npm run test:integration
+npm run e2e
+npm run e2e:blocks
+npm run check:architecture
+npm run check:test-structure
 npm run lint
-npm test
-npm run test:coverage
-npm run test:integration
-npm run e2e
+npm run format:check
 npm run build
 ```
 
----
+## CI/CD
 
-## 🚀 Executando localmente
-
-### Pré-requisitos
-
-- Node.js 22+
-- npm
-
-### 1. Clone o repositório
-
-```bash
-git clone https://github.com/anamsilva1981/app-flash-card.git
-cd app-flash-card
-```
-
-### 2. Instale as dependências
-
-```bash
-npm install
-```
-
-### 3. Configure o ambiente
-
-Copie o arquivo de exemplo:
-
-```bash
-cp .env.example .env
-```
-
-Preencha as variáveis necessárias utilizando apenas credenciais públicas apropriadas para o frontend.
-
-> Nunca utilize uma chave `service_role`, senha ou segredo privado dentro da aplicação cliente.
-
-### 4. Inicie o projeto
-
-```bash
-npm start
-```
-
-Por padrão, a aplicação será executada em:
+Pull requests passam por um quality gate no GitHub Actions:
 
 ```text
-http://localhost:4200
+npm ci
+  ↓
+formatação e lint
+  ↓
+fronteiras de arquitetura e estrutura de testes
+  ↓
+specs colocalizados
+  ↓
+build e cobertura
+  ↓
+Cypress E2E
+
+Em paralelo:
+Supabase descartável → testes de integração → persistência em navegador real
 ```
 
----
+Na branch `main`, outro workflow repete formatação, lint, build, cobertura e E2E antes de publicar o artefato no GitHub Pages.
 
-## 🔐 Variáveis de ambiente
+## Stack
 
-O projeto utiliza configuração de ambiente para separar dados públicos de infraestrutura do código-fonte.
+| Categoria         | Tecnologia                 |
+| ----------------- | -------------------------- |
+| Front-end         | Angular 20                 |
+| Linguagem         | TypeScript 5.9             |
+| UI                | Angular Material / CDK     |
+| Reatividade       | Angular Signals e RxJS     |
+| Backend           | Supabase                   |
+| Banco             | PostgreSQL                 |
+| Autenticação      | Supabase Auth              |
+| Autorização       | Row Level Security         |
+| Função de backend | Supabase Edge Functions    |
+| Testes            | Node Test Runner e Cypress |
+| Cobertura         | c8                         |
+| Qualidade         | ESLint e Prettier          |
+| CI/CD             | GitHub Actions             |
+| Deploy            | GitHub Pages               |
 
-Exemplo:
+## Executar localmente
 
-```env
-SUPABASE_URL=
-SUPABASE_PUBLISHABLE_KEY=
-APP_OWNER_NAME=
-APP_SUPPORT_URL=
-APP_PRIVACY_UPDATED_AT=
-```
+### Requisitos
 
-Durante a configuração, os scripts geram o arquivo `src/app/app-config.generated.ts`, que **não deve ser versionado**.
-
----
-
-## ⚙️ CI/CD
-
-O projeto utiliza GitHub Actions em duas frentes:
-
-**Quality Gate**
-
-Valida formatação, lint, build, cobertura de testes, Cypress e integração antes de mudanças estruturais.
-
-**Deploy**
-
-A branch `main` representa a versão de produção. O deploy para GitHub Pages ocorre automaticamente após a validação da aplicação.
-
----
-
-## 📁 Visão da estrutura
-
-```text
-app-flash-card/
-├── .github/          # workflows de CI/CD
-├── cypress/          # testes end-to-end
-├── database/         # scripts e estrutura de persistência
-├── docs/             # documentação técnica
-├── scripts/          # automações de configuração e testes
-├── src/              # aplicação Angular
-├── tests/
-│   ├── unit/         # testes unitários
-│   └── integration/  # testes de integração
-├── angular.json
-├── cypress.config.js
-├── package.json
-└── README.md
-```
-
----
-
-## 💭 O que este projeto representa
-
-Mais do que uma aplicação de flashcards, este projeto representa a evolução de uma necessidade pessoal para um produto funcional.
-
-Durante o desenvolvimento, trabalhei não apenas na implementação das funcionalidades, mas também em decisões envolvendo:
-
-- arquitetura e organização do código;
-- experiência do usuário;
-- modelagem e persistência de dados;
-- autenticação e autorização;
-- estratégia de testes;
-- acessibilidade;
-- experiência offline;
-- internacionalização;
-- automação de qualidade e deploy.
-
-É um projeto construído **enquanto eu estudava — e que também me fez estudar muito para conseguir construí-lo.**
-
----
-
-## 🤝 Feedback
-
-O App Flash Card é gratuito e nasceu como uma ferramenta de estudo pessoal.
-
-Se você testar a aplicação e encontrar um problema ou tiver alguma sugestão, fique à vontade para abrir uma issue no repositório.
-
----
-
-<div align="center">
-
-Desenvolvido por **Ana Maria** como projeto de estudo, engenharia e portfólio Front-end.
-
-</div>
-
----
-
-# English version
-
-## 📚 App Flash Card
-
-**Study with context. Review with intention. Learn for real.**
-
-App Flash Card is a **mobile-first learning application** built to organize study content, transform knowledge into flashcards and support spaced-repetition reviews in one place.
-
-The project started from a real problem in my own learning process: notes, references, topics and flashcards were spread across different places, and organizing the study process was becoming more time-consuming than studying itself.
-
-The question behind the project was simple:
-
-> **What if the entire learning workflow could live in one place?**
-
-What started as a personal tool evolved into a complete application and a **Front-end engineering portfolio case**, combining product thinking, Angular architecture, authentication, cloud persistence, offline behavior, automated testing, accessibility, internationalization and CI/CD.
-
-### Main learning flow
-
-```text
-Organize → Study → Understand → Create flashcards → Review → Retain
-```
-
-## Key features
-
-- Sign-up, login, email confirmation and password recovery
-- Account-scoped study data
-- Subjects and topics organization
-- Study queue with priorities, notes and references
-- Completed-content history
-- Manual flashcard creation
-- Flashcards with question, answer, explanation and practical example
-- Difficulty-based review flow
-- Automatic review scheduling
-- Subject and topic filters
-- Study progress and history
-- Study routine and calendar export
-- Study backup/export
-- Offline experience with later synchronization
-- Responsive mobile and desktop UI
-- Portuguese / English interface
-- Accessibility considerations
-- Privacy policy and account deletion flow
-
-## Tech stack
-
-- Angular 20
-- TypeScript 5.9
-- Angular Material / CDK
-- RxJS
-- Supabase Auth and persistence
-- Cypress E2E
-- Node Test Runner + c8
-- Angular Service Worker / PWA
-- ESLint + Prettier
-- GitHub Actions
-- GitHub Pages
-
-## Engineering highlights
-
-The project was designed not only as a product, but also as a practical software-engineering exercise.
-
-It includes automated quality gates for formatting, linting, production builds, unit tests, coverage, end-to-end tests and integration scenarios using a disposable backend.
-
-The application also validates persistence and user-data isolation while keeping private credentials outside the client application.
-
-## Run locally
+- Node.js 22 ou superior;
+- npm;
+- um projeto Supabase configurado para os fluxos autenticados.
 
 ```bash
 git clone https://github.com/anamsilva1981/app-flash-card.git
 cd app-flash-card
 npm install
+```
+
+Crie o arquivo local de ambiente a partir do exemplo:
+
+```bash
 cp .env.example .env
+```
+
+No PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Preencha apenas valores públicos e de configuração:
+
+```text
+SUPABASE_URL
+SUPABASE_PUBLISHABLE_KEY
+APP_OWNER_NAME
+APP_SUPPORT_URL
+APP_PRIVACY_UPDATED_AT
+```
+
+Nunca coloque `service_role`, senhas ou tokens administrativos no frontend.
+
+```bash
 npm start
 ```
 
-Node.js 22+ is required.
+O script `prestart` gera a configuração pública antes de iniciar o servidor. Por padrão, a aplicação fica em `http://localhost:4200`.
 
-## Tests
+## Autora
 
-```bash
-npm test
-npm run test:coverage
-npm run test:integration
-npm run e2e
-```
+**Ana Maria Silva**
 
-## Build
+Desenvolvedora Front-end
 
-```bash
-npm run build
-```
+[GitHub](https://github.com/anamsilva1981) · [Repositório](https://github.com/anamsilva1981/app-flash-card)
 
-## Deployment
+## Natureza do projeto
 
-`main` is the production branch. Deployment to GitHub Pages is automated through GitHub Actions after the application passes the configured quality checks.
-
----
-
-<div align="center">
-
-Built by **Ana Maria** as a Front-end learning, engineering and portfolio project.
-
-</div>
+Este é um projeto pessoal e de portfólio, criado a partir de um processo real de estudos e usado para exercitar decisões de produto e engenharia front-end. Não é um produto comercial.
