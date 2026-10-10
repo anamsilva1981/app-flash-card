@@ -1,12 +1,9 @@
-import { Component, signal, inject, DestroyRef } from "@angular/core";
+import { Component, signal, inject } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { appConfig } from "../../../core/config/app-config.generated";
-import { accountSession } from "../../../core/auth/account";
-import { AccountService } from "../../../core/auth/account-service";
+import { AccountFacade } from "../application/account.facade";
 import { I18nService } from "../../../core/i18n/i18n.service";
 import { I18nPipe } from "../../../core/i18n/i18n.pipe";
-import { cached, cache } from "../../../core/persistence/sync";
-import { calendarReminder } from "../../../core/notifications/reminders";
 import { studyTimeZone } from "../../../shared/utils/study-clock";
 @Component({
   selector: "app-account-panel",
@@ -15,20 +12,14 @@ import { studyTimeZone } from "../../../shared/utils/study-clock";
   templateUrl: "./account-panel.component.html",
 })
 export class AccountPanelComponent {
-  private account = inject(AccountService);
-  private destroyRef = inject(DestroyRef);
+  private facade = inject(AccountFacade);
   readonly i18n = inject(I18nService);
   readonly config = appConfig;
   readonly timeZone = studyTimeZone();
-  readonly session = accountSession;
-  name = cached(
-    "display-name",
-    String(accountSession()?.user.user_metadata["display_name"] || ""),
-  );
-  time = cached("reminder-time", "20:00");
-  readonly days = signal<number[]>(
-    cached("reminder-days", [0, 1, 2, 3, 4, 5, 6]),
-  );
+  readonly session = this.facade.session;
+  readonly name = this.facade.name;
+  readonly time = this.facade.time;
+  readonly days = this.facade.days;
   readonly week = [0, 1, 2, 3, 4, 5, 6].map((day) => "week." + day);
   readonly message = signal("");
   readonly busy = signal(false);
@@ -36,84 +27,32 @@ export class AccountPanelComponent {
   readonly deleteOpen = signal(false);
   confirmation = "";
   password = "";
-  readonly notifications = signal(cached("browser-reminders", false));
+  readonly notifications = this.facade.notifications;
   async saveName() {
-    try {
-      await this.account.savePreferences(
-        { display_name: this.name.trim() },
-        { "display-name": this.name.trim() },
-      );
-      this.message.set(this.i18n.t("account.nameSaved"));
-      window.dispatchEvent(new Event("study-profile-changed"));
-    } catch {
-      this.message.set(this.i18n.t("error.save"));
-    }
+    this.message.set(await this.facade.saveName());
   }
   async toggleDay(day: number) {
-    this.days.update((value) =>
-      value.includes(day)
-        ? value.filter((current) => current !== day)
-        : [...value, day],
-    );
-    await this.saveReminder();
+    this.message.set(await this.facade.toggleDay(day));
   }
   async saveReminder() {
-    try {
-      await this.account.savePreferences(
-        { reminder_time: this.time, reminder_days: this.days() },
-        { "reminder-time": this.time, "reminder-days": this.days() },
-      );
-    } catch {
-      this.message.set(this.i18n.t("error.save"));
-    }
+    this.message.set(await this.facade.saveReminder());
   }
   async exportCalendar() {
     try {
       await this.saveReminder();
-      const text = calendarReminder(this.time, this.days());
-      const url = URL.createObjectURL(
-        new Blob([text], { type: "text/calendar;charset=utf-8" }),
-      );
-      const anchor = document.createElement("a");
-      anchor.href = url;
-      anchor.download = "minha-rotina-de-estudos.ics";
-      anchor.click();
-      const timer = window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-      this.destroyRef.onDestroy(() => {
-        window.clearTimeout(timer);
-        URL.revokeObjectURL(url);
-      });
-      this.message.set(this.i18n.t("account.calendarExported"));
+      this.message.set(this.facade.exportCalendar());
     } catch {
       this.message.set(this.i18n.t("account.calendarInvalid"));
     }
   }
   async enableNotifications() {
-    if (!("Notification" in window)) {
-      this.message.set(this.i18n.t("account.noNotifications"));
-      return;
-    }
-    const enabled = (await Notification.requestPermission()) === "granted";
-    cache("browser-reminders", enabled);
-    this.notifications.set(enabled);
-    this.message.set(
-      this.i18n.t(
-        enabled
-          ? "account.notificationsEnabled"
-          : "account.notificationsDenied",
-      ),
-    );
+    this.message.set(await this.facade.enableNotifications());
   }
   disableNotifications() {
-    cache("browser-reminders", false);
-    this.notifications.set(false);
+    this.facade.disableNotifications();
   }
   async logout() {
-    try {
-      await this.account.logout();
-    } catch {
-      this.message.set(this.i18n.t("account.logoutPending"));
-    }
+    this.message.set(await this.facade.logout());
   }
   exitGuest() {
     window.dispatchEvent(new Event("study-account-exit"));
@@ -125,30 +64,22 @@ export class AccountPanelComponent {
     }
     this.busy.set(true);
     try {
-      await this.account.support(this.support.trim());
-      this.support = "";
-      this.message.set(this.i18n.t("account.supportSent"));
-    } catch {
-      this.message.set(this.i18n.t("account.supportFailed"));
+      const result = await this.facade.sendSupport(this.support);
+      this.support = result.support;
+      this.message.set(result.message);
     } finally {
       this.busy.set(false);
     }
   }
   async deleteAccount() {
-    if (
-      this.confirmation !== "EXCLUIR" ||
-      !this.password ||
-      !this.session() ||
-      this.busy()
-    )
-      return;
+    if (this.busy()) return;
     this.busy.set(true);
     const password = this.password;
     this.password = "";
     try {
-      await this.account.deleteAccount(password);
-    } catch {
-      this.message.set(this.i18n.t("account.deleteFailed"));
+      this.message.set(
+        await this.facade.deleteAccount(this.confirmation, password),
+      );
     } finally {
       this.busy.set(false);
     }

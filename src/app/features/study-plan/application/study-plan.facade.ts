@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from "@angular/core";
 import { StudyStore } from "../../../core/state/study-store";
-import { StudyRepository } from "../../../core/application/study-repository";
+import { StudyPlanRepository } from "../../../core/application/feature-repositories";
 import { I18nService } from "../../../core/i18n/i18n.service";
 import { Card, Priority, StudyItem } from "../../../shared/models";
 import { sortStudyItems } from "../../../shared/domain/study-plan";
@@ -10,7 +10,7 @@ import { ReviewFacade } from "../../review/public-api";
 @Injectable()
 export class StudyPlanFacade {
   private store = inject(StudyStore);
-  private repository = inject(StudyRepository);
+  private repository = inject(StudyPlanRepository);
   private i18n = inject(I18nService);
   private cardsFacade = inject(CardsFacade);
   private reviewFacade = inject(ReviewFacade);

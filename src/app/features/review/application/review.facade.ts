@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from "@angular/core";
 import { StudyStore } from "../../../core/state/study-store";
-import { StudyRepository } from "../../../core/application/study-repository";
+import { ReviewRepository } from "../../../core/application/feature-repositories";
 import { AppNavigation } from "../../../core/state/app-navigation";
 import { I18nService } from "../../../core/i18n/i18n.service";
 import { cache } from "../../../core/persistence/sync";
@@ -12,7 +12,7 @@ import { ReviewStore } from "./review-store";
 @Injectable()
 export class ReviewFacade {
   private store = inject(StudyStore);
-  private repository = inject(StudyRepository);
+  private repository = inject(ReviewRepository);
   private review = inject(ReviewStore);
   private navigation = inject(AppNavigation);
   private i18n = inject(I18nService);

@@ -1280,3 +1280,68 @@ app-root .progress-label span {
     max-width: 70%;
   }
 }
+
+/* Desktop layout: keep the mobile-first shell readable while using available width. */
+@media (min-width: 900px) {
+  app-root .app-shell {
+    width: min(100% - 48px, 1180px);
+    max-width: 1180px;
+    padding: 48px 0 56px;
+  }
+
+  app-root .daily-subjects,
+  app-root .deck-picker-list,
+  app-root .progress-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  app-root .daily-section,
+  app-root .panel-page,
+  app-root .review-page {
+    max-width: 100%;
+  }
+
+  app-root .review-filters {
+    max-width: 760px;
+  }
+
+  app-root .flashcard {
+    min-height: 420px;
+    max-width: 900px;
+    margin-inline: auto;
+  }
+
+  app-root .calendar-card,
+  app-root .day-detail,
+  app-root .settings-card,
+  app-root .study-form,
+  app-root .inbox-list {
+    max-width: 900px;
+    margin-inline: auto;
+  }
+
+  app-root .bottom-nav {
+    width: min(calc(100% - 48px), 1180px);
+    bottom: 24px;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: 0 12px 32px rgba(31, 40, 71, 0.1);
+  }
+
+  app-root .bottom-nav button {
+    min-height: 52px;
+  }
+}
+
+@media (min-width: 1280px) {
+  app-root .app-shell {
+    width: min(100% - 96px, 1280px);
+    max-width: 1280px;
+  }
+
+  app-root .daily-subjects,
+  app-root .deck-picker-list,
+  app-root .progress-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

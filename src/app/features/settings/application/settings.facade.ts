@@ -1,6 +1,6 @@
 import { DestroyRef, Injectable, inject, signal } from "@angular/core";
 import { StudyStore } from "../../../core/state/study-store";
-import { StudyRepository } from "../../../core/application/study-repository";
+import { SettingsRepository } from "../../../core/application/feature-repositories";
 import { I18nService } from "../../../core/i18n/i18n.service";
 import { createBackup, parseBackup } from "../../../core/backup/backup";
 import { syncStatus } from "../../../core/persistence/sync";
@@ -10,7 +10,7 @@ import { Card } from "../../../shared/models";
 @Injectable()
 export class SettingsFacade {
   private store = inject(StudyStore);
-  private repository = inject(StudyRepository);
+  private repository = inject(SettingsRepository);
   private i18n = inject(I18nService);
   private destroyRef = inject(DestroyRef);
 

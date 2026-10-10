@@ -2,7 +2,7 @@ import { DestroyRef, Injectable, inject, signal } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { SwUpdate } from "@angular/service-worker";
 import { StudyStore } from "./core/state/study-store";
-import { StudyRepository } from "./core/application/study-repository";
+import { StudyLifecycleRepository } from "./core/application/feature-repositories";
 import { AppNavigation, AppTab } from "./core/state/app-navigation";
 import { ReminderService } from "./core/notifications/reminder-service";
 import { accountSession } from "./core/auth/account";
@@ -22,7 +22,7 @@ import { CardsFacade } from "./features/cards/public-api";
 @Injectable()
 export class AppFacade {
   private store = inject(StudyStore);
-  private repository = inject(StudyRepository);
+  private repository = inject(StudyLifecycleRepository);
   private navigation = inject(AppNavigation);
   private reminders = inject(ReminderService);
   private updates = inject(SwUpdate);

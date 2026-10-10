@@ -23,12 +23,7 @@ import {
 @Component({
   selector: "app-session",
   standalone: true,
-  imports: [
-    I18nPipe,
-    LanguageSwitcherComponent,
-    FormsModule,
-    AppIconComponent,
-  ],
+  imports: [I18nPipe, LanguageSwitcherComponent, FormsModule, AppIconComponent],
   templateUrl: "./session.component.html",
 })
 export class SessionComponent {

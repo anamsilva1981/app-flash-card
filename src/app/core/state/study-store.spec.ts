@@ -38,9 +38,7 @@ test("StudyStore aplica snapshot sem misturar referências anteriores", () => {
         interval: 0,
       },
     ],
-    subjects: [
-      { id: "angular", name: "Angular", days: [3], archived: false },
-    ],
+    subjects: [{ id: "angular", name: "Angular", days: [3], archived: false }],
     queue: [],
     history: [],
   };

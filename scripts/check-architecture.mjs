@@ -12,14 +12,6 @@ const allowedRootFiles = new Set([
 ]);
 const errors = [];
 const legacyImporters = new Map([
-  ["core/app-facade.ts", new Set([
-    "core/data/study-store",
-    "core/data/study-repository",
-    "core/data/review-store",
-    "core/data/calendar-store",
-    "core/data/subject-navigation",
-    "core/data/reminder-service",
-  ])],
   ["core/backup.ts", new Set(["core/data/validation", "core/data/relations"])],
   ["core/remote-state.ts", new Set(["core/data/validation"])],
   ["core/onboarding.ts", new Set(["core/data/relations"])],
@@ -84,7 +76,10 @@ for (const file of walk(root).filter((item) => item.endsWith(".ts"))) {
       !legacyImporters.get(rel)?.has(target)
     ) {
       errors.push(
-        "Novo código não pode depender de core/data: " + rel + " -> " + specifier,
+        "Novo código não pode depender de core/data: " +
+          rel +
+          " -> " +
+          specifier,
       );
     }
 
@@ -93,7 +88,10 @@ for (const file of walk(root).filter((item) => item.endsWith(".ts"))) {
       (target === "app.component" || target === "app.facade")
     ) {
       errors.push(
-        "Feature não pode depender do shell da aplicação: " + rel + " -> " + specifier,
+        "Feature não pode depender do shell da aplicação: " +
+          rel +
+          " -> " +
+          specifier,
       );
     }
 
@@ -103,7 +101,10 @@ for (const file of walk(root).filter((item) => item.endsWith(".ts"))) {
       !target.endsWith("public-api")
     ) {
       errors.push(
-        "O shell deve consumir features somente por public-api: " + rel + " -> " + specifier,
+        "O shell deve consumir features somente por public-api: " +
+          rel +
+          " -> " +
+          specifier,
       );
     }
 
