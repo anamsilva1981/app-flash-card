@@ -1,0 +1,93 @@
+/* Desktop layout: keep the mobile-first shell readable while using available width. */
+.account-panel input,
+.account-panel textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  min-height: 48px;
+  padding: 12px;
+  font: inherit;
+  color: var(--text);
+}
+.account-panel {
+  display: grid;
+  gap: 18px;
+  margin-top: 24px;
+}
+.account-section {
+  padding: 24px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+.account-section h2 {
+  font-size: 18px;
+  margin: 0 0 12px;
+}
+.account-section p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.account-section label {
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+.account-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.account-actions button,
+.account-actions a {
+  min-height: 48px;
+  padding: 12px 16px;
+  background: var(--primary-soft);
+  border: 0;
+  border-radius: 12px;
+  color: var(--primary);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+.account-section .danger {
+  color: #a52b40;
+  background: #fff0f2;
+}
+.account-section .checkbox-row {
+  display: flex;
+  align-items: center;
+}
+.checkbox-row input {
+  width: 20px;
+  min-height: 20px;
+}
+.form-message {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--primary);
+}
+.reminder-days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+.reminder-days button {
+  min-width: 44px;
+  min-height: 44px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+.reminder-days button.active {
+  background: var(--primary);
+  color: white;
+}

@@ -1,0 +1,329 @@
+:host {
+  display: contents;
+}
+.review-page {
+  width: 100%;
+  min-width: 0;
+}
+.icon-button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: white;
+  display: grid;
+  place-items: center;
+  color: var(--text);
+  flex-shrink: 0;
+}
+.review-header {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.review-title {
+  min-width: 0;
+}
+.review-title h1 {
+  font-size: 24px;
+  margin: 0 0 6px;
+}
+.review-title p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.progress-row {
+  margin: 0 0 24px;
+}
+.progress-copy {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.progress-copy b {
+  color: var(--primary);
+  font-weight: 600;
+}
+.progress-track {
+  height: 6px;
+  background: #e9e8f2;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 10px;
+  transition: width 0.2s;
+}
+.review-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.review-filters label {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.topic-select {
+  font-size: 12px;
+  padding: 12px 10px;
+  min-height: 48px;
+}
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.meta b {
+  font-weight: 600;
+  white-space: nowrap;
+}
+.flashcard {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  min-height: 340px;
+  padding: 32px 24px;
+  border: 1px solid #e2dcef;
+  border-radius: 24px;
+  background: white;
+  box-shadow: 0 12px 32px #46357109;
+  text-align: center;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+.flashcard.flipped {
+  background: #fcfaff;
+  border-color: #cfc1f2;
+}
+.flashcard-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--primary);
+  padding: 7px 12px;
+  border-radius: 8px;
+  background: var(--primary-soft);
+}
+.flashcard-content {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.55;
+  letter-spacing: -0.035em;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+.flashcard small {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.primary-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+  width: 100%;
+  margin-top: 20px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--primary);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 14px 18px;
+  text-decoration: none;
+  box-shadow: 0 6px 16px #6236df18;
+}
+.primary-action:hover {
+  background: var(--primary-dark);
+}
+.explanation-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+  margin: 16px 0;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: white;
+  min-height: 48px;
+  padding: 12px 16px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+.explanation-toggle span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.explanation {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  background: white;
+  margin-bottom: 16px;
+}
+.explanation-block,
+.example-block {
+  padding: 20px;
+}
+.example-block {
+  background: #f5f7fc;
+  border-top: 1px solid var(--border);
+}
+.explanation span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.explanation p {
+  font-size: 14px;
+  line-height: 1.8;
+  margin: 12px 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.ratings {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 16px;
+  position: sticky;
+  bottom: 12px;
+  padding: 8px 0;
+  background: var(--background);
+  z-index: 5;
+}
+.ratings button {
+  min-height: 66px;
+  border-radius: 13px;
+  border: 1px solid #ecd9d9;
+  background: #fff4f3;
+  color: #a64b43;
+  padding: 10px 4px;
+}
+.ratings button:nth-child(2) {
+  border-color: #f0e2c6;
+  background: #fff8e9;
+  color: #94701c;
+}
+.ratings button:nth-child(3) {
+  border-color: #d2e8df;
+  background: #eff9f4;
+  color: #287353;
+}
+.ratings button:nth-child(4) {
+  border-color: #dcd2f5;
+  background: #f2edff;
+  color: #6540b7;
+}
+.ratings b,
+.ratings small {
+  display: block;
+}
+.ratings b {
+  font-size: 12px;
+  font-weight: 700;
+}
+.ratings small {
+  font-size: 10px;
+  margin-top: 7px;
+}
+.done {
+  text-align: center;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 36px 24px;
+}
+.done > app-icon {
+  width: 48px;
+  height: 48px;
+  color: var(--success);
+  background: #edf8f2;
+  padding: 10px;
+  border-radius: 50%;
+  margin-bottom: 16px;
+}
+.done h2 {
+  margin-bottom: 12px;
+}
+.done p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.new-subject-button {
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 10px 8px;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 600;
+}
+.done .new-subject-button {
+  width: 100%;
+  margin-top: 12px;
+}
+@media (max-width: 400px) {
+  .flashcard {
+    padding: 28px 20px;
+    min-height: 300px;
+  }
+  .flashcard-content {
+    font-size: 21px;
+  }
+  .ratings {
+    gap: 6px;
+  }
+  .ratings b {
+    font-size: 11px;
+  }
+}
+
+/* Desktop layout: keep the mobile-first shell readable while using available width. */
+@media (min-width: 900px) {
+  .review-page {
+    max-width: 100%;
+  }
+
+  .review-filters {
+    max-width: 760px;
+  }
+
+  .flashcard {
+    min-height: 420px;
+    max-width: 900px;
+    margin-inline: auto;
+  }
+}

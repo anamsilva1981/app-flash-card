@@ -18,7 +18,7 @@ import { HomeFacade } from "../application/home.facade";
     I18nPipe,
   ],
   templateUrl: "./home-page.component.html",
-  styles: [":host{display:contents}"],
+  styleUrl: "./home-page.component.css",
 })
 export class HomePageComponent {
   @Input({ required: true }) vm!: HomeFacade;

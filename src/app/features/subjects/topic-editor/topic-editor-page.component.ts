@@ -9,7 +9,7 @@ import { TopicEditorPort } from "../application/topic-editor.port";
   standalone: true,
   imports: [FormsModule, A11yModule, AppIconComponent, I18nPipe],
   templateUrl: "./topic-editor-page.component.html",
-  styles: [":host{display:contents}"],
+  styleUrl: "./topic-editor-page.component.css",
 })
 export class TopicEditorPageComponent {
   @Input({ required: true }) vm!: TopicEditorPort;

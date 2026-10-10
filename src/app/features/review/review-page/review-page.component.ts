@@ -9,7 +9,7 @@ import { ReviewFacade } from "../application/review.facade";
   standalone: true,
   imports: [FormsModule, A11yModule, AppIconComponent, I18nPipe],
   templateUrl: "./review-page.component.html",
-  styles: [":host{display:contents}"],
+  styleUrl: "./review-page.component.css",
 })
 export class ReviewPageComponent {
   @Input({ required: true }) vm!: ReviewFacade;

@@ -17,7 +17,7 @@ import { StudyPlanFacade } from "../application/study-plan.facade";
     SubjectManagerComponent,
   ],
   templateUrl: "./study-plan-page.component.html",
-  styles: [":host{display:contents}"],
+  styleUrl: "./study-plan-page.component.css",
 })
 export class StudyPlanPageComponent {
   @Input({ required: true }) vm!: StudyPlanFacade;

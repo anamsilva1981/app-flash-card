@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, inject } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { AppFacade } from "./app.facade";
 import { AppIconComponent } from "./shared/components/app-icon/app-icon.component";
 import { StudyStore } from "./core/state/study-store";
@@ -87,7 +87,6 @@ import {
   ],
   templateUrl: "./app.component.html",
   styleUrl: "./app.component.css",
-  encapsulation: ViewEncapsulation.None,
 })
 export class AppComponent implements OnInit {
   readonly vm = inject(AppFacade);

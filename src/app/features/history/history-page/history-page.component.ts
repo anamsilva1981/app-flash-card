@@ -9,7 +9,7 @@ import { HistoryFacade } from "../application/history.facade";
   standalone: true,
   imports: [FormsModule, A11yModule, AppIconComponent, I18nPipe],
   templateUrl: "./history-page.component.html",
-  styles: [":host{display:contents}"],
+  styleUrl: "./history-page.component.css",
 })
 export class HistoryPageComponent {
   @Input({ required: true }) vm!: HistoryFacade;

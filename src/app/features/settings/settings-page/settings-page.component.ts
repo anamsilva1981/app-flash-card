@@ -16,7 +16,7 @@ import { SettingsFacade } from "../application/settings.facade";
     AccountPanelComponent,
   ],
   templateUrl: "./settings-page.component.html",
-  styles: [":host{display:contents}"],
+  styleUrl: "./settings-page.component.css",
 })
 export class SettingsPageComponent {
   @Input({ required: true }) vm!: SettingsFacade;

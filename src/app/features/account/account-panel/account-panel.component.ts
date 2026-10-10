@@ -10,6 +10,7 @@ import { studyTimeZone } from "../../../shared/utils/study-clock";
   standalone: true,
   imports: [FormsModule, I18nPipe],
   templateUrl: "./account-panel.component.html",
+  styleUrl: "./account-panel.component.css",
 })
 export class AccountPanelComponent {
   private facade = inject(AccountFacade);

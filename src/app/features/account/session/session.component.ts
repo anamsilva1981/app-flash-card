@@ -25,6 +25,7 @@ import {
   standalone: true,
   imports: [I18nPipe, LanguageSwitcherComponent, FormsModule, AppIconComponent],
   templateUrl: "./session.component.html",
+  styleUrl: "./session.component.css",
 })
 export class SessionComponent {
   readonly applicationComponent = inject(SESSION_APPLICATION);

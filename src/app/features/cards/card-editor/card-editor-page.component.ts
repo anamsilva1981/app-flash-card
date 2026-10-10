@@ -9,7 +9,7 @@ import { CardsFacade } from "../application/cards.facade";
   standalone: true,
   imports: [FormsModule, A11yModule, AppIconComponent, I18nPipe],
   templateUrl: "./card-editor-page.component.html",
-  styles: [":host{display:contents}"],
+  styleUrl: "./card-editor-page.component.css",
 })
 export class CardEditorPageComponent {
   @Input({ required: true }) vm!: CardsFacade;

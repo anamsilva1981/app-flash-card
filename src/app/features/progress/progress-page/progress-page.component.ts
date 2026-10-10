@@ -18,7 +18,7 @@ import { ProgressFacade } from "../application/progress.facade";
     I18nPipe,
   ],
   templateUrl: "./progress-page.component.html",
-  styles: [":host{display:contents}"],
+  styleUrl: "./progress-page.component.css",
 })
 export class ProgressPageComponent {
   @Input({ required: true }) vm!: ProgressFacade;
