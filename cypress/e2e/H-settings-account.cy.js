@@ -26,6 +26,7 @@ describe("Parte H — configurações e conta", () => {
     cy.get("html").should("have.attr", "lang", "en");
     cy.reload();
     cy.get("html").should("have.attr", "lang", "en");
+    cy.contains("nav button", "Profile").click();
     cy.get(".language-switcher").should("contain.text", "Português");
   });
 
