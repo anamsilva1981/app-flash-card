@@ -22,11 +22,11 @@ describe("Parte H — configurações e conta", () => {
 
   it("alterna idioma e mantém a preferência após recarregar", () => {
     cy.contains("nav button", "Perfil").click();
-    cy.get(".language-switcher").should("contain.text", "EN").click();
+    cy.get(".language-switcher").should("contain.text", "English").click();
     cy.get("html").should("have.attr", "lang", "en");
     cy.reload();
     cy.get("html").should("have.attr", "lang", "en");
-    cy.get(".language-switcher").should("contain.text", "PT");
+    cy.get(".language-switcher").should("contain.text", "Português");
   });
 
   it("rejeita backup inválido sem apagar os dados atuais", () => {
