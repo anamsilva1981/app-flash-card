@@ -10,7 +10,7 @@
   height: 48px;
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: white;
+  background: var(--surface);
   display: grid;
   place-items: center;
   color: var(--text);
@@ -45,18 +45,18 @@
   margin-bottom: 10px;
 }
 .progress-copy b {
-  color: var(--primary);
+  color: var(--progress-dark);
   font-weight: 600;
 }
 .progress-track {
   height: 6px;
-  background: #e9e8f2;
+  background: var(--progress-soft);
   border-radius: 10px;
   overflow: hidden;
 }
 .progress-fill {
   height: 100%;
-  background: var(--primary);
+  background: var(--progress);
   border-radius: 10px;
   transition: width 0.2s;
 }
@@ -100,18 +100,18 @@
   gap: 24px;
   min-height: 340px;
   padding: 32px 24px;
-  border: 1px solid #e2dcef;
+  border: 1px solid var(--border);
   border-radius: 24px;
-  background: white;
-  box-shadow: 0 12px 32px #46357109;
+  background: var(--surface);
+  box-shadow: var(--shadow);
   text-align: center;
   transition:
     border-color 0.2s,
     background 0.2s;
 }
 .flashcard.flipped {
-  background: #fcfaff;
-  border-color: #cfc1f2;
+  background: var(--primary-soft);
+  border-color: var(--primary-border);
 }
 .flashcard-badge {
   font-size: 10px;
@@ -146,12 +146,12 @@
   border: 0;
   border-radius: 14px;
   background: var(--primary);
-  color: white;
+  color: var(--primary-on);
   font-size: 14px;
   font-weight: 600;
   padding: 14px 18px;
   text-decoration: none;
-  box-shadow: 0 6px 16px #6236df18;
+  box-shadow: var(--shadow-primary);
 }
 .primary-action:hover {
   background: var(--primary-dark);
@@ -165,7 +165,7 @@
   margin: 16px 0;
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: white;
+  background: var(--surface);
   min-height: 48px;
   padding: 12px 16px;
   color: var(--primary);
@@ -181,7 +181,7 @@
   border: 1px solid var(--border);
   border-radius: 18px;
   overflow: hidden;
-  background: white;
+  background: var(--surface);
   margin-bottom: 16px;
 }
 .explanation-block,
@@ -189,7 +189,7 @@
   padding: 20px;
 }
 .example-block {
-  background: #f5f7fc;
+  background: var(--surface-subtle);
   border-top: 1px solid var(--border);
 }
 .explanation span {
@@ -208,6 +208,14 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+.think-block {
+  border-top: 1px solid var(--warning-border);
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+.think-block span {
+  color: var(--warning);
+}
 .ratings {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -222,25 +230,25 @@
 .ratings button {
   min-height: 66px;
   border-radius: 13px;
-  border: 1px solid #ecd9d9;
-  background: #fff4f3;
-  color: #a64b43;
+  border: 1px solid var(--danger-border);
+  background: var(--rating-again-soft);
+  color: var(--rating-again);
   padding: 10px 4px;
 }
 .ratings button:nth-child(2) {
-  border-color: #f0e2c6;
-  background: #fff8e9;
-  color: #94701c;
+  border-color: var(--warning-border);
+  background: var(--rating-hard-soft);
+  color: var(--rating-hard);
 }
 .ratings button:nth-child(3) {
-  border-color: #d2e8df;
-  background: #eff9f4;
-  color: #287353;
+  border-color: var(--success-border);
+  background: var(--rating-good-soft);
+  color: var(--rating-good);
 }
 .ratings button:nth-child(4) {
-  border-color: #dcd2f5;
-  background: #f2edff;
-  color: #6540b7;
+  border-color: var(--primary-border);
+  background: var(--rating-easy-soft);
+  color: var(--rating-easy);
 }
 .ratings b,
 .ratings small {
@@ -256,7 +264,7 @@
 }
 .done {
   text-align: center;
-  background: white;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 24px;
   padding: 36px 24px;
@@ -265,7 +273,7 @@
   width: 48px;
   height: 48px;
   color: var(--success);
-  background: #edf8f2;
+  background: var(--success-soft);
   padding: 10px;
   border-radius: 50%;
   margin-bottom: 16px;

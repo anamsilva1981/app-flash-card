@@ -7,11 +7,13 @@
   display: grid;
   place-items: center;
   padding: 24px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .modal-backdrop {
   position: absolute;
   inset: 0;
-  background: #1f173959;
+  background: var(--overlay);
   backdrop-filter: blur(3px);
 }
 .modal-layer .modal-sheet {
@@ -23,8 +25,8 @@
   margin: 0;
   border: 0;
   border-radius: 24px;
-  background: white;
-  box-shadow: 0 24px 80px #1b123833;
+  background: var(--surface);
+  box-shadow: var(--shadow-modal);
   scrollbar-gutter: stable;
 }
 @media (max-width: 600px) {
@@ -44,6 +46,7 @@
   margin: 0 auto;
   padding: 48px 24px;
   color: var(--text);
+  min-height: 100svh;
 }
 .auth-brand {
   display: flex;
@@ -88,7 +91,7 @@
 .auth-page input:not([type="checkbox"]) {
   width: 100%;
   box-sizing: border-box;
-  background: white;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
   min-height: 48px;
@@ -120,7 +123,7 @@
   border: 0;
   border-radius: 12px;
   background: var(--primary);
-  color: white;
+  color: var(--primary-on);
   padding: 12px 20px;
   font: inherit;
   font-weight: 600;
@@ -143,7 +146,7 @@
 .guest-action {
   width: 100%;
   border: 1px solid var(--border);
-  background: white;
+  background: var(--surface);
   border-radius: 12px;
   margin: 20px 0 8px;
 }
@@ -214,12 +217,12 @@
   font-weight: 700;
 }
 .auth-notice .notice-icon.success {
-  background: #eaf7f2;
+  background: var(--success-soft);
   color: var(--success);
 }
 .auth-notice .notice-icon.error {
-  background: #fff1ee;
-  color: #a34135;
+  background: var(--danger-soft);
+  color: var(--danger);
 }
 .auth-notice h2 {
   margin-bottom: 10px;

@@ -44,7 +44,7 @@ import { I18nService } from "./i18n.service";
         padding: 14px 18px;
         border: 1px solid var(--border);
         border-radius: 18px;
-        background: white;
+        background: var(--surface);
         box-shadow: var(--shadow);
       }
       .language-setting > div {
@@ -71,7 +71,7 @@ import { I18nService } from "./i18n.service";
         border: 0;
         border-radius: 12px;
         background: var(--primary-soft);
-        color: #4823bb;
+        color: var(--primary);
         font-weight: 700;
         font-size: 12px;
         cursor: pointer;

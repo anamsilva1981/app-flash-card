@@ -109,8 +109,8 @@ export class AppIconComponent {
         width: 48px;
         height: 48px;
         border-radius: 13px;
-        background: #f0edff;
-        color: #6545d4;
+        background: var(--primary-soft);
+        color: var(--primary);
       }
     `,
   ],

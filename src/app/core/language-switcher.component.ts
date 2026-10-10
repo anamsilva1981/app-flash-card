@@ -25,13 +25,13 @@ import { I18nService } from "./i18n.service";
         min-width: 48px;
         height: 40px;
         padding: 0 12px;
-        border: 1px solid #e9ecf3;
+        border: 1px solid var(--border);
         border-radius: 999px;
-        background: white;
-        color: #4823bb;
+        background: var(--surface);
+        color: var(--primary);
         font-weight: 700;
         font-size: 12px;
-        box-shadow: 0 6px 24px rgba(31, 40, 71, 0.08);
+        box-shadow: var(--shadow);
       }
     `,
   ],

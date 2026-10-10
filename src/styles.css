@@ -4,27 +4,136 @@
 @import "@fontsource/plus-jakarta-sans/latin-600.css";
 @import "@fontsource/plus-jakarta-sans/latin-700.css";
 :root {
-  --primary: #6236df;
-  --primary-dark: #4823bb;
-  --primary-soft: #f1edff;
-  --background: #f7f8fc;
-  --surface: #fff;
-  --text: #192337;
-  --muted: #697386;
-  --border: #e9ecf3;
-  --success: #238168;
+  /* Brand and interaction */
+  --primary: #4f46e5;
+  --primary-dark: #4338ca;
+  --primary-soft: #eef2ff;
+  --primary-border: #a5b4fc;
+  --primary-on: #ffffff;
+  --secondary-action-text: #4338ca;
+  --focus-ring: #4f46e5;
+  --accent: #f97360;
+  --accent-strong: #c24132;
+  --accent-soft: #fff1ee;
+  --accent-border: #fdbaae;
+
+  /* Learning and progress */
+  --progress: #4f46e5;
+  --progress-dark: #4338ca;
+  --progress-soft: #e0e7ff;
+  --progress-border: #a5b4fc;
+
+  /* Neutral surfaces and typography */
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --surface-subtle: #f8fafc;
+  --text: #182238;
+  --muted: #475569;
+  --muted-soft: #64748b;
+  --border: #cbd5e1;
+
+  /* Semantic feedback */
+  --success: #0f766e;
+  --success-soft: #ccfbf1;
+  --success-border: #99f6e4;
+  --warning: #78350f;
+  --warning-soft: #fef3c7;
+  --warning-border: #fcd34d;
+  --danger: #991b1b;
+  --danger-soft: #fee2e2;
+  --danger-border: #fecaca;
+
+  /* Flashcard evaluation */
+  --rating-again: #991b1b;
+  --rating-again-soft: #fee2e2;
+  --rating-hard: #854d0e;
+  --rating-hard-soft: #fef3c7;
+  --rating-good: #0f766e;
+  --rating-good-soft: #ccfbf1;
+  --rating-easy: #5b21b6;
+  --rating-easy-soft: #ede9fe;
+
+  /* Layers and elevation */
+  --overlay: rgba(23, 32, 51, 0.58);
+  --surface-glass: rgba(255, 255, 255, 0.98);
+  --shadow-color: rgba(24, 34, 56, 0.14);
   --radius: 20px;
-  --shadow: 0 6px 24px rgba(31, 40, 71, 0.045);
+  --shadow: 0 8px 24px rgba(23, 32, 51, 0.08);
+  --shadow-modal: 0 24px 80px rgba(23, 32, 51, 0.2);
+  --shadow-primary: 0 8px 20px rgba(79, 70, 229, 0.2);
   font-family: "Plus Jakarta Sans", system-ui, sans-serif;
   color: var(--text);
   background: var(--background);
   font-synthesis: none;
+}
+
+:root[data-theme="dark"] {
+  --primary: #818cf8;
+  --primary-dark: #6366f1;
+  --primary-soft: #1e1b4b;
+  --primary-border: #6366f1;
+  --primary-on: #0f172a;
+  --secondary-action-text: #818cf8;
+  --focus-ring: #a5b4fc;
+  --accent: #fb8d7c;
+  --accent-strong: #fdbaae;
+  --accent-soft: #4c1d1d;
+  --accent-border: #9f4a3e;
+  --progress: #818cf8;
+  --progress-dark: #a5b4fc;
+  --progress-soft: #312e81;
+  --progress-border: #6366f1;
+  --background: #0f172a;
+  --surface: #1e293b;
+  --surface-subtle: #273449;
+  --text: #f1f5f9;
+  --muted: #cbd5e1;
+  --muted-soft: #94a3b8;
+  --border: #475569;
+  --success: #5eead4;
+  --success-soft: #134e4a;
+  --success-border: #0f766e;
+  --warning: #fde68a;
+  --warning-soft: #422006;
+  --warning-border: #a16207;
+  --danger: #fca5a5;
+  --danger-soft: #450a0a;
+  --danger-border: #991b1b;
+  --rating-again: #fca5a5;
+  --rating-again-soft: #450a0a;
+  --rating-hard: #fde68a;
+  --rating-hard-soft: #422006;
+  --rating-good: #5eead4;
+  --rating-good-soft: #134e4a;
+  --rating-easy: #c7d2fe;
+  --rating-easy-soft: #312e81;
+  --overlay: rgba(2, 6, 23, 0.76);
+  --surface-glass: rgba(30, 41, 59, 0.98);
+  --shadow-color: rgba(0, 0, 0, 0.34);
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  --shadow-modal: 0 24px 80px rgba(0, 0, 0, 0.5);
+  --shadow-primary: 0 8px 20px rgba(129, 140, 248, 0.18);
+}
+html {
+  min-height: 100%;
+  background: var(--background);
+  overflow-x: clip;
 }
 * {
   box-sizing: border-box;
 }
 body {
   margin: 0;
+  min-height: 100%;
+  overflow-x: clip;
+  overflow-y: auto;
+  color: var(--text);
+  background: var(--background);
+}
+app-session,
+app-root {
+  display: block;
+  min-height: 100%;
 }
 button,
 input,
@@ -47,6 +156,10 @@ button:disabled {
   cursor: default;
   opacity: 0.55;
 }
+button:disabled:hover,
+button:disabled:active {
+  transform: none;
+}
 a {
   color: var(--primary);
 }
@@ -56,7 +169,7 @@ input:focus-visible,
 textarea:focus-visible,
 select:focus-visible,
 summary:focus-visible {
-  outline: 3px solid #b29afb;
+  outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
 }
 h1,
@@ -93,9 +206,9 @@ textarea,
 select {
   width: 100%;
   min-width: 0;
-  border: 1px solid #dfe3ed;
+  border: 1px solid var(--border);
   border-radius: 12px;
-  background: #fff;
+  background: var(--surface);
   color: var(--text);
   min-height: 48px;
   padding: 12px 14px;
@@ -106,9 +219,19 @@ textarea {
   resize: vertical;
   min-height: 110px;
 }
+input:hover,
+textarea:hover,
+select:hover {
+  border-color: var(--muted-soft);
+}
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  border-color: var(--primary);
+}
 input::placeholder,
 textarea::placeholder {
-  color: #8b94a5;
+  color: var(--muted-soft);
 }
 label {
   color: var(--text);
@@ -122,8 +245,9 @@ label small {
 [role="alert"] {
   padding: 12px 16px;
   border-radius: 12px;
-  background: #fff1ee;
-  color: #a34135;
+  border: 1px solid var(--danger-border);
+  background: var(--danger-soft);
+  color: var(--danger);
   font-size: 13px;
   line-height: 1.6;
 }
@@ -146,6 +270,17 @@ button:active {
     scroll-behavior: auto !important;
   }
 }
-body:has(.modal-layer) {
+body:has(.modal-layer[aria-modal="true"]),
+body:has(.modal-layer > [aria-modal="true"]) {
   overflow: hidden;
+}
+
+@media (forced-colors: active) {
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline-color: Highlight;
+  }
 }

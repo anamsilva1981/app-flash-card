@@ -50,7 +50,7 @@
   height: 48px;
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: white;
+  background: var(--surface);
   display: grid;
   place-items: center;
   color: var(--text);
@@ -67,7 +67,7 @@
   flex-direction: column;
   gap: 8px;
   padding: 18px 12px;
-  background: white;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 16px;
 }
@@ -82,7 +82,7 @@
   color: var(--muted);
 }
 .calendar-card {
-  background: white;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 22px;
   padding: 20px;
@@ -145,16 +145,16 @@
   font-size: 12px;
 }
 .calendar-day.has-activity {
-  background: #f0ecfc;
+  background: var(--primary-soft);
   color: var(--primary);
   font-weight: 600;
 }
 .calendar-day.today {
-  border-color: #cfc0f4;
+  border-color: var(--primary-border);
 }
 .calendar-day.selected {
   background: var(--primary);
-  color: white;
+  color: var(--primary-on);
   border-color: var(--primary);
 }
 .calendar-day.empty {
@@ -173,13 +173,13 @@
   display: inline-block;
 }
 .learning {
-  background: #278264;
+  background: var(--progress);
 }
 .review {
-  background: #8966e9;
+  background: var(--primary);
 }
 .calendar-day.selected i {
-  background: white;
+  background: var(--primary-on);
 }
 .calendar-legend {
   display: flex;
@@ -195,7 +195,7 @@
   gap: 7px;
 }
 .day-detail {
-  background: white;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 24px;
@@ -244,7 +244,7 @@
   height: 17px;
 }
 .learning-detail .detail-icon {
-  background: #edf7f2;
+  background: var(--success-soft);
   color: var(--success);
 }
 .detail-group > div:last-child {

@@ -47,13 +47,13 @@
 }
 .mini-track {
   height: 6px;
-  background: #e9e8f2;
+  background: var(--progress-soft);
   border-radius: 10px;
   overflow: hidden;
 }
 .mini-track > div {
   height: 100%;
-  background: var(--primary);
+  background: var(--progress);
   border-radius: 10px;
   transition: width 0.2s;
 }
@@ -68,13 +68,13 @@
   flex-direction: column;
   gap: 8px;
   padding: 18px 12px;
-  background: white;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 16px;
 }
 .stat b {
   font-size: 24px;
-  color: var(--primary);
+  color: var(--progress-dark);
   font-weight: 700;
 }
 .stat span {
@@ -101,7 +101,7 @@
   display: flex;
   gap: 14px;
   padding: 20px;
-  background: white;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 16px;
 }

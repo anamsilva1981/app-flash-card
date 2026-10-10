@@ -37,7 +37,7 @@
   border-radius: 12px;
   padding: 12px 16px;
   background: var(--primary);
-  color: white;
+  color: var(--primary-on);
   font-size: 12px;
   font-weight: 600;
   flex-shrink: 0;
@@ -59,7 +59,7 @@
   gap: 4px;
   padding: 4px;
   border-radius: 14px;
-  background: #eceef5;
+  background: var(--primary-soft);
   margin: 0 0 24px;
 }
 .tabs button,
@@ -76,9 +76,9 @@
 }
 .tabs button.active,
 .detail-tabs button.active {
-  background: white;
+  background: var(--surface);
   color: var(--primary);
-  box-shadow: 0 2px 6px #28223e08;
+  box-shadow: var(--shadow);
 }
 .topic-view-tabs {
   background: transparent;
@@ -117,7 +117,7 @@
   padding: 16px;
   border: 1px solid var(--border);
   border-radius: 18px;
-  background: white;
+  background: var(--surface);
   box-shadow: var(--shadow);
 }
 .subject-main {
@@ -190,7 +190,7 @@
   align-items: center;
   text-align: center;
   gap: 14px;
-  background: white;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 32px 20px;
@@ -201,12 +201,12 @@
 .empty app-icon {
   width: 38px;
   height: 38px;
-  color: #ae9ad8;
+  color: var(--primary);
 }
 .subject-form,
 .topic-detail {
-  background: white;
-  border: 1px solid #ddd4f2;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 20px;
   padding: 24px;
   margin: 20px 0;
@@ -253,7 +253,7 @@
   width: 100%;
   border: 1px solid var(--border);
   border-radius: 10px;
-  background: white;
+  background: var(--surface);
   font-size: 11px;
   font-weight: 600;
   padding: 0;
@@ -261,7 +261,7 @@
 }
 .days button.active {
   background: var(--primary);
-  color: white;
+  color: var(--primary-on);
   border-color: var(--primary);
 }
 .save {
@@ -274,7 +274,7 @@
   gap: 14px;
   margin-bottom: 24px;
   padding: 20px;
-  background: white;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 20px;
 }
@@ -348,9 +348,9 @@
   padding: 24px;
   text-align: left;
   background: var(--primary);
-  color: white;
+  color: var(--primary-on);
   min-height: 106px;
-  box-shadow: 0 8px 20px #6236df15;
+  box-shadow: var(--shadow-primary);
 }
 .primary-card > div {
   display: grid;
@@ -362,16 +362,16 @@
 .primary-card span {
   font-size: 12px;
   line-height: 1.6;
-  color: #eee7ff;
+  color: var(--background);
 }
 .done-card {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 14px;
-  border: 1px solid #d6eadd;
+  border: 1px solid var(--success-border);
   border-radius: 20px;
-  background: #f7fcf9;
+  background: var(--success-soft);
   padding: 24px;
 }
 .done-card > b {
@@ -388,8 +388,8 @@
   line-height: 1.8;
 }
 .done-card button {
-  background: white;
-  border: 1px solid #dfd6f5;
+  background: var(--surface);
+  border: 1px solid var(--primary-border);
   color: var(--primary);
   font-size: 12px;
 }
@@ -407,7 +407,7 @@
   padding: 14px;
   border: 1px solid var(--border);
   border-radius: 16px;
-  background: white;
+  background: var(--surface);
   box-shadow: var(--shadow);
 }
 .topic-check,
@@ -416,15 +416,15 @@
   place-items: center;
   width: 42px;
   height: 44px;
-  border: 1px solid #ddd4f2;
+  border: 1px solid var(--primary-border);
   border-radius: 12px;
   background: var(--primary-soft);
   color: var(--primary);
   flex-shrink: 0;
 }
 .topic-done {
-  background: #eff8f2;
-  border-color: #d7eadf;
+  background: var(--success-soft);
+  border-color: var(--success-border);
   color: var(--success);
 }
 .topic-main {
@@ -452,20 +452,20 @@
 .topic-main .priority {
   padding: 4px 8px;
   border-radius: 6px;
-  background: #f3f4f8;
-  color: #667287;
+  background: var(--surface-subtle);
+  color: var(--muted);
 }
 .topic-main .priority[data-priority="alta"] {
-  background: #fff0ee;
-  color: #a14d43;
+  background: var(--danger-soft);
+  color: var(--danger);
 }
 .topic-main .priority[data-priority="media"] {
-  background: #fff7e3;
-  color: #8b6b24;
+  background: var(--warning-soft);
+  color: var(--warning);
 }
 .topic-main .priority[data-priority="baixa"] {
-  background: #eef7f2;
-  color: #3f7863;
+  background: var(--success-soft);
+  color: var(--success);
 }
 .topic-edit {
   flex-shrink: 0;
@@ -562,7 +562,7 @@
   cursor: pointer;
 }
 .topic-row.clickable:hover {
-  border-color: #cfc0f7;
+  border-color: var(--primary-border);
 }
 .topic-detail .form-title h2 {
   margin: 0;

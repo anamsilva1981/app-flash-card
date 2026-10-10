@@ -7,6 +7,7 @@ import {
 } from "./app/features/account/public-api";
 import { I18nService } from "./app/core/i18n/i18n.service";
 import { AppComponent } from "./app/app.component";
+import { ThemeService } from "./app/core/theme/theme.service";
 
 async function clearLegacyServiceWorkerCaches() {
   if (!("serviceWorker" in navigator)) return;
@@ -35,7 +36,9 @@ void clearLegacyServiceWorkerCaches().finally(() => {
   })
     .then((ref) => {
       const i18n = ref.injector.get(I18nService);
+      const theme = ref.injector.get(ThemeService);
       i18n.start();
+      theme.start();
     })
     .catch((err) => console.error(err));
 });

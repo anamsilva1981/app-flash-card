@@ -6,7 +6,24 @@
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="manifest" href="manifest.webmanifest" />
-    <meta name="theme-color" content="#5147ed" />
+    <meta name="theme-color" content="#F8FAFC" />
+    <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem("study-theme");
+          const theme =
+            saved === "light" || saved === "dark"
+              ? saved
+              : matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          document.documentElement.dataset.theme = theme;
+          document.documentElement.style.colorScheme = theme;
+        } catch {
+          document.documentElement.dataset.theme = "light";
+        }
+      })();
+    </script>
     <link rel="icon" href="icon.svg" />
   </head>
   <body>

@@ -3,7 +3,7 @@
 .account-panel textarea {
   width: 100%;
   box-sizing: border-box;
-  background: white;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
   min-height: 48px;
@@ -18,7 +18,7 @@
 }
 .account-section {
   padding: 24px;
-  background: white;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 20px;
 }
@@ -57,8 +57,8 @@
   text-decoration: none;
 }
 .account-section .danger {
-  color: #a52b40;
-  background: #fff0f2;
+  color: var(--danger);
+  background: var(--danger-soft);
 }
 .account-section .checkbox-row {
   display: flex;
@@ -89,5 +89,5 @@
 }
 .reminder-days button.active {
   background: var(--primary);
-  color: white;
+  color: var(--primary-on);
 }
