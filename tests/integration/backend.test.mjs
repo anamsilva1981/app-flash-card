@@ -1,4 +1,4 @@
-import { test } from "node:test";
+﻿import { test } from "node:test";
 import assert from "node:assert/strict";
 import { loadEnvFile } from "node:process";
 import { createClient } from "@supabase/supabase-js";
@@ -238,4 +238,36 @@ test("Supabase isolated persistence, authorization and deletion", async (t) => {
   } finally {
     for (const id of created) await admin.auth.admin.deleteUser(id);
   }
+});
+
+test("legacy anonymous study writes and RPCs are rejected", async () => {
+  const legacyAnon = createClient(url, process.env.ANON_KEY, options);
+  const id = crypto.randomUUID();
+  assert.ok(
+    (
+      await legacyAnon
+        .from("study_subjects")
+        .update({ name: "Anonymous mutation" })
+        .eq("id", id)
+    ).error,
+  );
+  assert.ok(
+    (
+      await legacyAnon.rpc("rename_study_subject", {
+        subject_id: id,
+        new_name: "Anonymous mutation",
+        routine: [1],
+        is_archived: false,
+      })
+    ).error,
+  );
+  assert.ok(
+    (
+      await legacyAnon.rpc("complete_study_topic", {
+        topic_id: id,
+        finished_at: new Date().toISOString(),
+        study_date: "2026-01-01",
+      })
+    ).error,
+  );
 });

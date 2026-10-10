@@ -9,7 +9,7 @@
 .env
 .env.*
 !.env.example
-/src/app/app-config.generated.ts
+/src/app/core/config/app-config.generated.ts
 /.test-build
 /coverage
 /tests/integration/backend

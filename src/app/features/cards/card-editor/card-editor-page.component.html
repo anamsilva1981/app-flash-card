@@ -1,0 +1,92 @@
+@if (vm.cardEditor()) {
+  <div class="modal-layer" (keydown.escape)="vm.cardEditor.set(false)">
+    <div
+      class="modal-backdrop"
+      (click)="vm.cardEditor.set(false)"
+      aria-hidden="true"
+    ></div>
+    <section
+      class="modal-sheet card-editor"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="card-editor-title"
+      cdkTrapFocus
+      [cdkTrapFocusAutoCapture]="true"
+    >
+      <div class="editor-head">
+        <h2 id="card-editor-title">
+          {{
+            vm.cardDraft.id
+              ? ("ui.editarFlashcard" | t)
+              : ("ui.criarFlashcard" | t)
+          }}
+        </h2>
+        <button
+          (click)="vm.cardEditor.set(false)"
+          [attr.aria-label]="'ui.fecharEditorDeFlashcard' | t"
+        >
+          <app-icon name="close" />
+        </button>
+      </div>
+      <label
+        >{{ "ui.baralho_1" | t
+        }}<select [(ngModel)]="vm.cardDraft.subject">
+          @for (s of vm.activeSubjects(); track s.id) {
+            <option [value]="s.deck_key || s.name">{{ s.name }}</option>
+          }
+        </select></label
+      ><label
+        >{{ "ui.topico" | t
+        }}<input
+          cdkFocusInitial
+          data-cy="card-topic"
+          [(ngModel)]="vm.cardDraft.topic"
+          [placeholder]="'ui.exFundamentos' | t" /></label
+      ><label
+        >{{ "ui.pergunta_2" | t
+        }}<textarea
+          data-cy="card-question"
+          [(ngModel)]="vm.cardDraft.question"
+        ></textarea></label
+      ><label
+        >{{ "ui.resposta_3" | t
+        }}<textarea
+          data-cy="card-answer"
+          [(ngModel)]="vm.cardDraft.answer"
+        ></textarea></label
+      ><label
+        >{{ "ui.entendaMelhorOpcional" | t
+        }}<textarea [(ngModel)]="vm.cardDraft.explanation"></textarea></label
+      ><label
+        >{{ "ui.exemploOpcional" | t
+        }}<textarea [(ngModel)]="vm.cardDraft.example"></textarea>
+      </label>
+      <label
+        >{{
+          vm.language() === "en"
+            ? "Think of it this way (optional)"
+            : "Pensa assim (opcional)"
+        }}
+        <textarea
+          data-cy="card-think"
+          [(ngModel)]="vm.cardDraft.think"
+          [placeholder]="
+            vm.language() === 'en'
+              ? 'Use an analogy or mental image that makes the idea easy to remember.'
+              : 'Use uma analogia ou imagem mental que deixe a ideia fácil de lembrar.'
+          "
+        ></textarea>
+      </label>
+      @if (vm.cardError()) {
+        <p role="alert">{{ vm.cardError() }}</p>
+      }
+      <button
+        data-cy="card-save"
+        class="primary-action"
+        (click)="vm.saveCard()"
+      >
+        {{ "ui.salvarFlashcard" | t }}
+      </button>
+    </section>
+  </div>
+}

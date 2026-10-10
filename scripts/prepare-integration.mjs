@@ -1,11 +1,16 @@
-import { mkdirSync, copyFileSync, writeFileSync, readFileSync } from "node:fs";
+﻿import {
+  mkdirSync,
+  copyFileSync,
+  writeFileSync,
+  readFileSync,
+  readdirSync,
+} from "node:fs";
 const folder = "tests/integration/backend/supabase";
 mkdirSync(folder + "/migrations", { recursive: true });
 mkdirSync(folder + "/functions/delete-account", { recursive: true });
-for (const file of [
-  "20261005154046_private_account_studies.sql",
-  "20261007130849_atomic_account_batch.sql",
-])
+for (const file of readdirSync("supabase/migrations")
+  .filter((name) => name.endsWith(".sql"))
+  .sort())
   copyFileSync("supabase/migrations/" + file, folder + "/migrations/" + file);
 copyFileSync(
   "supabase/functions/delete-account/index.ts",

@@ -1,0 +1,137 @@
+:host {
+  display: contents;
+}
+.panel-page {
+  width: 100%;
+  min-width: 0;
+}
+.page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.page-heading > div:first-child {
+  min-width: 0;
+}
+.page-heading span,
+.detail-heading span {
+  font-size: 10px;
+  color: var(--primary);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+.page-heading h1 {
+  margin: 6px 0 8px;
+}
+.page-heading p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin: 0;
+}
+.page-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+.page-icon app-icon {
+  width: 24px;
+  height: 24px;
+}
+.mini-track {
+  height: 6px;
+  background: #e9e8f2;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.mini-track > div {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 10px;
+  transition: width 0.2s;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0 0 24px;
+}
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 12px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+.stat b {
+  font-size: 24px;
+  color: var(--primary);
+  font-weight: 700;
+}
+.stat span {
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.detail-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.detail-heading h2 {
+  font-size: 22px;
+  margin: 6px 0 0;
+}
+.progress-list {
+  display: grid;
+  gap: 12px;
+}
+.progress-item {
+  display: flex;
+  gap: 14px;
+  padding: 20px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+.progress-info {
+  flex: 1;
+}
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+.progress-label span {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Desktop layout: keep the mobile-first shell readable while using available width. */
+@media (min-width: 900px) {
+  .progress-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .panel-page {
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 1280px) {
+  .progress-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

@@ -36,6 +36,15 @@ jobs:
       - name: Formatting and lint
         run: npm run format:check && npm run lint
 
+      - name: Architecture boundaries
+        run: npm run check:architecture
+
+      - name: Structural test coverage
+        run: npm run check:test-structure
+
+      - name: Colocated specs
+        run: npm run test:components
+
       - name: Build Angular
         run: npm run build -- --base-href /${{ github.event.repository.name }}/
 
@@ -54,8 +63,8 @@ jobs:
           cat /tmp/app-flash-card.log
           exit 1
 
-      - name: Cypress E2E
-        run: npm run e2e
+      - name: Cypress E2E blocks A-H
+        run: npm run e2e:blocks
 
       - name: Upload Cypress screenshots on failure
         if: failure()

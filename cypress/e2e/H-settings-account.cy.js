@@ -1,0 +1,47 @@
+describe("Parte H — configurações e conta", () => {
+  beforeEach(() => cy.loginApp());
+
+  it("cobre perfil, rotina, privacidade, suporte e exclusão", () => {
+    cy.contains("nav button", "Perfil").click();
+    cy.contains("h1", "Configurações").should("be.visible");
+    cy.contains("Sua conta").should("be.visible");
+    cy.contains("Seu horário de estudo").should("be.visible");
+    cy.contains("Privacidade e suporte").should("be.visible");
+    cy.contains("Excluir conta").should("be.visible");
+
+    cy.get('textarea[placeholder="Descreva o que precisa"]').type(
+      "Teste automatizado de suporte.",
+    );
+    cy.contains("button", "Registrar solicitação").click();
+    cy.contains("Solicitação registrada").should("be.visible");
+
+    cy.contains("button", "Quero excluir minha conta").click();
+    cy.contains("Digite EXCLUIR para confirmar").should("be.visible");
+    cy.contains("button", "Cancelar").click();
+  });
+
+  it("alterna idioma e mantém a preferência após recarregar", () => {
+    cy.contains("nav button", "Perfil").click();
+    cy.get(".language-switcher").should("contain.text", "EN").click();
+    cy.get("html").should("have.attr", "lang", "en");
+    cy.reload();
+    cy.get("html").should("have.attr", "lang", "en");
+    cy.get(".language-switcher").should("contain.text", "PT");
+  });
+
+  it("rejeita backup inválido sem apagar os dados atuais", () => {
+    cy.contains("nav button", "Perfil").click();
+    cy.get('input[type="file"]').selectFile(
+      {
+        contents: Cypress.Buffer.from('{"version":2,"cards":"invalid"}'),
+        fileName: "invalid.json",
+        mimeType: "application/json",
+      },
+      { force: true },
+    );
+    cy.contains("Nenhum dado foi importado.").should("be.visible");
+    cy.contains("nav button", "Estudar").click();
+    cy.contains("button", "Angular").should("be.visible");
+    cy.contains("button", "JavaScript").should("be.visible");
+  });
+});

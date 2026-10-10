@@ -24,7 +24,6 @@ export function readPublicConfig(env) {
     return value;
   };
   const key = required("SUPABASE_PUBLISHABLE_KEY");
-  // Only public frontend keys belong in the generated bundle.
   const claims = key.startsWith("eyJ")
     ? JSON.parse(Buffer.from(key.split(".")[1], "base64url").toString())
     : null;
@@ -54,7 +53,7 @@ export function readPublicConfig(env) {
 if (process.argv[1]?.endsWith("configure.mjs")) {
   if (existsSync(".env")) loadEnvFile(".env");
   const config = readPublicConfig(process.env);
-  const output = "src/app/app-config.generated.ts";
+  const output = "src/app/core/config/app-config.generated.ts";
   mkdirSync(dirname(output), { recursive: true });
   writeFileSync(
     output,

@@ -1,8 +1,12 @@
 import "zone.js";
 import { bootstrapApplication } from "@angular/platform-browser";
 import { provideServiceWorker } from "@angular/service-worker";
-import { SessionComponent } from "./app/session.component";
-import { I18nService } from "./app/i18n.service";
+import {
+  SESSION_APPLICATION,
+  SessionComponent,
+} from "./app/features/account/public-api";
+import { I18nService } from "./app/core/i18n/i18n.service";
+import { AppComponent } from "./app/app.component";
 
 async function clearLegacyServiceWorkerCaches() {
   if (!("serviceWorker" in navigator)) return;
@@ -24,7 +28,10 @@ async function clearLegacyServiceWorkerCaches() {
 
 void clearLegacyServiceWorkerCaches().finally(() => {
   bootstrapApplication(SessionComponent, {
-    providers: [provideServiceWorker("ngsw-worker.js", { enabled: false })],
+    providers: [
+      provideServiceWorker("ngsw-worker.js", { enabled: false }),
+      { provide: SESSION_APPLICATION, useValue: AppComponent },
+    ],
   })
     .then((ref) => {
       const i18n = ref.injector.get(I18nService);
