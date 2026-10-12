@@ -12,11 +12,13 @@
         try {
           const saved = localStorage.getItem("study-theme");
           const theme =
-            saved === "light" || saved === "dark"
-              ? saved
-              : matchMedia("(prefers-color-scheme: dark)").matches
-                ? "dark"
-                : "light";
+            saved === "light" || saved === "dark" || saved === "system"
+              ? saved === "system"
+                ? matchMedia("(prefers-color-scheme: dark)").matches
+                  ? "dark"
+                  : "light"
+                : saved
+              : "light";
           document.documentElement.dataset.theme = theme;
           document.documentElement.style.colorScheme = theme;
         } catch {

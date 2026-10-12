@@ -43,12 +43,12 @@ function installBrowser(saved: string | null, systemDark = false) {
   return { storage, root, listeners };
 }
 
-test("ThemeService usa sistema na primeira visita e acompanha suas mudanças", () => {
+test("ThemeService inicia claro na primeira visita", () => {
   const { root, listeners } = installBrowser(null, true);
   const service = new ThemeService();
   service.start();
-  assert.equal(service.preference(), "system");
-  assert.equal(root.dataset["theme"], "dark");
+  assert.equal(service.preference(), "light");
+  assert.equal(root.dataset["theme"], "light");
   listeners[0]({ matches: false });
   assert.equal(root.dataset["theme"], "light");
 });

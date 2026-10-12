@@ -44,7 +44,11 @@
         <app-settings-page [vm]="vm.settings" />
       }
     }
-    <nav class="bottom-nav" [attr.aria-label]="'ui.navegacaoPrincipal' | t">
+    <nav class="app-nav" [attr.aria-label]="'ui.navegacaoPrincipal' | t">
+      <div class="nav-brand" aria-label="Estuda Aqui">
+        <span class="nav-brand-mark" aria-hidden="true">▤</span>
+        <b>Estuda Aqui</b>
+      </div>
       <button
         [class.active]="vm.activeTab() === 'home'"
         [attr.aria-current]="vm.activeTab() === 'home' ? 'page' : null"
