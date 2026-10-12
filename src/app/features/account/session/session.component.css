@@ -56,6 +56,15 @@
   font-weight: 700;
   margin-bottom: 40px;
 }
+.back-landing {
+  border: 0;
+  padding: 8px 0;
+  margin-bottom: 22px;
+  background: transparent;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 600;
+}
 .auth-brand app-icon {
   width: 32px;
   height: 32px;

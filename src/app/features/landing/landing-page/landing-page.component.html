@@ -1,0 +1,411 @@
+<div class="landing" id="inicio">
+  <app-landing-header (login)="login.emit()" (signup)="signup.emit()" />
+  <main>
+    <section class="hero section-pad">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">PLANEJE · ESTUDE · REGISTRE · REVISE · EVOLUA</p>
+          <h1>Estudar é <span>mais do que criar flashcards.</span></h1>
+          <p class="lead">
+            Organize o que aprender, acompanhe seus tópicos, transforme
+            conhecimento em flashcards e revise no momento certo.
+          </p>
+          <div class="cta-row">
+            <button class="primary" type="button" (click)="signup.emit()">
+              Começar a estudar <span>→</span></button
+            ><a class="secondary" href="#como-funciona"
+              ><span class="play">▶</span> Ver como funciona</a
+            >
+          </div>
+          <ul class="benefits">
+            <li>◉ Organização completa</li>
+            <li>◷ Revisão espaçada</li>
+            <li>✦ Mais constância</li>
+          </ul>
+        </div>
+        <div class="devices" aria-label="Prévia ilustrativa do Estuda Aqui">
+          <div class="spark s1">〰</div>
+          <div class="spark s2">⌁</div>
+          <div class="laptop">
+            <div class="camera"></div>
+            <div class="screen">
+              <div class="appbar">
+                <b>▤ Estuda Aqui</b><span>⌕ Buscar tópicos...</span><i>●</i>
+              </div>
+              <div class="dashboard">
+                <aside>
+                  <b>⌂ Início</b><span>▣ Planejamento</span
+                  ><span>◫ Tópicos</span><span>▤ Flashcards</span
+                  ><span>◷ Revisões</span>
+                </aside>
+                <article>
+                  <h3>Olá, estudante! 👋</h3>
+                  <small>Continue sua jornada hoje.</small>
+                  <div class="mini-stats">
+                    <b
+                      >⏱<small>
+                        Revisar agora<br /><strong>12 flashcards</strong></small
+                      ></b
+                    ><b
+                      >▣<small>
+                        Tópicos ativos<br /><strong>6 de 10</strong></small
+                      ></b
+                    ><b
+                      >🔥<small>
+                        Sequência atual<br /><strong>7 dias</strong></small
+                      ></b
+                    >
+                  </div>
+                  <h4>Meus tópicos</h4>
+                  <div class="topic">
+                    <i class="blue"></i><b>Banco de Dados</b><em>60%</em>
+                  </div>
+                  <div class="bar"><span style="width: 60%"></span></div>
+                  <div class="topic">
+                    <i class="violet"></i><b>Estruturas de Dados</b><em>35%</em>
+                  </div>
+                  <div class="bar"><span style="width: 35%"></span></div>
+                  <div class="topic">
+                    <i class="green"></i><b>Programação Web</b><em>80%</em>
+                  </div>
+                  <div class="bar"><span style="width: 80%"></span></div>
+                </article>
+              </div>
+            </div>
+            <div class="base"></div>
+          </div>
+          <div class="phone">
+            <div class="phone-screen">
+              <small>Revisão <b>3 de 12</b></small>
+              <div class="phone-progress"><i></i></div>
+              <h3>O que é uma chave primária?</h3>
+              <p>Banco de Dados</p>
+              <button>Ver resposta</button>
+              <div class="ratings"><i>✕</i><i>◷</i><i>✓</i><i>●</i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="problem section-pad">
+      <div class="container problem-grid">
+        <div>
+          <h2>Seu estudo também<br />fica <span>espalhado?</span></h2>
+          <p>
+            Anotações soltas, links salvos, resumos em documentos, tópicos na
+            cabeça e flashcards em lugares diferentes... No fim, fica difícil
+            manter o foco e a constância.
+          </p>
+          <div class="callout">
+            O Estuda Aqui reúne tudo isso em um único lugar, com um fluxo
+            simples e prático.
+          </div>
+        </div>
+        <div
+          class="scatter"
+          aria-label="Caderno, links, resumos, tópicos e flashcards reunidos"
+        >
+          <div class="paper notebook">
+            <b>Caderno</b><span>+ Anotações</span><span>+ Ideias</span
+            ><span>+ Dúvidas...</span>
+          </div>
+          <div class="paper links">
+            <b>🔗 Links</b><span>🔵 Artigos salvos</span
+            ><span>🔴 Vídeos no YouTube</span><span>🟣 Documentação</span>
+          </div>
+          <div class="paper summary"><b>Resumos</b><i></i><i></i><i></i></div>
+          <div class="paper topics">
+            <b>Tópicos</b><span>• Banco de Dados</span
+            ><span>• Estruturas de Dados</span><span>• Programação Web</span
+            ><span>• Inglês</span>
+          </div>
+          <div class="paper cards"><b>Flashcards</b><strong>?</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="how section-pad" id="como-funciona">
+      <div class="container">
+        <h2>Como funciona</h2>
+        <p class="section-lead">Um ciclo completo para o seu aprendizado.</p>
+        <div class="steps">
+          <article>
+            <i>1</i><span>▤</span>
+            <h3>Organize</h3>
+            <p>Planeje seus estudos e defina seus tópicos.</p>
+          </article>
+          <b>→</b>
+          <article>
+            <i>2</i><span>▥</span>
+            <h3>Estude</h3>
+            <p>Explore o conteúdo do seu jeito, com liberdade.</p>
+          </article>
+          <b>→</b>
+          <article>
+            <i>3</i><span>▣</span>
+            <h3>Registre</h3>
+            <p>Transforme o que aprendeu em flashcards ricos.</p>
+          </article>
+          <b>→</b>
+          <article>
+            <i>4</i><span>♢</span>
+            <h3>Revise</h3>
+            <p>No momento certo, com revisão espaçada.</p>
+          </article>
+          <b>→</b>
+          <article>
+            <i>5</i><span>▥</span>
+            <h3>Acompanhe</h3>
+            <p>Veja sua evolução e mantenha a constância.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="features section-pad" id="funcionalidades">
+      <div class="container">
+        <h2>Funcionalidades</h2>
+        <p class="section-lead">
+          Tudo o que você precisa para estudar melhor, em um só lugar.
+        </p>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <div class="feature-title">
+              <i>▣</i>
+              <h3>Planeje o que estudar</h3>
+            </div>
+            <p>
+              Crie seus tópicos, organize por áreas e mantenha seu plano de
+              estudos sempre à vista.
+            </p>
+            <div class="panel">
+              <b>Meus tópicos <em>＋</em></b>
+              <div class="list-row">
+                <i class="amber"></i
+                ><span><b>Banco de Dados</b><small>12 flashcards</small></span
+                ><strong>›</strong>
+              </div>
+              <div class="list-row">
+                <i class="blue"></i
+                ><span
+                  ><b>Estruturas de Dados</b><small>28 flashcards</small></span
+                ><strong>›</strong>
+              </div>
+              <div class="list-row">
+                <i class="green"></i
+                ><span><b>Programação Web</b><small>16 flashcards</small></span
+                ><strong>›</strong>
+              </div>
+              <div class="list-row">
+                <i class="violet"></i
+                ><span><b>Inglês</b><small>20 flashcards</small></span
+                ><strong>›</strong>
+              </div>
+            </div>
+          </article>
+          <article class="feature-card">
+            <div class="feature-title coral">
+              <i>▤</i>
+              <h3>Flashcards ricos</h3>
+            </div>
+            <p>Registre o conhecimento com mais profundidade e contexto.</p>
+            <div class="fields">
+              <div>
+                <b>▣ Pergunta</b
+                ><span>O que é uma chave primária em um banco de dados?</span>
+              </div>
+              <div>
+                <b>▥ Resposta</b
+                ><span>É um campo que identifica unicamente um registro.</span>
+              </div>
+              <div>
+                <b>▧ Explicação</b
+                ><span
+                  >Garante que não existam dois registros com o mesmo
+                  valor.</span
+                >
+              </div>
+              <div>
+                <b>▤ Exemplo prático</b
+                ><span
+                  >Em uma tabela de usuários, o campo id pode ser a chave
+                  primária.</span
+                >
+              </div>
+              <div class="think">
+                <b>💡 Pensa assim</b
+                ><span
+                  >É como o RG de um registro: único e intransferível.</span
+                >
+              </div>
+            </div>
+          </article>
+          <article class="feature-card">
+            <div class="feature-title green-title">
+              <i>◷</i>
+              <h3>Revisão no seu ritmo</h3>
+            </div>
+            <p>
+              O app mostra os flashcards certos no momento certo, usando revisão
+              espaçada.
+            </p>
+            <div class="review-panel">
+              <b>Revisão</b><small>3 de 12</small>
+              <div class="progress"><i></i></div>
+              <h3>O que é uma chave primária?</h3>
+              <span>Banco de Dados</span><button>Ver resposta</button>
+              <div class="review-buttons">
+                <i>Não sei</i><i>Difícil</i><i>Sei</i><i>Fácil</i>
+              </div>
+            </div>
+          </article>
+          <article class="feature-card">
+            <div class="feature-title">
+              <i>▥</i>
+              <h3>Histórico e constância</h3>
+            </div>
+            <p>
+              Acompanhe seu progresso, veja sua sequência de estudos e mantenha
+              a motivação.
+            </p>
+            <div class="streak">
+              🔥 <span>Sequência atual<strong>7 dias</strong></span>
+            </div>
+            <div class="calendar">
+              <b>Abril de 2024</b>
+              <div class="week">D S T Q Q S S</div>
+              <div class="days">
+                1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
+                25 26 27 28
+              </div>
+              <b>Seu progresso <em>78%</em></b>
+              <div class="progress"><i style="width: 78%"></i></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="spaced section-pad">
+      <div class="container spaced-grid">
+        <div>
+          <h2>Revisão espaçada</h2>
+          <h3>Revise no momento certo e fixe o conteúdo por mais tempo.</h3>
+          <p>
+            O Estuda Aqui usa a revisão espaçada para mostrar os flashcards
+            ideais na hora certa, ajudando você a lembrar do conteúdo de forma
+            mais eficiente.
+          </p>
+        </div>
+        <div class="stacked-cards">
+          <div></div>
+          <div></div>
+          <article>
+            <b>O que é<br />polimorfismo?</b><span>Programação</span>
+          </article>
+        </div>
+        <div class="memory">
+          <b>Como você lembra deste conteúdo?</b>
+          <div>
+            <span
+              >Não sei<small>Ver novamente<br />em breve</small></span
+            ><span
+              >Difícil<small>Reforçar<br />em alguns dias</small></span
+            ><span
+              >Sei<small>Revisar<br />depois</small></span
+            ><span
+              >Fácil<small>Aparece<br />mais tarde</small></span
+            >
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="evolution section-pad">
+      <div class="container evolution-grid">
+        <div>
+          <h2>Sua evolução em destaque</h2>
+          <p>
+            Acompanhe seu progresso, veja sua constância e celebre cada passo da
+            sua jornada.
+          </p>
+        </div>
+        <div class="metric">
+          <i>▤</i
+          ><span
+            >Flashcards revisados<strong>284</strong
+            ><small>↗ 12% esta semana</small></span
+          >
+        </div>
+        <div class="metric">
+          <i>◷</i
+          ><span
+            >Tempo de estudo<strong>12h 30min</strong
+            ><small>↗ 16% esta semana</small></span
+          >
+        </div>
+        <div class="metric">
+          <i>🔥</i
+          ><span
+            >Sequência atual<strong>7 dias</strong
+            ><small>Melhor sequência: 14 dias</small></span
+          >
+        </div>
+        <div class="metric">
+          <i>▣</i
+          ><span
+            >Tópicos em andamento<strong>6 de 10</strong>
+            <div class="progress"><i style="width: 60%"></i></div
+          ></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="about section-pad" id="sobre">
+      <div class="container about-grid">
+        <div>
+          <h2>Sobre o projeto</h2>
+          <p>
+            Criado a partir de uma necessidade pessoal de estudo, o Estuda Aqui
+            organiza o aprendizado do jeito que funciona na prática.
+          </p>
+          <span class="badge">♥ Projeto pessoal e de portfólio</span>
+        </div>
+        <div class="illustration" aria-hidden="true">
+          <div class="sun"></div>
+          <div class="person">👨🏻‍💻</div>
+          <div class="desk"></div>
+          <div class="plant">🌿</div>
+          <div class="books">▰ ▰ ▰</div>
+        </div>
+        <blockquote>
+          “Um app feito por quem estuda,<br /><b
+            >para quem também acredita<br />no poder da constância.</b
+          >”
+        </blockquote>
+      </div>
+    </section>
+
+    <section class="final-cta">
+      <div class="mountains" aria-hidden="true"></div>
+      <div class="container">
+        <div>
+          <h2>Talvez o seu jeito de<br />estudar também caiba aqui.</h2>
+          <p>
+            Organize, estude, registre, revise e evolua. No seu ritmo, do seu
+            jeito.
+          </p>
+        </div>
+        <div class="cta-row">
+          <button class="primary" type="button" (click)="guest.emit()">
+            Experimentar sem conta →</button
+          ><button class="outline" type="button" (click)="signup.emit()">
+            Criar minha conta
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+  <app-landing-footer />
+</div>

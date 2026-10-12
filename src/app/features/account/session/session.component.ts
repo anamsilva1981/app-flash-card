@@ -14,6 +14,7 @@ import {
 import { FormsModule } from "@angular/forms";
 import { AppIconComponent } from "../../../shared/components/app-icon/app-icon.component";
 import { SESSION_APPLICATION } from "./session-application.token";
+import { LandingPageComponent } from "../../landing/public-api";
 import {
   accountSession,
   accountScope,
@@ -22,7 +23,7 @@ import {
 @Component({
   selector: "app-session",
   standalone: true,
-  imports: [I18nPipe, FormsModule, AppIconComponent],
+  imports: [I18nPipe, FormsModule, AppIconComponent, LandingPageComponent],
   templateUrl: "./session.component.html",
   styleUrl: "./session.component.css",
 })
@@ -36,6 +37,9 @@ export class SessionComponent {
   private authEpoch = 0;
   config = appConfig;
   readonly accountId = signal(accountScope());
+  readonly view = signal<"landing" | "auth">(
+    new URLSearchParams(location.search).has("auth") ? "auth" : "landing",
+  );
   loading = signal(true);
   ready = signal(false);
   mode = signal<"login" | "signup" | "signup-success" | "reset" | "password">(
@@ -157,10 +161,21 @@ export class SessionComponent {
   }
   showAccount(mode: "login" | "signup" = "signup") {
     this.ready.set(false);
+    this.view.set("auth");
     this.mode.set(mode);
     this.message.set("");
     this.notice.set(null);
     this.password = "";
+  }
+  showLanding() {
+    this.view.set("landing");
+    this.message.set("");
+    this.notice.set(null);
+    history.replaceState(null, "", location.pathname);
+  }
+  startGuest() {
+    localStorage.setItem("study-guest-entered", "yes");
+    this.enter("guest");
   }
   switchMode(mode: "login" | "signup" | "reset") {
     this.mode.set(mode);

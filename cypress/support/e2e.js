@@ -120,6 +120,7 @@ Cypress.Commands.add("mockBackend", (overrides = {}) => {
 Cypress.Commands.add("loginApp", (overrides = {}) => {
   cy.mockBackend(overrides);
   cy.visit("/");
+  cy.contains("button", "Entrar").click();
   cy.contains("Bem-vinda de volta").should("be.visible");
   cy.get('input[name="email"]').type("e2e@app.local");
   cy.get('input[name="password"]').type("Senha@123");

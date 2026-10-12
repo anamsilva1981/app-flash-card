@@ -4,6 +4,7 @@ describe("Parte A — autenticação e onboarding", () => {
 
     it("abre login, cadastro, valida senha e política de privacidade", () => {
       cy.visit("/");
+      cy.contains("button", "Entrar").click();
       cy.contains("Bem-vinda de volta").should("be.visible");
       cy.contains("button", "Criar uma conta").click();
       cy.contains("Seu próximo aprendizado começa aqui").should("be.visible");
@@ -20,6 +21,7 @@ describe("Parte A — autenticação e onboarding", () => {
 
     it("abre recuperação de senha", () => {
       cy.visit("/");
+      cy.contains("button", "Entrar").click();
       cy.contains("button", "Esqueci minha senha").click();
       cy.contains("Recupere seu acesso").should("be.visible");
       cy.get('input[name="email"]').should("be.visible");

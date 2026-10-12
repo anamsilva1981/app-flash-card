@@ -64,10 +64,19 @@
   @for (id of [accountId()]; track id) {
     <ng-container />
   }
+} @else if (view() === "landing") {
+  <app-landing-page
+    (login)="showAccount('login')"
+    (signup)="showAccount('signup')"
+    (guest)="startGuest()"
+  />
 } @else {
   <main class="auth-page">
+    <button class="back-landing" type="button" (click)="showLanding()">
+      ← Voltar ao início
+    </button>
     <div class="auth-brand">
-      <app-icon name="cards" /><span>App Flash Card</span>
+      <app-icon name="cards" /><span>Estuda Aqui</span>
     </div>
     <span class="auth-eyebrow">{{ "ui.aprendaUMPOUCOTODOSOS" | t }}</span>
     <h1>

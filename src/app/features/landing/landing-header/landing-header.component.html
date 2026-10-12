@@ -1,0 +1,23 @@
+<header class="landing-header">
+  <a class="brand" href="#inicio" aria-label="Estuda Aqui — início">
+    <span class="brand-mark" aria-hidden="true">▤</span><b>Estuda Aqui</b>
+  </a>
+  <button
+    class="menu-toggle"
+    type="button"
+    aria-label="Abrir menu"
+    [attr.aria-expanded]="menuOpen()"
+    (click)="menuOpen.set(!menuOpen())"
+  >
+    ☰
+  </button>
+  <nav [class.open]="menuOpen()" aria-label="Navegação da landing page">
+    <a href="#como-funciona" (click)="menuOpen.set(false)">Como funciona</a>
+    <a href="#funcionalidades" (click)="menuOpen.set(false)">Funcionalidades</a>
+    <a href="#sobre" (click)="menuOpen.set(false)">Sobre</a>
+  </nav>
+  <div class="actions">
+    <button class="login" type="button" (click)="login.emit()">Entrar</button>
+    <button class="start" type="button" (click)="signup.emit()">Começar</button>
+  </div>
+</header>
