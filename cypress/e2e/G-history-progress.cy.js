@@ -20,7 +20,7 @@ describe("Parte G — histórico e progresso", () => {
     cy.get('[data-cy="card-save"]').click();
     cy.contains("button", /Revisar agora|Revisar novamente/).click();
     cy.contains("button", "Virar card").click();
-    cy.contains("button", "Sei").click();
+    cy.contains("button", "Acertei em cheio").click();
     cy.contains("Revisão concluída").should("be.visible");
     cy.contains("button", "Voltar ao início").click();
     cy.contains("nav button", "Histórico").click();
