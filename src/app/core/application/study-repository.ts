@@ -9,6 +9,7 @@ import {
   flush,
   hasPending,
   readAccountSnapshot,
+  syncStatus,
   writeRevision,
 } from "../persistence/sync";
 import { StudyStore } from "../state/study-store";
@@ -86,6 +87,7 @@ export class StudyRepository {
         ),
       );
       this.store.error.set("");
+      syncStatus.set("sync.complete");
     } catch {
       if (scope === accountScope())
         this.store.error.set(this.i18n.t("error.sync"));

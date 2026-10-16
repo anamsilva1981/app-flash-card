@@ -58,6 +58,7 @@
   display: none;
 }
 .sync-banner,
+.sync-error,
 .update-banner {
   padding: 14px 16px;
   border-radius: 14px;
@@ -67,6 +68,33 @@
   font-size: 12px;
   line-height: 1.6;
   margin: 0 0 20px;
+}
+.sync-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-color: var(--danger-border);
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.sync-error p {
+  margin: 0;
+}
+.sync-error button {
+  flex: 0 0 auto;
+  min-height: 40px;
+  border: 1px solid currentColor;
+  border-radius: 10px;
+  padding: 9px 14px;
+  background: var(--surface);
+  color: inherit;
+  font-size: 12px;
+  font-weight: 600;
+}
+.sync-error button:disabled {
+  cursor: wait;
+  opacity: 0.65;
 }
 .update-banner {
   display: flex;
@@ -88,6 +116,14 @@
 @media (max-width: 400px) {
   .app-shell {
     padding: 24px 16px 106px;
+  }
+  .sync-error {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .sync-error button {
+    width: 100%;
   }
 }
 @media (min-width: 900px) {

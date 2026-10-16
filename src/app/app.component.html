@@ -6,9 +6,17 @@
     </div>
   }
   @if (vm.dataError()) {
-    <p role="alert">{{ vm.dataError() }}</p>
-  }
-  @if (
+    <div class="sync-error" role="alert">
+      <p>{{ vm.dataError() }}</p>
+      <button
+        type="button"
+        (click)="vm.retrySync()"
+        [disabled]="vm.retryingSync()"
+      >
+        {{ (vm.retryingSync() ? "sync.retrying" : "sync.retry") | t }}
+      </button>
+    </div>
+  } @else if (
     [
       "sync.offline",
       "sync.pending",

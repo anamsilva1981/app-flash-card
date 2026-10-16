@@ -42,6 +42,7 @@ export class AppFacade {
   readonly dataError = this.store.error;
   readonly syncStatus = syncStatus;
   readonly updateReady = signal(false);
+  readonly retryingSync = signal(false);
 
   private initialized = false;
 
@@ -85,6 +86,17 @@ export class AppFacade {
 
   reloadApp() {
     window.location.reload();
+  }
+
+  async retrySync() {
+    if (this.retryingSync()) return;
+    this.retryingSync.set(true);
+    this.store.error.set("");
+    try {
+      await this.repository.initialize();
+    } finally {
+      this.retryingSync.set(false);
+    }
   }
 
   setTab(tab: AppTab) {

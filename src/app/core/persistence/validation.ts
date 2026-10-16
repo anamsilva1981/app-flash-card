@@ -76,14 +76,14 @@ export const parseTopics = (v: unknown) =>
       (r["notes"] === undefined || text(r["notes"])) &&
       ["todo", "done"].includes(String(r["status"])) &&
       ["alta", "media", "baixa"].includes(String(r["priority"])) &&
-      (r["link"] === null || text(r["link"])) &&
+      (r["link"] === undefined || r["link"] === null || text(r["link"])) &&
       (r["completed_at"] === null ||
         (text(r["completed_at"]) &&
           !Number.isNaN(Date.parse(r["completed_at"])))) &&
       (r["subject_id"] === undefined ||
         r["subject_id"] === null ||
         text(r["subject_id"])),
-  ).map((x) => ({ ...x, notes: x.notes || "" }));
+  ).map((x) => ({ ...x, notes: x.notes || "", link: x.link ?? null }));
 export const parseHistory = (v: unknown) =>
   list<StudyDay>(
     v,

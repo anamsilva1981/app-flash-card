@@ -1317,6 +1317,14 @@ export const MESSAGES: Record<string, { pt: string; en: string }> = {
     pt: "Offline · usando dados salvos",
     en: "Offline · using saved data",
   },
+  "sync.retry": {
+    pt: "Tentar sincronizar novamente",
+    en: "Try syncing again",
+  },
+  "sync.retrying": {
+    pt: "Tentando sincronizar…",
+    en: "Trying to sync…",
+  },
   "auth.passwordPolicy": {
     pt: "A senha deve ter pelo menos 8 caracteres, com letra maiúscula, letra minúscula, número e caractere especial.",
     en: "Use at least 8 characters, with uppercase and lowercase letters, a number and a special character.",

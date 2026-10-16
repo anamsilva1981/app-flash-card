@@ -150,6 +150,33 @@ test("remote initialization validates the complete snapshot and preserves local 
   injector.destroy();
 });
 
+test("remote initialization accepts legacy topics without a link", async () => {
+  app.accountSession.set({
+    user: { id: "legacy", user_metadata: {} },
+    access_token: "fake",
+  });
+  app.setScope("legacy");
+  const { repository, store, injector } = services();
+  const legacyTopic = { ...fixture().topic };
+  delete legacyTopic.link;
+  globalThis.fetch = async () =>
+    Response.json([
+      {
+        data: {
+          ...fixture().state,
+          queue: [legacyTopic],
+          activity: [],
+          progress: [],
+          preferences: {},
+        },
+      },
+    ]);
+  await repository.initialize();
+  assert.equal(store.queue()[0].link, null);
+  assert.equal(store.error(), "");
+  injector.destroy();
+});
+
 test("rejects a backup that the server cannot accept before committing local data", async () => {
   const { repository, store, injector } = services();
   const { backup, card } = fixture();
