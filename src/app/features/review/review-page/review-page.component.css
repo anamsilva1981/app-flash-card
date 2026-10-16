@@ -286,6 +286,29 @@
   line-height: 1.7;
   color: var(--muted);
 }
+.review-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  margin: 16px 0 8px;
+}
+.review-summary div {
+  display: grid;
+  gap: 4px;
+  padding: 12px 8px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.review-summary b {
+  color: var(--primary);
+  font-size: 20px;
+}
+.review-summary span {
+  color: var(--muted);
+  font-size: 10px;
+}
 .new-subject-button {
   border: 0;
   background: transparent;

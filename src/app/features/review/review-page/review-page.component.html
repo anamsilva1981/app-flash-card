@@ -173,6 +173,20 @@
       <p>
         {{ "review.remaining" | t: { count: vm.dueCards().length } }}
       </p>
+      <div class="review-summary" [attr.aria-label]="'ui.resumoRevisao' | t">
+        <div>
+          <b>{{ vm.todayReviews() }}</b
+          ><span>{{ "ui.revisadosHoje" | t }}</span>
+        </div>
+        <div>
+          <b>{{ vm.todayCorrect() }}</b
+          ><span>{{ "ui.acertosHoje" | t }}</span>
+        </div>
+        <div>
+          <b>{{ vm.todayXp() }}</b
+          ><span>{{ "ui.pontosXP" | t }}</span>
+        </div>
+      </div>
       @if (vm.dueCards().length && !vm.practice()) {
         <button class="primary-action" (click)="vm.startSession()">
           {{ "ui.proximaSessao" | t }}

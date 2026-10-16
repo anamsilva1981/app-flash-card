@@ -1,4 +1,4 @@
-import { Injectable, inject } from "@angular/core";
+import { Injectable, inject, computed } from "@angular/core";
 import { StudyStore } from "../../../core/state/study-store";
 import { ReviewStore } from "../../review/public-api";
 import {
@@ -6,6 +6,7 @@ import {
   countSubjectCards,
 } from "../../../shared/domain/flashcard";
 import { studyDate } from "../../../shared/utils/study-clock";
+import { levelForXp } from "../../../shared/domain/gamification";
 
 @Injectable()
 export class ProgressFacade {
@@ -16,6 +17,10 @@ export class ProgressFacade {
   readonly cards = this.store.cards;
   readonly history = this.store.history;
   readonly activeSubjects = this.store.activeSubjects;
+  readonly xp = this.store.xp;
+  readonly todayReviews = this.store.todayReviews;
+  readonly todayCorrect = this.store.todayCorrect;
+  readonly level = computed(() => levelForXp(this.xp()));
 
   subjectDue(name: string) {
     return countDueCards(this.cards(), name, studyDate());

@@ -279,6 +279,28 @@ export class StudyRepository {
     });
   }
 
+  async importCards(cards: Card[]) {
+    const prepared = cards.map((card) => createCard(card));
+    await this.mutate((current) => {
+      const state = normalizeRelations({
+        ...current,
+        cards: prepared.reduce(
+          (cards, card) => upsertCard(cards, card),
+          current.cards,
+        ),
+      });
+      const operations = prepared.map((card) => ({
+        id: crypto.randomUUID(),
+        path: "account_cards",
+        body: state.cards.find((item) => item.id === card.id)!,
+      }));
+      return {
+        state,
+        operations: [{ path: "rpc/apply_account_batch", body: operations }],
+      };
+    });
+  }
+
   async importBackup(data: BackupData) {
     data = validateBackup(data);
     await this.mutate((current) => {

@@ -1,4 +1,5 @@
 import { Component, DestroyRef, Input, ViewChild, inject } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 import { AppIconComponent } from "../../../shared/components/app-icon/app-icon.component";
 import { I18nPipe } from "../../../core/i18n/i18n.pipe";
 import {
@@ -11,6 +12,7 @@ import { StudyPlanFacade } from "../application/study-plan.facade";
   selector: "app-study-plan-page",
   standalone: true,
   imports: [
+    FormsModule,
     TopicEditorPageComponent,
     AppIconComponent,
     I18nPipe,

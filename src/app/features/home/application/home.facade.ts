@@ -99,6 +99,12 @@ export class HomeFacade {
     this.subjectNavigation.run((manager) => manager.openNew());
   }
 
+  startAiImport() {
+    this.dismissOnboarding();
+    this.setTab("studyPlan");
+    this.studyPlan.openAiImport();
+  }
+
   startFirstTopic() {
     const first = this.activeSubjects()[0];
     if (!first) return this.startFirstSubject();

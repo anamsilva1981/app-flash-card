@@ -12,6 +12,8 @@ const entry = [
   "export * from '../src/app/features/review/domain/review-schedule';",
   "export * from '../src/app/shared/domain/study-history';",
   "export * from '../src/app/shared/domain/progress';",
+  "export * from '../src/app/shared/domain/ai-card-import';",
+  "export * from '../src/app/shared/domain/gamification';",
   "export * from '../src/app/shared/utils/study-clock';",
   "export * from '../src/app/core/notifications/reminders';",
   "export * from '../src/app/core/notifications/reminder-policy';",

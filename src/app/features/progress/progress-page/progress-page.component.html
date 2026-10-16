@@ -9,6 +9,22 @@
   </div>
   <div class="stats-grid">
     <div class="stat purple">
+      <b>{{ vm.xp() }}</b
+      ><span>{{ "ui.pontosXP" | t }}</span>
+    </div>
+    <div class="stat blue">
+      <b>{{ vm.todayReviews() }}</b
+      ><span>{{ "ui.revisadosHoje" | t }}</span>
+    </div>
+    <div class="stat green">
+      <b>{{ vm.todayCorrect() }}</b
+      ><span>{{ "ui.acertosHoje" | t }}</span>
+    </div>
+    <div class="stat amber">
+      <b>{{ vm.level() }}</b
+      ><span>{{ "ui.nivel" | t }}</span>
+    </div>
+    <div class="stat purple">
       <b>{{ vm.totalDue() }}</b
       ><span>{{ "ui.paraRevisar" | t }}</span>
     </div>

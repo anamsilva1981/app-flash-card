@@ -49,6 +49,9 @@ export class StudyPlanRepository {
   completeTopic(item: StudyItem) {
     return this.repository.completeTopic(item);
   }
+  importCards(cards: Card[]) {
+    return this.repository.importCards(cards);
+  }
 }
 
 @Injectable()

@@ -45,6 +45,124 @@
   width: 24px;
   height: 24px;
 }
+.study-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin: -12px 0 20px;
+}
+.secondary-action {
+  min-height: 42px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 0 14px;
+  background: var(--surface);
+  color: var(--primary);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.ai-import-panel {
+  margin-bottom: 24px;
+  padding: 20px;
+  border: 1px solid var(--primary-border);
+  border-radius: 18px;
+  background: var(--primary-soft);
+}
+.ai-import-heading,
+.ai-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.ai-import-heading span {
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+.ai-import-heading h2 {
+  margin: 5px 0;
+  font-size: 20px;
+}
+.ai-import-heading p {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.ai-prompt {
+  max-height: 150px;
+  overflow: auto;
+  margin: 0 0 14px;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--muted);
+  font:
+    11px/1.5 ui-monospace,
+    monospace;
+  white-space: pre-wrap;
+}
+.ai-field {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+.ai-field input,
+.ai-field select,
+.ai-field textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 12px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  box-sizing: border-box;
+}
+.ai-field textarea {
+  resize: vertical;
+  font:
+    12px/1.5 ui-monospace,
+    monospace;
+}
+.ai-actions {
+  justify-content: flex-start;
+  margin-top: 14px;
+}
+.ai-preview {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+.ai-preview article {
+  display: grid;
+  gap: 3px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--surface);
+  font-size: 12px;
+}
+.ai-preview article b {
+  color: var(--primary);
+  font-size: 10px;
+}
+.ai-preview article small {
+  color: var(--muted);
+}
+.ai-error {
+  color: var(--danger);
+  font-size: 12px;
+}
+.ai-success {
+  color: var(--success);
+  font-weight: 700;
+  font-size: 13px;
+}
 .detail-heading {
   display: flex;
   justify-content: space-between;

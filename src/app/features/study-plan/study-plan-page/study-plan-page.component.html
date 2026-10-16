@@ -6,6 +6,102 @@
     </div>
     <div class="page-icon"><app-icon name="book" /></div>
   </div>
+  <div class="study-actions">
+    <button class="secondary-action" type="button" (click)="vm.openAiImport()">
+      <app-icon name="spark" />{{ "ui.importarComIA" | t }}
+    </button>
+  </div>
+  @if (vm.aiImportOpen()) {
+    <section class="ai-import-panel">
+      <div class="ai-import-heading">
+        <div>
+          <span>{{ "ui.importarComIA" | t }}</span>
+          <h2>{{ "ui.transformeConteudoEmCards" | t }}</h2>
+          <p>{{ "ui.coleOJsonGeradoPelaIA" | t }}</p>
+        </div>
+        <button type="button" class="icon-button" (click)="vm.closeAiImport()">
+          <app-icon name="close" />
+        </button>
+      </div>
+      <pre class="ai-prompt">{{ "ui.promptParaIA" | t }}</pre>
+      @if (vm.activeSubjects().length) {
+        <label class="ai-field"
+          >{{ "ui.baralho" | t }}
+          <select
+            [ngModel]="vm.aiSubject()"
+            (ngModelChange)="vm.aiSubject.set($event)"
+          >
+            <option value="">{{ "ui.criarNovoBaralho" | t }}</option>
+            @for (subject of vm.activeSubjects(); track subject.id) {
+              <option [value]="subject.deck_key || subject.name">
+                {{ subject.name }}
+              </option>
+            }
+          </select>
+        </label>
+      }
+      @if (!vm.aiSubject()) {
+        <label class="ai-field"
+          >{{ "ui.nomeDoNovoBaralho" | t }}
+          <input
+            [ngModel]="vm.aiDeckName()"
+            (ngModelChange)="vm.aiDeckName.set($event)"
+            [placeholder]="'ui.cardsImportadosPorIA' | t"
+          />
+        </label>
+      }
+      <label class="ai-field"
+        >{{ "ui.jsonDosCards" | t }}
+        <textarea
+          rows="9"
+          [ngModel]="vm.aiJson()"
+          (ngModelChange)="vm.aiJson.set($event)"
+          [placeholder]="'ui.jsonDosCardsPlaceholder' | t"
+        ></textarea>
+      </label>
+      @if (vm.aiError()) {
+        <p class="ai-error" role="alert">{{ vm.aiError() }}</p>
+      }
+      <div class="ai-actions">
+        <button
+          class="secondary-action"
+          type="button"
+          (click)="vm.validateAiImport()"
+        >
+          {{ "ui.validarCards" | t }}
+        </button>
+        @if (vm.aiPreview().length) {
+          <button
+            class="primary-action"
+            type="button"
+            [disabled]="vm.aiImporting()"
+            (click)="vm.importAiCards()"
+          >
+            {{ "ui.importarCards" | t: { count: vm.aiPreview().length } }}
+          </button>
+        }
+      </div>
+      @if (vm.aiPreview().length) {
+        <div class="ai-preview">
+          <strong>{{
+            "ui.previaCards" | t: { count: vm.aiPreview().length }
+          }}</strong>
+          @for (card of vm.aiPreview(); track $index) {
+            <article>
+              <b>{{ card.topic }}</b
+              ><span>{{ card.question }}</span
+              ><small>{{ card.answer }}</small>
+            </article>
+          }
+        </div>
+      }
+      @if (vm.aiImportedCount()) {
+        <p class="ai-success" role="status">
+          {{ "ui.cardsImportados" | t: { count: vm.aiImportedCount() } }}
+        </p>
+      }
+    </section>
+  }
   <app-subject-manager
     [attr.inert]="vm.studyFormOpen() || vm.cardEditor() ? '' : null"
     [flashcards]="vm.cards()"

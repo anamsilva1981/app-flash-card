@@ -12,7 +12,7 @@ test("review scheduling, priorities and immutable mutations", () => {
     ["easy", 7],
   ])
     assert.equal(app.intervalFor(0, r), d);
-  assert.equal(app.intervalFor(4, "good"), 9);
+  assert.equal(app.intervalFor(4, "good"), 10);
   assert.equal(app.intervalFor(365, "easy"), 365);
   const { card, topic } = fixture();
   assert.equal(app.createCard({ ...card, id: 0 }).id > 0, true);

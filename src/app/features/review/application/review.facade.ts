@@ -32,6 +32,9 @@ export class ReviewFacade {
   readonly totalDue = this.review.totalDue;
   readonly card = this.review.card;
   readonly progress = this.review.progress;
+  readonly todayReviews = this.store.todayReviews;
+  readonly todayCorrect = this.store.todayCorrect;
+  readonly todayXp = this.store.todayXp;
   readonly rating = signal(false);
 
   subjectLabel() {
@@ -121,6 +124,7 @@ export class ReviewFacade {
           this.reviewLabel(),
           rating,
         );
+        this.store.recordReview(rating);
       }
       this.sessionPosition.update((value) => value + 1);
       this.review.reset();

@@ -1,3 +1,5 @@
+export { xpForRating } from "../../../shared/domain/gamification";
+
 export type Rating = "again" | "hard" | "good" | "easy";
 export function intervalFor(previous: number, rating: Rating): number {
   if (rating === "again") return 1;
@@ -6,7 +8,7 @@ export function intervalFor(previous: number, rating: Rating): number {
     365,
     Math.max(
       previous + 1,
-      Math.round(previous * { hard: 1.2, good: 2.2, easy: 3 }[rating]),
+      Math.round(previous * { hard: 1.5, good: 2.5, easy: 3.5 }[rating]),
     ),
   );
 }

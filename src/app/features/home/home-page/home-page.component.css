@@ -438,3 +438,8 @@
   cursor: pointer;
   text-decoration: none;
 }
+.onboarding .secondary-action {
+  margin-left: 8px;
+  background: transparent;
+  border: 1px solid var(--border);
+}

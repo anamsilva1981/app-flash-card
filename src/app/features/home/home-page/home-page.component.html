@@ -72,6 +72,9 @@
           <button class="primary-action" (click)="vm.startFirstSubject()">
             {{ "ui.criarMeuPrimeiroBaralho" | t }}
           </button>
+          <button class="secondary-action" (click)="vm.startAiImport()">
+            {{ "ui.importarComIA" | t }}
+          </button>
         } @else if (vm.onboardingStep() === "topic") {
           <h2>{{ "ui.adicioneOPrimeiroTopico" | t }}</h2>
           <p>
