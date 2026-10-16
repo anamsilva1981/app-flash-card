@@ -22,7 +22,7 @@ describe("Parte F — estudo e revisão", () => {
     cy.contains("Associe a resposta a uma situação conhecida.").should(
       "be.visible",
     );
-    cy.contains("button", "Sei").click();
+    cy.contains("button", "Acertei em cheio").click();
   });
 
   it("revisa conteúdo persistido da conta", () => {
